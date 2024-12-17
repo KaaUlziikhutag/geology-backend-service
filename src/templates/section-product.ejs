@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Тайлан</title>
+    <style>
+      /* General Styles */
+      body {
+        background-color: #e5e7eb;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+      }
+
+      /* A4 Paper Styles */
+      .a4-paper {
+        width: 210mm;
+        height: 297mm;
+        margin: auto;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Printing Styles */
+      @media print {
+        .a4-paper {
+          box-shadow: none;
+          margin: 0;
+        }
+      }
+
+      /* Header Styles */
+      .header {
+        text-align: center;
+        margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header p {
+        margin: 0;
+        font-weight: 600;
+      }
+      .header .centered {
+        display: flex;
+        justify-content: space-around;
+        font-weight: normal;
+        margin-top: 4px;
+      }
+
+      /* Table Styles */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        background-color: #fff;
+        border: 1px solid black;
+        margin: 16px 0;
+      }
+
+      table th,
+      table td {
+        border: 1px solid black;
+        padding: 4px;
+        text-align: left;
+      }
+      /* table td {
+      border: 1px solid black;
+      padding: 4px;
+      text-align: center;
+    } */
+
+      .table-header th {
+        font-weight: bold;
+      }
+
+      /* Footer Signatures */
+      .signature-section {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .signature-row {
+        display: flex;
+        justify-content: center;
+        margin: 8px 0;
+      }
+
+      .signature-row p {
+        margin: 0 8px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="a4-paper">
+      <!-- Header Section -->
+      <header class="header">
+        <text>БАТЛАВ:</text>
+        <text class="header-subtitle"
+          >ГЕОЛОГИЙН СУДАЛГАА ШИНЖИЛГЭЭНИЙ ТӨВ" ТӨҮГ-ЫН</text
+        >
+        <div class="centered">
+          <text>ЗАХИРАЛ</text>
+          <text>Д.МӨНХБААТАР</text>
+        </div>
+        <p>
+          ГЕОЛОГИЙН СУДАЛГААА ШИНЖИЛГЭЭНИЙ ТӨВИЙН <%= reportYearMonth %>
+          ШИНЖИЛГЭЭНИЙ АЖЛЫН ГҮЙЦЭТГЭЛ (шинжилгээний төрлөөр)
+        </p>
+      </header>
+
+      <!-- Table Section -->
+      <table>
+        <thead class="table-header">
+          <tr>
+            <th rowspan="3" style="width: 1%">№</th>
+            <th colspan="2" rowspan="3" style="width: 35%">
+              Шинжилгээний төрөл
+            </th>
+            <th colspan="4"><%= reportMonth %></th>
+          </tr>
+          <tr>
+            <th colspan="2">Тайлант сар</th>
+            <th colspan="2">Жилийн эхээс</th>
+          </tr>
+          <tr>
+            <th>Дээжийн тоо</th>
+            <th>Дүн</th>
+            <th>Дээжийн тоо</th>
+            <th>Дүн</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% sections.forEach(function(item, index) {%>
+            <tr>
+              <td class="p-1 border border-black text-right"><%= index + 1 %></td>
+              <td class="p-1 border border-black" colspan="2"><%= item.name %></td>
+              <td class="p-1 border border-black text-right"><%= item.monthQty %></td>
+              <td class="p-1 border border-black text-right"><%= item.monthAmount %></td>
+              <td class="p-1 border border-black text-right"><%= item.yearQty %></td>
+              <td class="p-1 border border-black text-right"><%= item.yearAmount %></td>
+            </tr>
+            <% });%>
+          
+          <tr class="font-bold">
+            <td colspan="3">Шинжилгээний ажлын нийт дүн</td>
+            <td><%= monthQty %></td>
+            <td><%= monthAmount %></td>
+            <td><%= yearQty %></td>
+            <td><%= yearAmount %></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Signature Section -->
+      <div class="signature-section">
+        <div class="signature-row">
+          <p>ЕРӨНХИЙ ИНЖЕНЕР</p>
+          <p>...................................................</p>
+          <p>/Т.БҮЖИНЛХАМ/</p>
+        </div>
+        <div class="signature-row">
+          <p>ЕРӨНХИЙ НЯГТЛАН БОДОГЧ</p>
+          <p>....................................</p>
+          <p>/Ш.АМАРЗАЯА/</p>
+        </div>
+        <div class="signature-row">
+          <p>ЭДИЙН ЗАСАГЧ</p>
+          <p>.............................................................</p>
+          <p>/Н.ДОЛГОРМАА/</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

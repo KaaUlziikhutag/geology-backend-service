@@ -1,0 +1,113 @@
+import {
+  BadRequestException,
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { CustomerService } from './customer.service.js';
+import { IResponse } from '../../utils/interfaces/response.interface.js';
+import GetCustomerDto from './dto/get-customer.dto.js';
+import { ResponseSuccess } from '../../utils/dto/response.dto.js';
+import { AuthGuard } from '@nestjs/passport';
+import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard.js';
+import FindOneParams from '../../utils/find-one-params.js';
+import FindOneRegno from '../../utils/find-one-regno.js';
+import { ApiPaginatedResponse } from '../../utils/api-paginated-response.decorator.js';
+import CreateCustomerDto from './dto/create-customer.dto.js';
+import UpdateCustomerDto from './dto/update-customer.dto.js';
+import { ApiTags } from '@nestjs/swagger';
+import RequestWithUser from '../authentication/interface/request-with-user.interface.js';
+
+@Controller('customer')
+@ApiTags('customer')
+@UseInterceptors(ClassSerializerInterceptor)
+export class CustomerController {
+  constructor(private readonly customerService: CustomerService) {}
+
+  @Get()
+  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(AuthGuard('api-key'))
+  @ApiPaginatedResponse(GetCustomerDto)
+  async getAllCustomer(@Query() query: GetCustomerDto): Promise<IResponse> {
+    try {
+      const data = await this.customerService.getAllCustomer(query);
+      return new ResponseSuccess('GET_CUSTOMER', data);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  @Get('by-id/:id')
+  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(AuthGuard('api-key'))
+  async getCustomerById(@Param() { id }: FindOneParams): Promise<IResponse> {
+    try {
+      const data = await this.customerService.getCustomerById(id);
+      return new ResponseSuccess('GET_CUSTOMER.SUCCESS', data);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+  @Get('by-regno/:regno')
+  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(AuthGuard('api-key'))
+  async getCustomerByRegno(
+    @Param() { regno }: FindOneRegno,
+  ): Promise<IResponse> {
+    try {
+      const data = await this.customerService.getCustomerByRegno(regno);
+      return new ResponseSuccess('GET_CUSTOMER.SUCCESS', data);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+  @Post()
+  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(AuthGuard('api-key'))
+  async createCustomer(
+    @Req() { user }: RequestWithUser,
+    @Body() customer: CreateCustomerDto,
+  ): Promise<IResponse> {
+    try {
+      const data = await this.customerService.createCustomer(user, customer);
+      return new ResponseSuccess('CREATE_CUSTOMER.SUCCESS', data);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+  @Patch(':id')
+  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(AuthGuard('api-key'))
+  async updateCustomer(
+    @Req() { user }: RequestWithUser,
+    @Param() { id }: FindOneParams,
+    @Body() customer: UpdateCustomerDto,
+  ): Promise<IResponse> {
+    try {
+      const data = await this.customerService.updateCustomer(user, id, customer);
+      return new ResponseSuccess('UPDATE_CUSTOMER.SUCCESS', data);
+    } catch (error) {
+      throw new BadRequestException(error.toString());
+    }
+  }
+  @Delete(':id')
+  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(AuthGuard('api-key'))
+  async deleteCustomer(@Param() { id }: FindOneParams): Promise<IResponse> {
+    try {
+      const data = await this.customerService.deleteCustomer(id);
+      return new ResponseSuccess('DELETE_CUSTOMER.SUCCESS', data);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+}

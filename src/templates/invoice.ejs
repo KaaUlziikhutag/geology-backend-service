@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      font-size: 12px;
+    }
+    .container {
+      display: flex;
+      width: 1029px;
+      height: 1330px;
+      padding: 60px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 36px;
+    }
+    .header-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      align-self: stretch;
+    }
+    .title-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .info-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      align-self: stretch;
+    }
+    .line {
+      width: 100%;
+      height: 1px;
+      background: #555;
+    }
+    .typography {
+      font-size: 12px;
+      font-weight: bold;
+      line-height: 16px;
+    }
+    table {
+      width: 100%;
+      line-height: inherit;
+      text-align: left;
+    }
+    table td {
+      padding: 5px;
+      vertical-align: top;
+    }
+    table tr td:nth-child(2) {
+      text-align: right;
+    }
+    table tr.top table td {
+      padding-bottom: 20px;
+    }
+    table tr.top table td.title {
+      font-size: 45px;
+      line-height: 45px;
+      color: #333;
+    }
+    table tr.information table td {
+      padding-bottom: 40px;
+    }
+    table tr.heading td {
+      background: #eee;
+      border-bottom: 1px solid #ddd;
+      font-weight: bold;
+    }
+    table tr.item td {
+      border-bottom: 1px solid #eee;
+    }
+    table tr.item.last td {
+      border-bottom: none;
+    }
+    table tr.total td:nth-child(2) {
+      border-top: 2px solid #eee;
+      font-weight: bold;
+    }
+    .payment{
+      color: black;
+      position: absolute;
+      top: 45px;
+      right: -60px;
+      transform: rotate(45deg);
+      width: 150px;
+      border-bottom: 55px solid #555555c0;
+      border-left: 55px solid transparent;
+      border-right: 55px solid transparent;
+      display: flex;
+      justify-content: center;
+      align-items: center; 
+    }
+    .payment p {
+      position: absolute;
+      top: 0;
+      font: bold;
+      color: #fff;
+    }
+    .paid{
+      color: black;
+    }
+
+      
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-box">
+      <div class="title-box">
+        <img src="data:image/png;base64, <%= logo %>" alt="logo">
+        <p style="font-size: 24px; font-weight: 500;">НЭХЭМЖЛЭХ #<%= code %></p>
+      </div>
+      <div>
+        <p style="color: red; text-align: center; font-size: 32px; font-weight: bold;">ТӨЛӨГДӨӨГҮЙ</p>
+        <p>Үргэлжлэх хугацаа: <%= dueDate %></p>
+      </div>
+    </div>
+    <div class="line"></div>
+    <div class="info-box">
+      <div>
+        <p class="typography">Нэхэмжлэх нь:</p>
+        <p class="typography"><%= clientName %></p>
+        <p><%= clientAddress %></p>
+      </div>
+      <div style="text-align: right;">
+        <p><span class="typography">Нэхэмжлэх гаргасан:</span> <%= companyName %></p>
+        <p><span class="typography">Хаяг:</span> <%= companyAddress %></p>
+        <p><span class="typography">Регистрийн дугаар:</span> <%= companyRegno %></p>
+        <p><span class="typography">Утас:</span> <%= companyPhone %></p>
+        <p><span class="typography">И-мэйл:</span> <%= companyEmail %></p>
+        <p><span class="typography">Нэхэмжилсэн огноо:</span> <%= date %></p>
+        <p class="typography">Дансны дугаарууд</p>
+        <% bankAccounts.forEach(function(item) { %>
+            <p><span class="typography"><%= item.bankName %>:</span> <%= item.bankAccountNo %> (<%= item.bankAccountName %>)</p>
+        <% }); %>
+      </div>
+    </div>
+    <p style="font-size: 16px; font-weight: 500; font-weight: 500;">НЭХЭМЖЛЭХИЙН БҮТЭЭГДХҮҮН ҮЙЛЧИЛГЭЭНҮҮД</p>
+    <table>
+    <tr class="heading">
+      <td>Үйлчилгээ</td>
+      <td>Тоо ширхэг</td>
+      <td>Үнэ</td>
+    </tr>
+    <% items.forEach(function(item) { %>
+      <tr class="item">
+        <td><%= item.description %></td>
+        <td><%= item.quantity %></td>
+        <td><%= item.amount %>₮</td>
+      </tr>
+    <% }); %>
+    <tr class="total">
+      <td></td>
+      <td></td>
+      <td>Нийт: <%= total %>₮</td>
+    </tr>
+  </table>
+  </div>
+</body>
+</html>

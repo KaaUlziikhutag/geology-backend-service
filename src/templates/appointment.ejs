@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="mn">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Захиалгын хуудас</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    p {
+      font-size: 10pt;
+      margin: 1pt;
+    }
+
+    p.underline {
+      text-decoration: underline;
+    }
+
+    .page {
+      width: 210mm;
+      height: 297mm;
+      padding: 10mm;
+      border: 1px solid black;
+      margin: 0;
+    }
+
+    .header {
+      position: relative;
+      display: flow-root;
+      gap: 2px;
+      align-items: flex-end;
+    }
+
+    .header img {
+      float: left;
+      width: 100px;
+    }
+
+    .header .label {
+      float: right;
+      align-self: flex-start;
+      text-align: end;
+    }
+
+    .header-title {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      margin: 0;
+      transform: translate(-50%, -50%);
+    }
+
+    .header .label>p {
+      font-size: 8pt;
+    }
+
+    input.smCheckbox {
+      width: 9px;
+      height: 9px;
+    }
+
+    .appointment-number {
+      text-align: center;
+    }
+
+    .flex {
+      display: flex;
+    }
+
+    .grid {
+      display: grid;
+    }
+
+    .grid-cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .flex-col {
+      flex-direction: column;
+    }
+
+    .flex-row {
+      flex-direction: row;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .text-bold {
+      font-weight: bold;
+    }
+
+    .gap-1 {
+      gap: 4px;
+    }
+
+    .gap-2 {
+      gap: 8px;
+    }
+
+    .gap-3 {
+      gap: 12px;
+    }
+
+    .gap-4 {
+      gap: 16px;
+    }
+
+    .justify-flex-end {
+      justify-content: flex-end;
+    }
+
+    .justify-space-between {
+      justify-content: space-between;
+    }
+
+    table tr td,
+    table tr th {
+      font-size: 10pt;
+      text-align: start;
+      border: 1px solid black;
+    }
+
+    .container {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+    }
+
+    .p-1 {
+      padding: 4px;
+    }
+
+    .p-2 {
+      padding: 8px;
+    }
+
+    /*  */
+
+    .text-center {
+      text-align: center;
+    }
+
+    .flex-right {
+      display: flex;
+      float: right;
+      gap: 100px;
+    }
+
+    .input-group {
+      padding: 20px;
+      margin-bottom: 10px;
+    }
+
+    .input-group label {
+      display: inline-block;
+      font-weight: bold;
+      text-align: end;
+      width: 26%;
+    }
+
+    .input-group input {
+      width: 70%;
+    }
+
+    .input-group-checkbox {
+      font-size: 10pt;
+      display: inline-block;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .grid-col-2 {
+      display: grid;
+      grid-template-columns: auto auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="header">
+      <img src="data:image/png;base64, <%= logo %>" alt="logo" />
+      <h2 class="header-title">Захиалгын хуудас</h2>
+      <div class="label">
+        <p>ГСШТ-ийн Захиралын 2023 оны</p>
+        <p>A/09 тоот тушаалын 1 дүгээр хавсралт</p>
+      </div>
+    </div>
+    <h3 class="appointment-number">Захиалгын дугаар: <%= code %>
+    </h3>
+    <div class="container">
+      <div class="flex flex-col gap-2" style="width: 100%;">
+        <table>
+          <tbody>
+            <tr>
+              <td colspan="2">
+                <div class="flex flex-col gap-2">
+                  <p class="text-center">Шинжилгээ хийх тухай эрх бүхий албан тушаалтны шийдвэр</p>
+                  <div class="flex flex-row gap-2">
+                    <p>Шинжлэх элемэнт, нэгдэл:</p>
+                    <div class="flex flex-col">
+                      <p class="underline">asdasdA</p>
+                      <p class="underline">asdasdA</p>
+                    </div>
+                  </div>
+                  <div class="flex flex-row gap-2">
+                    <p>Шинжилгээний төрөл, арга:</p>
+                    <div class="flex flex-col">
+                      <p class="underline">asdasdA</p>
+                      <p class="underline">asdasdA</p>
+                    </div>
+                  </div>
+                  <div class="flex flex-row gap-2">
+                    <p>Шинжилгээ хийх хугацаа:</p>
+                    <div class="flex flex-col">
+                      <p class="underline">asdasd</p>
+                      <p class="underline">asdasdA</p>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <div class="flex flex-row p-2 justify-flex-end">
+                  <label>Гарын үсэг:</label>
+                  <input type="text" />
+                  <label>Огноо:</label>
+                  <%= createdAt %>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <p class="text-center text-bold">
+                  Дээж хүлээн авсан тухай тэмдэглэл
+                </p>
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="flex flex-row gap-2">
+                    <p>Захиалагчийн нэр:</p>
+                    <p class="text-bold">
+                      <%= customer.name %>
+                    </p>
+                  </div>
+                  <div class="flex flex-row gap-2">
+                    <p>Объектын нэр:</p>
+                    <p class="text-bold">
+                      <%= warehouse?.name %>
+                    </p>
+                  </div>
+                  <div class="flex flex-row gap-2">
+                    <p>Дээжийн төрөл:</p>
+                    <p class="text-bold">АУҮ</p>
+                  </div>
+                  <div class="flex flex-row gap-2">
+                    <p>Тоо:</p>
+                    <p class="text-bold">АУҮ</p>
+                  </div>
+                </div>
+                <p class="text-center text-bold">
+                  Лабораторийн дугаар: 16335-16364
+                </p>
+                <div class="flex flex-row gap-2">
+                  <div class="flex flex-col gap-2">
+                    <p>Дубликат дээж буцааж авах эсэх:</p>
+                    <p>Аналитик дээж буцааж авах эсэх:</p>
+                    <p>Хүлээлгэн өгсөн хүний нэр, гарын үсэг:</p>
+                    <p>Хүлээн авсан хүний нэр, гарын үсэг:</p>
+                    <p>Огноо:</p>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <div class="flex flex-row gap-4">
+                      <div class="input-group-checkbox">
+                        <input type="checkbox" disabled <%=isDuplicate ? 'checked' : '' %> />
+                        <label>Тийм</label>
+                      </div>
+                      <div class="input-group-checkbox">
+                        <input type="checkbox" disabled <%=isDuplicate===false ? 'checked' : '' %> />
+                        <label>Үгүй</label>
+                      </div>
+                      <div class="input-group-checkbox">
+                        <input type="checkbox" disabled <%=isDuplicate===null ? 'checked' : '' %> />
+                        <label>Боломжгүй</label>
+                      </div>
+                    </div>
+
+                    <div class="flex flex-row gap-4">
+                      <div class="input-group-checkbox">
+                        <input type="checkbox" disabled <%=isAnalytic ? 'checked' : '' %> />
+                        <label>Тийм</label>
+                      </div>
+                      <div class="input-group-checkbox">
+                        <input type="checkbox" disabled <%=!isAnalytic ? 'checked' : '' %> />
+                        <label>Үгүй</label>
+                      </div>
+                    </div>
+                    <p class="text-bold">____________________ /<%= delivered %>/</p>
+                    <p class="text-bold">____________________ /<%= received %>/</p>
+                    <p class="text-bold">2024/09/24</p>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <p class="text-center text-bold">Тусгай тэмдэглэл</p>
+                <p class="underline">
+                  <%= description %>
+                </p>
+              </td>
+              <td>
+                <p>Захиалагчийн хаяг:</p>
+                <p class="text-bold">
+                  <%= customer.address %>
+                </p>
+                <div class="flex flex-row gap-2">
+                  <p>Утас: <%= customer.phone %>
+                      <%= customer.addPhone %>
+                  </p>
+                </div>
+                <p>Э-шуудан: <% customer.email %>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <p class="text-center text-bold">Дээжийн хөдөлгөөн</p>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <div style="padding: 8px">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Хүлээн авсан дээжийн тоо</th>
+                        <th>
+                          <%= minerals.length %>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Гарын үсэг</td>
+                        <td></td>
+                      </tr>
+                      <tr></tr>
+                      <td>Огноо</td>
+                      <td>
+                        <%= createdAt %>
+                      </td>
+            </tr>
+          </tbody>
+        </table>
+        <br />
+        <table>
+          <thead>
+            <tr>
+              <th class="text-center">Д/д</th>
+              <th class="text-center">Дээжийн №</th>
+              <th class="text-center">Лаб №</th>
+              <th class="text-center" style="width: 40mm;">Дээж/чулуулгын тодорхойлолт</th>
+              <th class="text-center">Дээжийн жин</th>
+              <th class="text-center" style="width: 40mm;">Тодорхойлуулах элемэнт нэгдэл</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% minerals.forEach(function(item, index) { %>
+              <tr>
+                <td>
+                  <%= index + 1 %>
+                </td>
+                <td>
+                  <%= item.id %>
+                </td>
+                <td>Лаб №</td>
+                <td>
+                  <%= item.mineralType.name %>
+                </td>
+                <td>
+                  <%= item.weight %>
+                </td>
+                <td>Тодорхойлуулах элемэнт нэгдэл</td>
+              </tr>
+              <% }); %>
+          </tbody>
+        </table>
+        <p class="text-center">- Аналитик болон дубликат дээжийг 90 хоног хадгалах бөгөөд хадгалалтын хугацаа дуусмагц
+          устгах эсхүл хадгалалтын төлбөр нэхэмжлэх болохыг анхаарна уу.</p>
+      </div>
+      </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <p class="text-center text-bold">Төлбөр тооцоо</p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <div class="grid grid-cols-2 gap-4 p-2">
+            <div class="flex flex-col gap-2">
+              <div class="flex flex-row justify-space-between">
+                <p>Боловсруулалт:</p>
+                <p>0.00 төг</p>
+              </div>
+              <div class="flex flex-row justify-space-between">
+                <p>Шинжилгээ:</p>
+                <p>0.00 төг</p>
+              </div>
+              <div class="flex flex-row justify-space-between">
+                <p>Нэмэгдэл:</p>
+                <p>0.00 төг</p>
+              </div>
+              <div class="flex flex-row justify-space-between">
+                <p>Хөнгөлөлт:</p>
+                <p>0.00 төг</p>
+              </div>
+              <div class="flex flex-row justify-space-between">
+                <p>НӨТ:</p>
+                <p>0.00 төг</p>
+              </div>
+              <div class="flex flex-row justify-space-between">
+                <p>Нийт дүн:</p>
+                <p>0.00 төг</p>
+              </div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <div class="grid grid-cols-2 gap-4">
+                <div class="input-group-checkbox">
+                  <input type="checkbox" disabled />
+                  <label>Бэлнээр:</label>
+                </div>
+                <p>Баримтын №</p>
+                <div class="input-group-checkbox">
+                  <input type="checkbox" disabled />
+                  <label>Дансаар:</label>
+                </div>
+                <p>Нэхэмжлэхийн №</p>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+      </table>
+      <p>Шифрийн дугаар:</p>
+      <p>Шифр авсан огноо:</p>
+      <p>Хяналтын инженерийн гарын үсэг:</p>
+    </div>
+  </div>
+  </div>
+</body>
+
+</html>

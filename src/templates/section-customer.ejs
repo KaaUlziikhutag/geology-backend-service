@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>4-р сарийн шинжилгээний ажлын нэгдсэн гүйцэтгэл</title>
+    <style>
+        body {
+            background-color: #e5e7eb;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .a4-paper {
+            width: 210mm;
+            height: 297mm;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        @media print {
+            .a4-paper {
+                box-shadow: none;
+                margin: 0;
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            background-color: #fff;
+            border: 1px solid black;
+            margin: 16px 0;
+        }
+
+        table th,
+        table td {
+            border: 1px solid black;
+            padding: 4px;
+            text-align: left;
+            height: 20px;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .table-header th {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="a4-paper">
+        <!-- Header Section -->
+        <header class="header">
+            <p>
+                ГСШТ-ийн <%= reportYearMonth %> шинжилгээний ажлын нэгдсэн гүйцэтгэл
+            </p>
+        </header>
+
+        <!-- Table Section -->
+        <table>
+            <thead class="table-header">
+                <tr>
+                    <th rowspan="3" style="width: 1%">№</th>
+                    <th rowspan="3" style="width: 35%">Байгууллага</th>
+                </tr>
+                <tr>
+                    <th style="text-align: center" colspan="2">Тайлант сар</th>
+                    <th style="text-align: center" colspan="2">Жилийн эхээс</th>
+                </tr>
+                <tr>
+                    <th>Дээжийн тоо</th>
+                    <th>Дүн</th>
+                    <th>Дээжийн тоо</th>
+                    <th>Дүн</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% sections.forEach(function(section) { %>
+                    <tr>
+                        <th style="text-align: center" colspan="6">
+                            <%= section.name %>
+                        </th>
+                    </tr>
+                    <% section.customers.forEach(function(customer, index) { %>
+                        <tr>
+                            <td>
+                                <%= index + 1 %>
+                            </td>
+                            <td>
+                                <%= customer.name %>
+                            </td>
+                            <td class="right">
+                                <%= customer.monthQty%>
+                            </td>
+                            <td class="right">
+                                <%= customer.monthAmount %>
+                            </td>
+                            <td class="right">
+                                <%= customer.yearQty %>
+                            </td>
+                            <td class="right">
+                                <%= customer.yearAmount %>
+                            </td>
+                        </tr>
+                        <%})%>
+                            <tr style="font-weight: 600">
+                                <td colspan="2" style="text-align: center">Нийт дүн</td>
+                                <td class="right">
+                                    <%= section.monthQty %>
+                                </td>
+                                <td class="right">
+                                    <%= section.monthAmount %>
+                                </td>
+                                <td class="right">
+                                    <%= section.yearQty %>
+                                </td>
+                                <td class="right">
+                                    <%= section.yearAmount %>
+                                </td>
+                            </tr>
+                            <% }) %>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
