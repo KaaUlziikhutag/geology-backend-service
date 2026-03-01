@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Laboratory from './laboratory.entity.js';
+import Laboratory from './laboratory.entity';
 import { Equal, FindManyOptions, ILike, Repository } from 'typeorm';
-import GetReferenceDto from '../dto/get-reference.dto.js';
+import GetReferenceDto from '../dto/get-reference.dto';
 
 @Injectable()
 export class LaboratoryService {

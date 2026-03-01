@@ -1,5 +1,5 @@
-import Contract from '../../contract/contract.entity.js';
-import { SpendType } from '../../../utils/enum-utils.js';
+import Contract from '../../contract/contract.entity';
+import { SpendType } from '../../../utils/enum-utils';
 import {
   BaseEntity,
   Column,

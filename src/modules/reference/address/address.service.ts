@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Province from './province.entity.js';
+import Province from './province.entity';
 import { FindManyOptions, ILike, Repository } from 'typeorm';
-import District from './district.entity.js';
-import GetReferenceDto from '../dto/get-reference.dto.js';
+import District from './district.entity';
+import GetReferenceDto from '../dto/get-reference.dto';
 
 @Injectable()
 export class AddressService {

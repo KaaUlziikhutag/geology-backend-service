@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Classification from './classification.entity.js';
+import Classification from './classification.entity';
 import { FindManyOptions, ILike, Repository } from 'typeorm';
-import GetReferenceDto from '../dto/get-reference.dto.js';
+import GetReferenceDto from '../dto/get-reference.dto';
 
 @Injectable()
 export class ClassificationService {

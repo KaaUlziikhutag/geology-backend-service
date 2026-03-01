@@ -7,26 +7,26 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard.js';
+import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
-import { IResponse } from '../../utils/interfaces/response.interface.js';
-import { ResponseSuccess } from '../../utils/dto/response.dto.js';
-import GetReferenceDto from './dto/get-reference.dto.js';
-import FindOneParams from '../../utils/find-one-params.js';
+import { IResponse } from '../../utils/interfaces/response.interface';
+import { ResponseSuccess } from '../../utils/dto/response.dto';
+import GetReferenceDto from './dto/get-reference.dto';
+import FindOneParams from '../../utils/find-one-params';
 
-import { SectionCustomerService } from './section-customer/section-customer.service.js';
-import { DirectionService } from './direction/direction.service.js';
-import { LaboratoryService } from './laboratory/laboratory.service.js';
-import { MineralTypeService } from './mineral-type/mineral-type.service.js';
-import { AddressService } from './address/address.service.js';
-import { ClassificationService } from './classification/classification.service.js';
-import { ElementService } from './element/element.service.js';
-import { TechnologyService } from './technology/technology.service.js';
-import { DiscountService } from './discount/discount.service.js';
-import { AdditionService } from './addition/addition.service.js';
-import GetDiscountDto from './discount/dto/get-discount.dto.js';
-import { SectionProductService } from './section-product/section-product.service.js';
-import { MeasurementService } from './measurement/measurement.service.js';
+import { SectionCustomerService } from './section-customer/section-customer.service';
+import { DirectionService } from './direction/direction.service';
+import { LaboratoryService } from './laboratory/laboratory.service';
+import { MineralTypeService } from './mineral-type/mineral-type.service';
+import { AddressService } from './address/address.service';
+import { ClassificationService } from './classification/classification.service';
+import { ElementService } from './element/element.service';
+import { TechnologyService } from './technology/technology.service';
+import { DiscountService } from './discount/discount.service';
+import { AdditionService } from './addition/addition.service';
+import GetDiscountDto from './discount/dto/get-discount.dto';
+import { SectionProductService } from './section-product/section-product.service';
+import { MeasurementService } from './measurement/measurement.service';
 
 @Controller('reference')
 @ApiTags('reference')

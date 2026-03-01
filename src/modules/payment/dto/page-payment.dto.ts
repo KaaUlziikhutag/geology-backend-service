@@ -1,5 +1,5 @@
 import { IsOptional, IsString } from 'class-validator';
-import { PageOptionsDto } from '../../../utils/dto/page-options.dto.js';
+import { PageOptionsDto } from '../../../utils/dto/page-options.dto';
 
 export default class PagePaymentDto extends PageOptionsDto {
   @IsOptional()

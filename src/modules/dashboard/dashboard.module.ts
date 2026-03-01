@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import Customer from '../customer/customer.entity.js';
-import { DashboardService } from './dashboard.service.js';
-import { DashboardController } from './dashboard.controller.js';
-import Mineral from '../appointment/mineral/mineral.entity.js';
-import Appointment from '../appointment/appointment.entity.js';
+import Customer from '../customer/customer.entity';
+import { DashboardService } from './dashboard.service';
+import { DashboardController } from './dashboard.controller';
+import Mineral from '../appointment/mineral/mineral.entity';
+import Appointment from '../appointment/appointment.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Customer, Mineral, Appointment])],

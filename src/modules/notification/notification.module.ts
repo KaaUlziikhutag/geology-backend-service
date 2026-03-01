@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { NotificationGateway } from './notification.gateway.js';
-import { AuthenticationModule } from '../authentication/authentication.module.js';
-import { NotificationService } from './notifcation.service.js';
-import { NotificationController } from './notification.controller.js';
+import { NotificationGateway } from './notification.gateway';
+import { AuthenticationModule } from '../authentication/authentication.module';
+import { NotificationService } from './notifcation.service';
+import { NotificationController } from './notification.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Notification } from './notification.entity.js';
+import { Notification } from './notification.entity';
 
 @Module({
   imports: [AuthenticationModule, TypeOrmModule.forFeature([Notification])],

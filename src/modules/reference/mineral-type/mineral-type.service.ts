@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import MineralType from './mineral-type.entity.js';
+import MineralType from './mineral-type.entity';
 import { Equal, FindManyOptions, ILike, Repository } from 'typeorm';
-import GetReferenceDto from '../dto/get-reference.dto.js';
+import GetReferenceDto from '../dto/get-reference.dto';
 
 @Injectable()
 export class MineralTypeService {

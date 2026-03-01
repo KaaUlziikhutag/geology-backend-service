@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import Element from './element.entity.js';
-import { ElementService } from './element.service.js';
+import Element from './element.entity';
+import { ElementService } from './element.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Element])],

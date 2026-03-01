@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import Measurement from './measurement.entity.js';
-import { MeasurementService } from './measurement.service.js';
+import Measurement from './measurement.entity';
+import { MeasurementService } from './measurement.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Measurement])],

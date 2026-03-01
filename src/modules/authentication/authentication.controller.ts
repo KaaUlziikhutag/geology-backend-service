@@ -13,20 +13,20 @@ import {
   BadRequestException,
   ValidationPipe,
 } from '@nestjs/common';
-import { AuthenticationService } from './authentication.service.js';
-import RegisterDto from './dto/register.dto.js';
-import RequestWithUser from './interface/request-with-user.interface.js';
-import JwtAuthenticationGuard from './guard/jwt-authentication.guard.js';
-import { UsersService } from '../users/users.service.js';
-import JwtRefreshGuard from './guard/jwt-refresh.guard.js';
+import { AuthenticationService } from './authentication.service';
+import RegisterDto from './dto/register.dto';
+import RequestWithUser from './interface/request-with-user.interface';
+import JwtAuthenticationGuard from './guard/jwt-authentication.guard';
+import { UsersService } from '../users/users.service';
+import JwtRefreshGuard from './guard/jwt-refresh.guard';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
-import LogInDto from './dto/log-in.dto.js';
-import ChangePassworDto from './dto/change-password.dto.js';
+import LogInDto from './dto/log-in.dto';
+import ChangePassworDto from './dto/change-password.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { LocalAuthenticationGuard } from './guard/local-authentication.guard.js';
-import FindOneParams from '../../utils/find-one-params.js';
-import { ResponseSuccess } from '../../utils/dto/response.dto.js';
-import { IResponse } from '../../utils/interfaces/response.interface.js';
+import { LocalAuthenticationGuard } from './guard/local-authentication.guard';
+import FindOneParams from '../../utils/find-one-params';
+import { ResponseSuccess } from '../../utils/dto/response.dto';
+import { IResponse } from '../../utils/interfaces/response.interface';
 
 @Controller('authentication')
 @ApiTags('authentication')

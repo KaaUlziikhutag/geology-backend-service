@@ -1,4 +1,4 @@
-import { AbstractEntity } from '../../utils/abstract.entity.js';
+import { AbstractEntity } from '../../utils/abstract.entity';
 import {
   Column,
   Entity,
@@ -9,11 +9,11 @@ import {
   OneToMany,
   Relation,
 } from 'typeorm';
-import Order from '../order/order.entity.js';
-import Mineral from '../appointment/mineral/mineral.entity.js';
-import { TaskState } from '../../utils/enum-utils.js';
-import Users from '../users/users.entity.js';
-import TaskUser from './task-user/task-user.entity.js';
+import Order from '../order/order.entity';
+import Mineral from '../appointment/mineral/mineral.entity';
+import { TaskState } from '../../utils/enum-utils';
+import Users from '../users/users.entity';
+import TaskUser from './task-user/task-user.entity';
 /** Ажлын даалгавар */
 @Entity('tasks')
 export default class Task extends AbstractEntity {
@@ -38,6 +38,11 @@ export default class Task extends AbstractEntity {
   @Column({ name: 'is_duplicate', type: 'boolean', default: false })
   isDuplicate: boolean; // Төлөв
 
-  @OneToMany(() => TaskUser, (taskUser) => taskUser.task)
-  users?: Relation<TaskUser>[];
+  @ManyToMany(() => Users)
+  @JoinTable({
+    name: 'task_users',
+    joinColumn: { name: 'task_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' },
+  })
+  users?: Relation<Users[]>; // Хэрэглэгчид
 }

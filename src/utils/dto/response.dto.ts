@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { IResponse } from '../interfaces/response.interface.js';
+import { IResponse } from '../interfaces/response.interface';
 
 export class ResponseSuccess implements IResponse {
   constructor(

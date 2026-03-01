@@ -1,6 +1,6 @@
 import { IsEnum, IsNumberString, IsOptional, IsString } from 'class-validator';
-import { PageOptionsDto } from '../../../utils/dto/page-options.dto.js';
-import { CustomerType } from '../../../utils/enum-utils.js';
+import { PageOptionsDto } from '../../../utils/dto/page-options.dto';
+import { CustomerType } from '../../../utils/enum-utils';
 
 export default class GetCustomerDto extends PageOptionsDto {
   @IsOptional()

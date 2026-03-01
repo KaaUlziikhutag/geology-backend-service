@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional } from 'class-validator';
-import { CustomerType } from '../../../utils/enum-utils.js';
+import { CustomerType } from '../../../utils/enum-utils';
 
 export class GetCustomerDto {
   @IsOptional()

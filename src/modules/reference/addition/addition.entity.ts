@@ -1,4 +1,4 @@
-import { SpendType } from '../../../utils/enum-utils.js';
+import { SpendType } from '../../../utils/enum-utils';
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 /** Нэмэгдэл */

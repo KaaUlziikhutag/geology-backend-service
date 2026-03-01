@@ -5,7 +5,7 @@ import {
   IsNumber,
   IsString,
 } from 'class-validator';
-import { TaxType } from '../../../utils/enum-utils.js';
+import { TaxType } from '../../../utils/enum-utils';
 
 export default class CreateProductDto {
   @IsDefined()

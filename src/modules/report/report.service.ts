@@ -9,23 +9,23 @@ import {
   getMonthDates,
   getYearDates,
   imageToBase64,
-} from '../../utils/helper-utils.js';
-import { AppointmentService } from '../appointment/appointment.service.js';
-import { CompanyService } from '../company/company.service.js';
-import IInvoice from './interface/invoice.interface.js';
-import { OrderService } from '../order/order.service.js';
-import { InvoiceDto } from './dto/invoice.dto.js';
-import { EbarimtService } from '../payment/ebarimt/ebarimt.service.js';
-import GetUserDto from '../users/dto/get-user.dto.js';
-import { ElementService } from '../reference/element/element.service.js';
+} from '../../utils/helper-utils';
+import { AppointmentService } from '../appointment/appointment.service';
+import { CompanyService } from '../company/company.service';
+import IInvoice from './interface/invoice.interface';
+import { OrderService } from '../order/order.service';
+import { InvoiceDto } from './dto/invoice.dto';
+import { EbarimtService } from '../payment/ebarimt/ebarimt.service';
+import GetUserDto from '../users/dto/get-user.dto';
+import { ElementService } from '../reference/element/element.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import SectionProduct from '../reference/section-product/section-product.entity.js';
+import SectionProduct from '../reference/section-product/section-product.entity';
 import { Repository } from 'typeorm';
-import { GetSectionDto } from './dto/get-section.dto.js';
-import SectionCustomer from '../reference/section-customer/section-customer.entity.js';
-import { ReceiptStatus } from '../../utils/enum-utils.js';
-import Customer from '../customer/customer.entity.js';
-import ISectionCustomer from './interface/section-customer.interface.js';
+import { GetSectionDto } from './dto/get-section.dto';
+import SectionCustomer from '../reference/section-customer/section-customer.entity';
+import { ReceiptStatus } from '../../utils/enum-utils';
+import Customer from '../customer/customer.entity';
+import ISectionCustomer from './interface/section-customer.interface';
 
 @Injectable()
 export class ReportService {

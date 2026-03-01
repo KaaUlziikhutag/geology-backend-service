@@ -13,19 +13,19 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { OrderService } from './order.service.js';
+import { OrderService } from './order.service';
 import { AuthGuard } from '@nestjs/passport';
-import { IResponse } from '../../utils/interfaces/response.interface.js';
-import { ResponseSuccess } from '../../utils/dto/response.dto.js';
-import FindOneParams from '../../utils/find-one-params.js';
-import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard.js';
-import CreateOrderDto from './dto/create-order.dto.js';
-import GetOrderDto from './dto/get-order.dto.js';
+import { IResponse } from '../../utils/interfaces/response.interface';
+import { ResponseSuccess } from '../../utils/dto/response.dto';
+import FindOneParams from '../../utils/find-one-params';
+import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
+import CreateOrderDto from './dto/create-order.dto';
+import GetOrderDto from './dto/get-order.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { CompleteOrderDto } from './dto/complete-order.dto.js';
-import RequestWithUser from '../authentication/interface/request-with-user.interface.js';
-import { CreateReceiveDto } from './dto/create-receive.dto.js';
-import { CreateAnalystOrderDto } from './dto/create-analyst-order.dto.js';
+import { CompleteOrderDto } from './dto/complete-order.dto';
+import RequestWithUser from '../authentication/interface/request-with-user.interface';
+import { CreateReceiveDto } from './dto/create-receive.dto';
+import { CreateAnalystOrderDto } from './dto/create-analyst-order.dto';
 
 @Controller('order')
 @UseInterceptors(ClassSerializerInterceptor)

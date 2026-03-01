@@ -13,19 +13,19 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { CustomerService } from './customer.service.js';
-import { IResponse } from '../../utils/interfaces/response.interface.js';
-import GetCustomerDto from './dto/get-customer.dto.js';
-import { ResponseSuccess } from '../../utils/dto/response.dto.js';
+import { CustomerService } from './customer.service';
+import { IResponse } from '../../utils/interfaces/response.interface';
+import GetCustomerDto from './dto/get-customer.dto';
+import { ResponseSuccess } from '../../utils/dto/response.dto';
 import { AuthGuard } from '@nestjs/passport';
-import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard.js';
-import FindOneParams from '../../utils/find-one-params.js';
-import FindOneRegno from '../../utils/find-one-regno.js';
-import { ApiPaginatedResponse } from '../../utils/api-paginated-response.decorator.js';
-import CreateCustomerDto from './dto/create-customer.dto.js';
-import UpdateCustomerDto from './dto/update-customer.dto.js';
+import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
+import FindOneParams from '../../utils/find-one-params';
+import FindOneRegno from '../../utils/find-one-regno';
+import { ApiPaginatedResponse } from '../../utils/api-paginated-response.decorator';
+import CreateCustomerDto from './dto/create-customer.dto';
+import UpdateCustomerDto from './dto/update-customer.dto';
 import { ApiTags } from '@nestjs/swagger';
-import RequestWithUser from '../authentication/interface/request-with-user.interface.js';
+import RequestWithUser from '../authentication/interface/request-with-user.interface';
 
 @Controller('customer')
 @ApiTags('customer')
@@ -93,7 +93,11 @@ export class CustomerController {
     @Body() customer: UpdateCustomerDto,
   ): Promise<IResponse> {
     try {
-      const data = await this.customerService.updateCustomer(user, id, customer);
+      const data = await this.customerService.updateCustomer(
+        user,
+        id,
+        customer,
+      );
       return new ResponseSuccess('UPDATE_CUSTOMER.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error.toString());

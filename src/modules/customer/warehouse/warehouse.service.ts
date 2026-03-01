@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Warehouse from './warehouse.entity.js';
+import Warehouse from './warehouse.entity';
 import { Equal, FindManyOptions, ILike, Repository } from 'typeorm';
-import CreateWarehouseDto from './dto/create-warehouse.dto.js';
-import UpdateWarehouseDto from './dto/update-warehouse.dto.js';
-import WarehouseNotFoundException from './exceptions/warehouse-not-found.exception.js';
-import GetWarehouseDto from './dto/get-warehouse.dto.js';
+import CreateWarehouseDto from './dto/create-warehouse.dto';
+import UpdateWarehouseDto from './dto/update-warehouse.dto';
+import WarehouseNotFoundException from './exceptions/warehouse-not-found.exception';
+import GetWarehouseDto from './dto/get-warehouse.dto';
 
 @Injectable()
 export class WarehouseService {

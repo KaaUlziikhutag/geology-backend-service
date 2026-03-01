@@ -1,33 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Payment from './payment.entity.js';
+import Payment from './payment.entity';
 import { Equal, FindManyOptions, ILike, Repository } from 'typeorm';
-import CreatePaymentDto from './dto/create-payment.dto.js';
-import { EbarimtService } from './ebarimt/ebarimt.service.js';
-import { OrderService } from '../order/order.service.js';
-import GetUserDto from '../users/dto/get-user.dto.js';
-import { CompanyService } from '../company/company.service.js';
-import PaymentNotFoundException from './exceptions/payment-not-found.exception.js';
-import Order from '../order/order.entity.js';
-import { ReceiptDto } from './ebarimt/dto/receipt.dto.js';
-import PaymentBadRequestException from './exceptions/payment-bad-request.exception.js';
-import PagePaymentDto from './dto/page-payment.dto.js';
-import PageMetaDto from '../../utils/dto/page-meta.dto.js';
-import PageDto from '../../utils/dto/page.dto.js';
+import CreatePaymentDto from './dto/create-payment.dto';
+import { EbarimtService } from './ebarimt/ebarimt.service';
+import { OrderService } from '../order/order.service';
+import GetUserDto from '../users/dto/get-user.dto';
+import { CompanyService } from '../company/company.service';
+import PaymentNotFoundException from './exceptions/payment-not-found.exception';
+import Order from '../order/order.entity';
+import { ReceiptDto } from './ebarimt/dto/receipt.dto';
+import PaymentBadRequestException from './exceptions/payment-bad-request.exception';
+import PagePaymentDto from './dto/page-payment.dto';
+import PageMetaDto from '../../utils/dto/page-meta.dto';
+import PageDto from '../../utils/dto/page.dto';
 import {
   CustomerType,
   EbarimtTaxType,
   ReceiptStatus,
   SpendType,
-} from '../../utils/enum-utils.js';
-import UpdatePaymentDto from './dto/update-payment.dto.js';
-import GetPaymentDto from './dto/get-payment.dto.js';
-import EbarimtPaymentDto from './dto/ebarimt-payment.dto.js';
-import { CustomerService } from '../customer/customer.service.js';
-import { DiscountService } from '../reference/discount/discount.service.js';
-import { ContractService } from '../contract/contract.service.js';
-import { AdditionService } from '../reference/addition/addition.service.js';
-import { formatFullDate } from '../../utils/helper-utils.js';
+} from '../../utils/enum-utils';
+import UpdatePaymentDto from './dto/update-payment.dto';
+import GetPaymentDto from './dto/get-payment.dto';
+import EbarimtPaymentDto from './dto/ebarimt-payment.dto';
+import { CustomerService } from '../customer/customer.service';
+import { DiscountService } from '../reference/discount/discount.service';
+import { ContractService } from '../contract/contract.service';
+import { AdditionService } from '../reference/addition/addition.service';
+import { formatFullDate } from '../../utils/helper-utils';
 
 @Injectable()
 export class PaymentService {

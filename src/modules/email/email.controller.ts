@@ -10,14 +10,14 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import EmailService from './email.service.js';
+import EmailService from './email.service';
 import { AuthGuard } from '@nestjs/passport';
-import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard.js';
-import { IResponse } from '../../utils/interfaces/response.interface.js';
-import { ResponseSuccess } from '../../utils/dto/response.dto.js';
-import { SendMailDto } from './dto/send-mail.dto.js';
+import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
+import { IResponse } from '../../utils/interfaces/response.interface';
+import { ResponseSuccess } from '../../utils/dto/response.dto';
+import { SendMailDto } from './dto/send-mail.dto';
 import { ApiTags } from '@nestjs/swagger';
-import RequestWithUser from '../authentication/interface/request-with-user.interface.js';
+import RequestWithUser from '../authentication/interface/request-with-user.interface';
 
 @Controller('email')
 @ApiTags('email')

@@ -6,7 +6,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { MineralState } from '../../../../utils/enum-utils.js';
+import { MineralState } from '../../../../utils/enum-utils';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export default class CreateMineralDto {

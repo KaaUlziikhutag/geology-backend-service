@@ -11,13 +11,13 @@ import {
   Req,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { NotificationService } from './notifcation.service.js';
-import { CreateNotificationDto } from './dto/create-notification.dto.js';
-import { IResponse } from '../../utils/interfaces/response.interface.js';
-import { ResponseSuccess } from '../../utils/dto/response.dto.js';
-import FindOneParams from '../../utils/find-one-params.js';
-import RequestWithUser from '../authentication/interface/request-with-user.interface.js';
-import { GetNotificationDto } from './dto/get-notification.dto.js';
+import { NotificationService } from './notifcation.service';
+import { CreateNotificationDto } from './dto/create-notification.dto';
+import { IResponse } from '../../utils/interfaces/response.interface';
+import { ResponseSuccess } from '../../utils/dto/response.dto';
+import FindOneParams from '../../utils/find-one-params';
+import RequestWithUser from '../authentication/interface/request-with-user.interface';
+import { GetNotificationDto } from './dto/get-notification.dto';
 
 @Controller('notification')
 @ApiTags('notification')

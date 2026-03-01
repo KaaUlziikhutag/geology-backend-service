@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
-import { EbarimtEasyService } from './ebarimt-easy.service.js';
-import { EbarimtAuthModule } from '../ebarimt-auth/ebarimt-auth.module.js';
+import { EbarimtEasyService } from './ebarimt-easy.service';
+import { EbarimtAuthModule } from '../ebarimt-auth/ebarimt-auth.module';
 import Joi from '@hapi/joi';
 @Module({
   imports: [

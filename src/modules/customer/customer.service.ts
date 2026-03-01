@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Customer from './customer.entity.js';
+import Customer from './customer.entity';
 import { Equal, FindManyOptions, ILike, Repository } from 'typeorm';
-import GetCustomerDto from './dto/get-customer.dto.js';
-import PageMetaDto from '../../utils/dto/page-meta.dto.js';
-import PageDto from '../../utils/dto/page.dto.js';
-import { CustomerType } from '../../utils/enum-utils.js';
-import CustomerNotFoundException from './exceptions/customer-not-found.exception.js';
-import CreateCustomerDto from './dto/create-customer.dto.js';
-import UpdateCustomerDto from './dto/update-customer.dto.js';
-import { EbarimtEasyService } from '../payment/ebarimt/ebarimt-easy/ebarimt-easy.service.js';
-import { EbarimtInquireService } from '../payment/ebarimt/ebarimt-inquire/ebarimt-inquire.service.js';
-import GetUserDto from '../users/dto/get-user.dto.js';
+import GetCustomerDto from './dto/get-customer.dto';
+import PageMetaDto from '../../utils/dto/page-meta.dto';
+import PageDto from '../../utils/dto/page.dto';
+import { CustomerType } from '../../utils/enum-utils';
+import CustomerNotFoundException from './exceptions/customer-not-found.exception';
+import CreateCustomerDto from './dto/create-customer.dto';
+import UpdateCustomerDto from './dto/update-customer.dto';
+import { EbarimtEasyService } from '../payment/ebarimt/ebarimt-easy/ebarimt-easy.service';
+import { EbarimtInquireService } from '../payment/ebarimt/ebarimt-inquire/ebarimt-inquire.service';
+import GetUserDto from '../users/dto/get-user.dto';
 
 @Injectable()
 export class CustomerService {

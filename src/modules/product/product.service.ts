@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Product from './product.entity.js';
+import Product from './product.entity';
 import { Equal, FindManyOptions, ILike, In, Repository } from 'typeorm';
-import CreateProductDto from './dto/create-product.dto.js';
-import ProductNotFoundException from './exceptions/product-not-found.exceptioin.js';
-import { UpdateProductDto } from './dto/update-product.dto.js';
-import PageProductDto from './dto/page-product.dto.js';
-import PageMetaDto from '../../utils/dto/page-meta.dto.js';
-import PageDto from '../../utils/dto/page.dto.js';
-import GetProductDto from './dto/get-product.dto.js';
+import CreateProductDto from './dto/create-product.dto';
+import ProductNotFoundException from './exceptions/product-not-found.exceptioin';
+import { UpdateProductDto } from './dto/update-product.dto';
+import PageProductDto from './dto/page-product.dto';
+import PageMetaDto from '../../utils/dto/page-meta.dto';
+import PageDto from '../../utils/dto/page.dto';
+import GetProductDto from './dto/get-product.dto';
 
 @Injectable()
 export class ProductService {

@@ -2,9 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { AxiosError } from 'axios';
 import { firstValueFrom, catchError } from 'rxjs';
-import { TinInfoDto } from './dto/tin-info.dto.js';
-import { InfoDto } from './dto/info.dto.js';
-import { BranchInfoDto } from './dto/branch-info.dto.js';
+import { TinInfoDto } from './dto/tin-info.dto';
+import { InfoDto } from './dto/info.dto';
+import { BranchInfoDto } from './dto/branch-info.dto';
 
 @Injectable()
 export class EbarimtInquireService {

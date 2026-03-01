@@ -1,0 +1,188 @@
+import { Injectable } from '@nestjs/common';
+import { CreatePublicVoteDto } from './dto/create-vote.dto';
+import { UpdatePublicVoteDto } from './dto/update-vote.dto';
+import { GetPublicVoteDto } from './dto/get-vote.dto';
+import { EntityManager, Equal, FindManyOptions, In } from 'typeorm';
+import PublicVote from './vote.entity';
+import PublicVoteNotFoundException from './exceptions/vote-not-found.exception';
+import { PageDto } from '../../../utils/dto/page.dto';
+import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import { ModuleRef } from '@nestjs/core';
+import { getEntityManagerToken } from '@nestjs/typeorm';
+import GetUserDto from '../../cloud/user/dto/get-user.dto';
+
+import { VoteQuestionService } from './question/question.service';
+import Trees from '../../human-resource/tree/tree.entity';
+
+@Injectable()
+export class PublicVoteService {
+  /**
+   * @ignore
+   */
+  constructor(
+    private moduleRef: ModuleRef,
+    private readonly voteQuestionService: VoteQuestionService,
+  ) {}
+
+  private async loadEntityManager(systemId: string): Promise<EntityManager> {
+    return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
+      strict: false,
+    });
+  }
+
+  /**
+   * A method that fetches the Contract from the database
+   * @returns A promise with the list of Contract
+   */
+  async getAllVote(query: GetPublicVoteDto, user: GetUserDto) {
+    const entityManager = await this.loadEntityManager(user.dataBase);
+    const where: FindManyOptions<PublicVote>['where'] = {};
+    if (query.exp) {
+      where.exp = Equal(query.exp);
+    }
+    if (query.authorId) {
+      where.authorId = Equal(query.authorId);
+    }
+    const page =
+      query.page && !isNaN(query.page) && query.page > 0
+        ? Number(query.page)
+        : 1;
+    const limit =
+      query.limit && !isNaN(query.limit) && query.limit > 0
+        ? Number(query.limit)
+        : 10;
+    const skip = (page - 1) * limit;
+    const [items, count] = await entityManager.findAndCount(PublicVote, {
+      where,
+      order: {
+        createdAt: 'DESC',
+      },
+      relations: ['questions', 'questions.voteAnswer'],
+      skip: skip,
+      take: limit,
+    });
+    const itemCount = count;
+    const pageMetaDto = new PageMetaDto({ page, limit, itemCount });
+    return new PageDto(items, pageMetaDto);
+  }
+
+  /**
+   * A method that fetches a Access with a given id. Example:
+   *
+   * @example
+   * const Access = await AccessService.getAccessById(1);
+   */
+  async getVoteById(voteId: number, user: GetUserDto): Promise<PublicVote> {
+    const entityManager = await this.loadEntityManager(user.dataBase);
+    const vote = await entityManager.findOne(PublicVote, {
+      where: { id: voteId },
+      relations: ['questions', 'questions.voteAnswer'],
+    });
+    if (vote) {
+      return vote;
+    }
+    throw new PublicVoteNotFoundException(voteId);
+  }
+
+  /**
+   *
+   * @param SystemMail createSystemMail
+   *
+   */
+  async createVote(vote: CreatePublicVoteDto, user: GetUserDto) {
+    const entityManager = await this.loadEntityManager(user.dataBase);
+
+    // Assign author details
+    vote.authorId = user.workerId;
+    vote.author = {
+      lastName: user.lastName,
+      firstName: user.firstName,
+    };
+
+    // Validate treeIds
+    if (vote.treeIds?.length) {
+      const trees = await entityManager.find(Trees, {
+        where: { id: In(vote.treeIds) },
+      });
+
+      if (trees.length !== vote.treeIds.length) {
+        throw new Error('Some of the treeIds are invalid');
+      }
+
+      vote.trees = trees;
+    }
+
+    // Create a new PublicVote entity (excluding ID)
+    const newVote = entityManager.create(PublicVote, { ...vote });
+    await entityManager.save(newVote); // Now, newVote has an id
+
+    // Ensure vote.questions exist before iterating
+    if (vote.questions?.length) {
+      for (const question of vote.questions) {
+        await this.voteQuestionService.createVoteQuestion(
+          {
+            option: question.option,
+            voteId: newVote.id,
+            authorId: null,
+          },
+          user,
+        );
+      }
+    }
+
+    return newVote;
+  }
+
+  /**
+   * See the [definition of the UpdateContractDto file]{@link UpdateSystemMailDto} to see a list of required properties
+   */
+  async updateVote(
+    id: number,
+    user: GetUserDto,
+    vote: UpdatePublicVoteDto,
+  ): Promise<PublicVote> {
+    const entityManager = await this.loadEntityManager(user.dataBase);
+    const existingVote = await entityManager.findOne(PublicVote, {
+      where: { id },
+    });
+    if (!existingVote) {
+      throw new PublicVoteNotFoundException(id);
+    }
+    if (vote.treeIds?.length) {
+      const trees = await entityManager.find(Trees, {
+        where: { id: In(vote.treeIds) },
+      });
+      if (trees.length !== vote.treeIds.length) {
+        throw new Error('Some of the treeIds are invalid');
+      }
+      vote.trees = trees;
+    }
+    await entityManager.update(PublicVote, id, vote);
+    const updatedVote = await entityManager.findOne(PublicVote, {
+      where: { id: id },
+    });
+    if (!updatedVote) {
+      throw new PublicVoteNotFoundException(id);
+    }
+    return updatedVote;
+  }
+
+  /**
+   * @deprecated Use deleteContract instead
+   */
+  async deleteVoteById(id: number, user: GetUserDto): Promise<void> {
+    return this.deleteVote(id, user);
+  }
+
+  /**
+   * A method that deletes a contract from the database
+   * @param id An id of a contract. A contract with this id should exist in the database
+   */
+  async deleteVote(id: number, user: GetUserDto): Promise<void> {
+    const entityManager = await this.loadEntityManager(user.dataBase);
+    const deleteResponse = await entityManager.softDelete(PublicVote, id);
+    if (!deleteResponse.affected) {
+      throw new PublicVoteNotFoundException(id);
+    }
+  }
+}

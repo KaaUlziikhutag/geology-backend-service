@@ -8,7 +8,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { CustomerType } from '../../../utils/enum-utils.js';
+import { CustomerType } from '../../../utils/enum-utils';
 import { ApiProperty } from '@nestjs/swagger';
 
 export default class CreateCustomerDto {

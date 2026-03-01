@@ -7,8 +7,8 @@ import {
   Length,
   ValidateNested,
 } from 'class-validator';
-import { ReceiptItemDto } from './receipt-item.dto.js';
-import { TaxType } from '../../../../utils/enum-utils.js';
+import { ReceiptItemDto } from './receipt-item.dto';
+import { TaxType } from '../../../../utils/enum-utils';
 
 /** Дэд төлбөрийн баримт */
 export class ReceiptDto {

@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
-import Indicator from '../indicator/indicator.entity.js';
-import TestingResult from './testing-result.entity.js';
+import Indicator from '../indicator/indicator.entity';
+import TestingResult from './testing-result.entity';
 /** үр дүнгийн үзүүлэлт */
 @Entity('result_indicators')
 export default class ResultIndicator extends BaseEntity {

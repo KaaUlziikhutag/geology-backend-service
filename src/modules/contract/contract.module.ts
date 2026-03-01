@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import Contract from './contract.entity.js';
+import Contract from './contract.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ContractService } from './contract.service.js';
-import { ProductModule } from '../product/product.module.js';
-import { ContractController } from './contract.controller.js';
-import { DiscountModule } from '../reference/discount/discount.module.js';
+import { ContractService } from './contract.service';
+import { ProductModule } from '../product/product.module';
+import { ContractController } from './contract.controller';
+import { DiscountModule } from '../reference/discount/discount.module';
 
 @Module({
   imports: [

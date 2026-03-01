@@ -1,0 +1,9 @@
+import { NotFoundException } from '@nestjs/common';
+
+class SystemMailNotFoundException extends NotFoundException {
+  constructor(mailId: number) {
+    super(`System mail with id ${mailId} not found`);
+  }
+}
+
+export default SystemMailNotFoundException;

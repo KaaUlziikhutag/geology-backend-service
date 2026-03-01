@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Barcode } from './barcode.entity.js';
+import { Barcode } from './barcode.entity';
 import { Repository } from 'typeorm';
 import { generate } from 'generate-password';
 import { InjectRepository } from '@nestjs/typeorm';

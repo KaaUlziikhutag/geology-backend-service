@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, In, Repository } from 'typeorm';
-import LocalFileDto from './dto/local-file.dto.js';
-import LocalFile from './local-file.entity.js';
-import { GetLocalFileDto } from './dto/get-local-file.dto.js';
+import LocalFileDto from './dto/local-file.dto';
+import LocalFile from './local-file.entity';
+import { GetLocalFileDto } from './dto/get-local-file.dto';
 import * as fs from 'fs';
 
 @Injectable()

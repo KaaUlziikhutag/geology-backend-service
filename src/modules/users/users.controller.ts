@@ -11,14 +11,14 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard.js';
-import GetUsers from './dto/get-users.dto.js';
-import { UpdateUsersDto } from './dto/update-users.dto.js';
-import { UsersService } from './users.service.js';
+import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
+import GetUsers from './dto/get-users.dto';
+import { UpdateUsersDto } from './dto/update-users.dto';
+import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
-import FindOneParams from '../../utils/find-one-params.js';
-import { ResponseSuccess } from '../../utils/dto/response.dto.js';
-import { IResponse } from '../../utils/interfaces/response.interface.js';
+import FindOneParams from '../../utils/find-one-params';
+import { ResponseSuccess } from '../../utils/dto/response.dto';
+import { IResponse } from '../../utils/interfaces/response.interface';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('users')

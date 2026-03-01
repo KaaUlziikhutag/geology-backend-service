@@ -8,10 +8,10 @@ import {
   Length,
   ValidateNested,
 } from 'class-validator';
-import { ReceiptDto } from './receipt.dto.js';
+import { ReceiptDto } from './receipt.dto';
 import { Type } from 'class-transformer';
-import { PaymentDto } from './payment.dto.js';
-import { EbarimtTaxType } from '../../../../utils/enum-utils.js';
+import { PaymentDto } from './payment.dto';
+import { EbarimtTaxType } from '../../../../utils/enum-utils';
 /** Төлбөрийн баримт үүсгэх */
 export class CreateReceiptDto {
   @IsOptional()

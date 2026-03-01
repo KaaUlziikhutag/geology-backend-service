@@ -12,15 +12,15 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { WarehouseService } from './warehouse.service.js';
+import { WarehouseService } from './warehouse.service';
 import { AuthGuard } from '@nestjs/passport';
-import JwtAuthenticationGuard from '../../authentication/guard/jwt-authentication.guard.js';
-import CreateWarehouseDto from './dto/create-warehouse.dto.js';
-import { IResponse } from '../../../utils/interfaces/response.interface.js';
-import { ResponseSuccess } from '../../../utils/dto/response.dto.js';
-import FindOneParams from '../../../utils/find-one-params.js';
-import GetWarehouseDto from './dto/get-warehouse.dto.js';
-import UpdateWarehouseDto from './dto/update-warehouse.dto.js';
+import JwtAuthenticationGuard from '../../authentication/guard/jwt-authentication.guard';
+import CreateWarehouseDto from './dto/create-warehouse.dto';
+import { IResponse } from '../../../utils/interfaces/response.interface';
+import { ResponseSuccess } from '../../../utils/dto/response.dto';
+import FindOneParams from '../../../utils/find-one-params';
+import GetWarehouseDto from './dto/get-warehouse.dto';
+import UpdateWarehouseDto from './dto/update-warehouse.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('warehouse')

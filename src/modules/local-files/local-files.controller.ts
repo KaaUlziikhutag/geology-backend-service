@@ -15,18 +15,18 @@ import {
   BadRequestException,
   Delete,
 } from '@nestjs/common';
-import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard.js';
-import LocalFilesService from './local-files.service.js';
-import LocalFilesInterceptor from './local-files.interceptor.js';
-import FileUploadDto from '../../utils/dto/file-upload.dto.js';
+import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
+import LocalFilesService from './local-files.service';
+import LocalFilesInterceptor from './local-files.interceptor';
+import FileUploadDto from '../../utils/dto/file-upload.dto';
 import { Response } from 'express';
 import { createReadStream } from 'fs';
 import { join } from 'path';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { ResponseSuccess } from '../../utils/dto/response.dto.js';
-import { IResponse } from '../../utils/interfaces/response.interface.js';
+import { ResponseSuccess } from '../../utils/dto/response.dto';
+import { IResponse } from '../../utils/interfaces/response.interface';
 import { AuthGuard } from '@nestjs/passport';
-import FindOneParams from '../../utils/find-one-params.js';
+import FindOneParams from '../../utils/find-one-params';
 
 @Controller('local-files')
 @UseInterceptors(ClassSerializerInterceptor)

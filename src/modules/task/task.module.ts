@@ -1,11 +1,11 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
-import Task from './task.entity.js';
+import Task from './task.entity';
 import { Module } from '@nestjs/common';
-import { TaskService } from './task.service.js';
-import { TaskController } from './task.controller.js';
-import { MineralModule } from '../appointment/mineral/mineral.module.js';
-import { BarcodeModule } from '../barcode/barcode.module.js';
-import { UsersModule } from '../users/users.module.js';
+import { TaskService } from './task.service';
+import { TaskController } from './task.controller';
+import { MineralModule } from '../appointment/mineral/mineral.module';
+import { BarcodeModule } from '../barcode/barcode.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Equal, FindManyOptions, ILike, Repository } from 'typeorm';
-import Indicator from './indicator.entity.js';
-import { GetIndicatorDto } from './dto/get-indicator.dto.js';
+import Indicator from './indicator.entity';
+import { GetIndicatorDto } from './dto/get-indicator.dto';
 
 @Injectable()
 export class IndicatorService {

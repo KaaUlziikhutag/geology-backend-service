@@ -1,6 +1,6 @@
-import { AbstractEntity } from '../../utils/abstract.entity.js';
+import { AbstractEntity } from '../../utils/abstract.entity';
 import { Column, Entity, JoinColumn, Relation } from 'typeorm';
-import Users from '../users/users.entity.js';
+import Users from '../users/users.entity';
 
 @Entity({ name: 'notifications' })
 export class Notification extends AbstractEntity {

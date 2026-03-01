@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Customer from '../customer/customer.entity.js';
+import Customer from '../customer/customer.entity';
 import { Equal, FindManyOptions, Repository } from 'typeorm';
-import { GetCustomerDto } from './dto/get-dashboard.dto.js';
-import { CustomerType } from '../../utils/enum-utils.js';
-import Mineral from '../appointment/mineral/mineral.entity.js';
-import Appointment from '../appointment/appointment.entity.js';
+import { GetCustomerDto } from './dto/get-dashboard.dto';
+import { CustomerType } from '../../utils/enum-utils';
+import Mineral from '../appointment/mineral/mineral.entity';
+import Appointment from '../appointment/appointment.entity';
 
 @Injectable()
 export class DashboardService {

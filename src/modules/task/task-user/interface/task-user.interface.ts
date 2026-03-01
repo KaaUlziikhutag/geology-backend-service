@@ -1,4 +1,4 @@
-import Users from '../../../users/users.entity.js';
+import Users from '../../../users/users.entity';
 
 export default interface ITaskUser {
   taskId: number;

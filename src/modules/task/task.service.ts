@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Task from './task.entity.js';
+import Task from './task.entity';
 import { Equal, FindManyOptions, In, Repository } from 'typeorm';
-import { CreateTaskDto } from './dto/create-task.dto.js';
-import GetUserDto from '../users/dto/get-user.dto.js';
-import TaskNotFoundException from './exceptions/task-not-found.exception.js';
-import { GetTaskDto } from './dto/get-task.dto.js';
-import PageDto from '../../utils/dto/page.dto.js';
-import PageMetaDto from '../../utils/dto/page-meta.dto.js';
-import UpdateTaskDto from './dto/update-task.dto.js';
-import { OrderState, TaskState } from '../../utils/enum-utils.js';
-import { MineralState, ProductType } from '../../utils/enum-utils.js';
-import { MineralService } from '../appointment/mineral/mineral.service.js';
-import { GetAnalyticTaskDto } from './dto/get-analytic-task.dto.js';
-import { BarcodeService } from '../barcode/barcode.service.js';
-import { TaskUsersDto } from './dto/task-users.dto.js';
-import { UsersService } from '../users/users.service.js';
+import { CreateTaskDto } from './dto/create-task.dto';
+import GetUserDto from '../users/dto/get-user.dto';
+import TaskNotFoundException from './exceptions/task-not-found.exception';
+import { GetTaskDto } from './dto/get-task.dto';
+import PageDto from '../../utils/dto/page.dto';
+import PageMetaDto from '../../utils/dto/page-meta.dto';
+import UpdateTaskDto from './dto/update-task.dto';
+import { OrderState, TaskState } from '../../utils/enum-utils';
+import { MineralState, ProductType } from '../../utils/enum-utils';
+import { MineralService } from '../appointment/mineral/mineral.service';
+import { GetAnalyticTaskDto } from './dto/get-analytic-task.dto';
+import { BarcodeService } from '../barcode/barcode.service';
+import { TaskUsersDto } from './dto/task-users.dto';
+import { UsersService } from '../users/users.service';
 @Injectable()
 export class TaskService {
   constructor(
@@ -160,11 +160,11 @@ export class TaskService {
     const tasks = await this.getTaskByIds(taskUser.taskIds);
     const users = await this.userService.getByIds(taskUser.userIds);
     tasks.forEach((task) => {
-      task.users = users.map((item) => ({
-        taskId: task.id,
-        userId: item.id,
-        user: item,
-      }));
+      // task.users = users.map((item) => ({
+      //   taskId: task.id,
+      //   userId: item.id,
+      //   user: item,
+      // }));
     });
     return await this.taskRepository.save(tasks);
   }

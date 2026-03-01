@@ -12,14 +12,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard.js';
+import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
-import FindOneParams from '../../utils/find-one-params.js';
-import RequestWithUser from '../authentication/interface/request-with-user.interface.js';
-import { InvoiceDto } from './dto/invoice.dto.js';
-import { ReportService } from './report.service.js';
+import FindOneParams from '../../utils/find-one-params';
+import RequestWithUser from '../authentication/interface/request-with-user.interface';
+import { InvoiceDto } from './dto/invoice.dto';
+import { ReportService } from './report.service';
 import { Response } from 'express';
-import { GetSectionDto } from './dto/get-section.dto.js';
+import { GetSectionDto } from './dto/get-section.dto';
 
 @Controller('report')
 @ApiTags('report')

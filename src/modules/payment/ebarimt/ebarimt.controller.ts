@@ -5,11 +5,11 @@ import {
   Param,
   UseGuards,
 } from '@nestjs/common';
-import { EbarimtService } from './ebarimt.service.js';
-import JwtAuthenticationGuard from '../../authentication/guard/jwt-authentication.guard.js';
+import { EbarimtService } from './ebarimt.service';
+import JwtAuthenticationGuard from '../../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
-import { IResponse } from '../../../utils/interfaces/response.interface.js';
-import { ResponseSuccess } from '../../../utils/dto/response.dto.js';
+import { IResponse } from '../../../utils/interfaces/response.interface';
+import { ResponseSuccess } from '../../../utils/dto/response.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('ebarimt')

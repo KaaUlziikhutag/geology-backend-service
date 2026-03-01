@@ -1,17 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, FindManyOptions, ILike, Equal } from 'typeorm';
-import Users from './users.entity.js';
-import RegisterDto from '../authentication/dto/register.dto.js';
-import GetUsers from './dto/get-users.dto.js';
-import { UpdateUsersDto } from './dto/update-users.dto.js';
+import Users from './users.entity';
+import RegisterDto from '../authentication/dto/register.dto';
+import GetUsers from './dto/get-users.dto';
+import { UpdateUsersDto } from './dto/update-users.dto';
 import bcrypt from 'bcryptjs';
-import UserNotFoundException from './exceptions/user-not-found.exception.js';
+import UserNotFoundException from './exceptions/user-not-found.exception';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(Users, 'userdb')
+    @InjectRepository(Users)
     private userRepository: Repository<Users>,
   ) {}
 

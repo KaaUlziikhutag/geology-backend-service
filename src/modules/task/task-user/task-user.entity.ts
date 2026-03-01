@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
-import Users from '../../users/users.entity.js';
-import Task from '../task.entity.js';
+import Users from '../../users/users.entity';
+import Task from '../task.entity';
 /** Ажлын даалгавар */
 @Entity('task_users')
 export default class TaskUser extends BaseEntity {
@@ -24,6 +24,7 @@ export default class TaskUser extends BaseEntity {
   @Column({ name: 'user_id' })
   userId: number; // Хэрэглэгч
 
-  @Column({ type: 'jsonb' })
+  @JoinColumn({ name: 'user_id' })
+  @ManyToOne(() => Users)
   user?: Users; // Хэрэглэгч
 }

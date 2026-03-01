@@ -1,6 +1,6 @@
-import { AbstractEntity } from '../../utils/abstract.entity.js';
+import { AbstractEntity } from '../../utils/abstract.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import Company from '../company/company.entity.js';
+import Company from '../company/company.entity';
 
 /** Байгуулагын дотоод тушаал */
 @Entity('decisions')

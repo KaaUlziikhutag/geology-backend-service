@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { MineralService } from './mineral.service.js';
-import { MineralController } from './mineral.controller.js';
+import { MineralService } from './mineral.service';
+import { MineralController } from './mineral.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import Mineral from './mineral.entity.js';
+import Mineral from './mineral.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Mineral])],
@@ -11,4 +11,3 @@ import Mineral from './mineral.entity.js';
   exports: [MineralService],
 })
 export class MineralModule {}
-

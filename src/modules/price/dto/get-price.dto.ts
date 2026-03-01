@@ -1,7 +1,7 @@
 import { IsEnum, IsNumberString, IsOptional } from 'class-validator';
-import { ProductType } from '../../../utils/enum-utils.js';
+import { ProductType } from '../../../utils/enum-utils';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { PageOptionsDto } from '../../../utils/dto/page-options.dto.js';
+import { PageOptionsDto } from '../../../utils/dto/page-options.dto';
 
 export default class GetPriceDto extends PageOptionsDto {
   @ApiPropertyOptional()

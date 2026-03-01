@@ -6,12 +6,12 @@ import {
   UpdateResult,
 } from 'typeorm';
 import { Injectable } from '@nestjs/common';
-import { Notification } from './notification.entity.js';
+import { Notification } from './notification.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateNotificationDto } from './dto/create-notification.dto.js';
-import { NotificationGateway } from './notification.gateway.js';
-import GetUserDto from '../users/dto/get-user.dto.js';
-import { GetNotificationDto } from './dto/get-notification.dto.js';
+import { CreateNotificationDto } from './dto/create-notification.dto';
+import { NotificationGateway } from './notification.gateway';
+import GetUserDto from '../users/dto/get-user.dto';
+import { GetNotificationDto } from './dto/get-notification.dto';
 
 @Injectable()
 export class NotificationService {

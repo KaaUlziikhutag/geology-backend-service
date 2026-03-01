@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Appointment from './appointment.entity.js';
+import Appointment from './appointment.entity';
 import {
   Between,
   Equal,
@@ -9,18 +9,18 @@ import {
   IsNull,
   Repository,
 } from 'typeorm';
-import CreateAppointmentDto from './dto/create-appointment.dto.js';
-import GetAppointmentDto from './dto/get-appointment.dto.js';
-import PageMetaDto from '../../utils/dto/page-meta.dto.js';
-import PageDto from '../../utils/dto/page.dto.js';
-import { getCode, today } from '../../utils/helper-utils.js';
-import AppointmentNotFoundException from './exceptions/appointment-not-found.exception.js';
-import UpdateAppointmentDto from './dto/update-appointment.dto.js';
+import CreateAppointmentDto from './dto/create-appointment.dto';
+import GetAppointmentDto from './dto/get-appointment.dto';
+import PageMetaDto from '../../utils/dto/page-meta.dto';
+import PageDto from '../../utils/dto/page.dto';
+import { getCode, today } from '../../utils/helper-utils';
+import AppointmentNotFoundException from './exceptions/appointment-not-found.exception';
+import UpdateAppointmentDto from './dto/update-appointment.dto';
 import * as ejs from 'ejs';
 import { join } from 'path';
 import moment from 'moment';
-import GetUserDto from '../users/dto/get-user.dto.js';
-import { ReceiptStatus } from '../../utils/enum-utils.js';
+import GetUserDto from '../users/dto/get-user.dto';
+import { ReceiptStatus } from '../../utils/enum-utils';
 @Injectable()
 export class AppointmentService {
   constructor(

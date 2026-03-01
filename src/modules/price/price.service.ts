@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Price from './price.entity.js';
+import Price from './price.entity';
 import { Repository } from 'typeorm';
-import GetPriceDto from './dto/get-price.dto.js';
-import Decision from '../decision/decision.entity.js';
-import PriceNotFoundException from './exceptions/price-not-found.exception.js';
-import PageDto from '../../utils/dto/page.dto.js';
-import PageMetaDto from '../../utils/dto/page-meta.dto.js';
+import GetPriceDto from './dto/get-price.dto';
+import Decision from '../decision/decision.entity';
+import PriceNotFoundException from './exceptions/price-not-found.exception';
+import PageDto from '../../utils/dto/page.dto';
+import PageMetaDto from '../../utils/dto/page-meta.dto';
 
 @Injectable()
 export class PriceService {

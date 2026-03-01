@@ -8,12 +8,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { IndicatorService } from './indicator.service.js';
-import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard.js';
+import { IndicatorService } from './indicator.service';
+import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
-import { IResponse } from '../../utils/interfaces/response.interface.js';
-import { ResponseSuccess } from '../../utils/dto/response.dto.js';
-import { GetIndicatorDto } from './dto/get-indicator.dto.js';
+import { IResponse } from '../../utils/interfaces/response.interface';
+import { ResponseSuccess } from '../../utils/dto/response.dto';
+import { GetIndicatorDto } from './dto/get-indicator.dto';
 
 @Controller('indicator')
 @ApiTags('indicator')

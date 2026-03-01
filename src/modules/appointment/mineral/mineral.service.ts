@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Mineral from './mineral.entity.js';
+import Mineral from './mineral.entity';
 import { Equal, FindManyOptions, ILike, In, Repository } from 'typeorm';
-import GetMineralDto from './dto/get-mineral.dto.js';
-import PageMetaDto from '../../../utils/dto/page-meta.dto.js';
-import PageDto from '../../../utils/dto/page.dto.js';
-import MineralNotFoundException from './exceptions/mineral-not-found.exception.js';
-import CreateMineralDto from './dto/create-mineral.dto.js';
-import UpdateMineralDto from './dto/update-mineral.dto.js';
+import GetMineralDto from './dto/get-mineral.dto';
+import PageMetaDto from '../../../utils/dto/page-meta.dto';
+import PageDto from '../../../utils/dto/page.dto';
+import MineralNotFoundException from './exceptions/mineral-not-found.exception';
+import CreateMineralDto from './dto/create-mineral.dto';
+import UpdateMineralDto from './dto/update-mineral.dto';
 
 @Injectable()
 export class MineralService {

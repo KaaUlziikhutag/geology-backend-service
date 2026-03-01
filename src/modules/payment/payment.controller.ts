@@ -14,19 +14,19 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard.js';
-import { IResponse } from '../../utils/interfaces/response.interface.js';
-import { ResponseSuccess } from '../../utils/dto/response.dto.js';
-import FindOneParams from '../../utils/find-one-params.js';
-import CreatePaymentDto from './dto/create-payment.dto.js';
-import { PaymentService } from './payment.service.js';
-import RequestWithUser from '../authentication/interface/request-with-user.interface.js';
-import { PaymentDetailService } from './payment-detail/payment-detail.service.js';
-import CreatePaymentDetailDto from './payment-detail/dto/create-payment-dtl.dto.js';
-import PagePaymentDto from './dto/page-payment.dto.js';
+import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
+import { IResponse } from '../../utils/interfaces/response.interface';
+import { ResponseSuccess } from '../../utils/dto/response.dto';
+import FindOneParams from '../../utils/find-one-params';
+import CreatePaymentDto from './dto/create-payment.dto';
+import { PaymentService } from './payment.service';
+import RequestWithUser from '../authentication/interface/request-with-user.interface';
+import { PaymentDetailService } from './payment-detail/payment-detail.service';
+import CreatePaymentDetailDto from './payment-detail/dto/create-payment-dtl.dto';
+import PagePaymentDto from './dto/page-payment.dto';
 import { ApiTags } from '@nestjs/swagger';
-import UpdatePaymentDto from './dto/update-payment.dto.js';
-import EbarimtPaymentDto from './dto/ebarimt-payment.dto.js';
+import UpdatePaymentDto from './dto/update-payment.dto';
+import EbarimtPaymentDto from './dto/ebarimt-payment.dto';
 
 @Controller('payment')
 @ApiTags('payment')

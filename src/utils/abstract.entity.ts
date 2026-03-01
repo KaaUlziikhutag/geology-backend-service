@@ -1,4 +1,4 @@
-import Users from '../modules/users/users.entity.js';
+import Users from '../modules/users/users.entity';
 import {
   BaseEntity,
   Column,
@@ -14,7 +14,7 @@ export abstract class AbstractEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'created_by' })
+  @Column({ name: 'created_by', nullable: true })
   createdBy: number;
 
   @Column({ name: 'updated_by', nullable: true })

@@ -1,9 +1,9 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ApiLogModule } from '../../api-log/api-log.module.js';
-import { EbarimtController } from './ebarimt.controller.js';
-import { EbarimtService } from './ebarimt.service.js';
+import { ApiLogModule } from '../../api-log/api-log.module';
+import { EbarimtController } from './ebarimt.controller';
+import { EbarimtService } from './ebarimt.service';
 import Joi from '@hapi/joi';
 
 @Module({

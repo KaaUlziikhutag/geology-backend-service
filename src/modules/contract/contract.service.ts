@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Contract from './contract.entity.js';
+import Contract from './contract.entity';
 import {
   Between,
   Equal,
@@ -9,14 +9,14 @@ import {
   MoreThanOrEqual,
   Repository,
 } from 'typeorm';
-import GetContractDto from './dto/get-contract.dto.js';
-import CreateContractDto from './dto/create-contract.dto.js';
-import { ProductService } from '../product/product.service.js';
-import GetUserDto from '../users/dto/get-user.dto.js';
-import UpdateContractDto from './dto/update-contract.dto.js';
-import ContractNotFoundException from './exceptions/contract-not-found.exception.js';
-import { DiscountService } from '../reference/discount/discount.service.js';
-import { GetValidContractDto } from './dto/get-valid-contract.dto.js';
+import GetContractDto from './dto/get-contract.dto';
+import CreateContractDto from './dto/create-contract.dto';
+import { ProductService } from '../product/product.service';
+import GetUserDto from '../users/dto/get-user.dto';
+import UpdateContractDto from './dto/update-contract.dto';
+import ContractNotFoundException from './exceptions/contract-not-found.exception';
+import { DiscountService } from '../reference/discount/discount.service';
+import { GetValidContractDto } from './dto/get-valid-contract.dto';
 
 @Injectable()
 export class ContractService {

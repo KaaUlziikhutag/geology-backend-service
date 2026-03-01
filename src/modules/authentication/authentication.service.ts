@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UsersService } from '../users/users.service.js';
-import RegisterDto from './dto/register.dto.js';
+import { UsersService } from '../users/users.service';
+import RegisterDto from './dto/register.dto';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
-import TokenPayload from './interface/token-payload.interface.js';
+import TokenPayload from './interface/token-payload.interface';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()

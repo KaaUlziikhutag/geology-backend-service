@@ -6,9 +6,9 @@ import {
   IsOptional,
   ValidateNested,
 } from 'class-validator';
-import { OrderState } from '../../../utils/enum-utils.js';
+import { OrderState } from '../../../utils/enum-utils';
 import { Type } from 'class-transformer';
-import { GetRangeDateDto } from '../../../utils/dto/get-date.dto.js';
+import { GetRangeDateDto } from '../../../utils/dto/get-date.dto';
 
 export default class GetOrderDto {
   @ApiPropertyOptional()

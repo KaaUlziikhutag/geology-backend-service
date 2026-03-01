@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Company from './company.entity.js';
+import Company from './company.entity';
 import { Repository } from 'typeorm';
-import CompanyNotFoundException from './exceptions/company-not-found.exception.js';
+import CompanyNotFoundException from './exceptions/company-not-found.exception';
 
 @Injectable()
 export class CompanyService {

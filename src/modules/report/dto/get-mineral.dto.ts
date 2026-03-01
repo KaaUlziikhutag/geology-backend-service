@@ -1,5 +1,5 @@
 import { IsEnum, IsNumberString, IsOptional } from 'class-validator';
-import { CustomerType } from '../../../utils/enum-utils.js';
+import { CustomerType } from '../../../utils/enum-utils';
 
 export class GetMineraDto {
   @IsNumberString()

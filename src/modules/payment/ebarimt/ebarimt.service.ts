@@ -1,13 +1,13 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { catchError, firstValueFrom } from 'rxjs';
-import { ApiLogService } from '../../api-log/api-log.service.js';
-import { CreateReceiptDto } from './dto/create-receipt.dto.js';
-import CreateApiLogDto from '../../api-log/dto/create-api-log.dto.js';
-import { CreateReceiptRes } from './response/create-receipt.response.js';
-import { DeleteReceiptDto } from './dto/delete-receipt.dto.js';
-import { PosApiInfo } from './response/pos-api-info.response.js';
-import { BankAccount } from './response/bank-account.response.js';
+import { ApiLogService } from '../../api-log/api-log.service';
+import { CreateReceiptDto } from './dto/create-receipt.dto';
+import CreateApiLogDto from '../../api-log/dto/create-api-log.dto';
+import { CreateReceiptRes } from './response/create-receipt.response';
+import { DeleteReceiptDto } from './dto/delete-receipt.dto';
+import { PosApiInfo } from './response/pos-api-info.response';
+import { BankAccount } from './response/bank-account.response';
 
 @Injectable()
 export class EbarimtService {

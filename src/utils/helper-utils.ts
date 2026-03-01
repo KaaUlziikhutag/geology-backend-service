@@ -1,7 +1,7 @@
 import moment from 'moment';
 import puppeteer from 'puppeteer';
 import fs from 'fs';
-import { GetRangeDateDto } from './dto/get-date.dto.js';
+import { GetRangeDateDto } from './dto/get-date.dto';
 
 export const formatDate = (date: Date): string => {
   moment.locale('mn');

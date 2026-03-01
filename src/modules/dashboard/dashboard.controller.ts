@@ -8,12 +8,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { DashboardService } from './dashboard.service.js';
-import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard.js';
+import { DashboardService } from './dashboard.service';
+import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
-import { GetCustomerDto } from './dto/get-dashboard.dto.js';
-import { IResponse } from '../../utils/interfaces/response.interface.js';
-import { ResponseSuccess } from '../../utils/dto/response.dto.js';
+import { GetCustomerDto } from './dto/get-dashboard.dto';
+import { IResponse } from '../../utils/interfaces/response.interface';
+import { ResponseSuccess } from '../../utils/dto/response.dto';
 
 @Controller('dashboard')
 @ApiTags('dashboard')

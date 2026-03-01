@@ -8,13 +8,13 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
-import MineralType from '../reference/mineral-type/mineral-type.entity.js';
-import Element from '../reference/element/element.entity.js';
-import Laboratory from '../reference/laboratory/laboratory.entity.js';
-import Product from '../product/product.entity.js';
-import Technology from '../reference/technology/technology.entity.js';
-import Decision from '../decision/decision.entity.js';
-import Order from '../order/order.entity.js';
+import MineralType from '../reference/mineral-type/mineral-type.entity';
+import Element from '../reference/element/element.entity';
+import Laboratory from '../reference/laboratory/laboratory.entity';
+import Product from '../product/product.entity';
+import Technology from '../reference/technology/technology.entity';
+import Decision from '../decision/decision.entity';
+import Order from '../order/order.entity';
 
 @Entity('prices')
 export default class Price extends BaseEntity {

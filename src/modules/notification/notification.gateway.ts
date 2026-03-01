@@ -5,7 +5,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { AuthenticationService } from '../authentication/authentication.service.js';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 interface SocketWithUser {
   socketId: string;

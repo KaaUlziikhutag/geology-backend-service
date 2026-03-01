@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CustomerService } from './customer.service.js';
-import { CustomerController } from './customer.controller.js';
-import Customer from './customer.entity.js';
-import { WarehouseModule } from './warehouse/warehouse.module.js';
-import { EbarimtEasyModule } from '../payment/ebarimt/ebarimt-easy/ebarimt-easy.module.js';
-import { EbarimtInquireModule } from '../payment/ebarimt/ebarimt-inquire/ebarimt-inquire.module.js';
+import { CustomerService } from './customer.service';
+import { CustomerController } from './customer.controller';
+import Customer from './customer.entity';
+import { WarehouseModule } from './warehouse/warehouse.module';
+import { EbarimtEasyModule } from '../payment/ebarimt/ebarimt-easy/ebarimt-easy.module';
+import { EbarimtInquireModule } from '../payment/ebarimt/ebarimt-inquire/ebarimt-inquire.module';
 
 @Module({
   imports: [

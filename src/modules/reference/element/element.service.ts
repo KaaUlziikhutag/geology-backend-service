@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, ILike, Repository } from 'typeorm';
-import GetReferenceDto from '../dto/get-reference.dto.js';
-import Element from './element.entity.js';
+import GetReferenceDto from '../dto/get-reference.dto';
+import Element from './element.entity';
 
 @Injectable()
 export class ElementService {

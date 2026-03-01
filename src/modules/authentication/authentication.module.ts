@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AuthenticationService } from './authentication.service.js';
-import { UsersModule } from '../users/users.module.js';
-import { AuthenticationController } from './authentication.controller.js';
+import { AuthenticationService } from './authentication.service';
+import { UsersModule } from '../users/users.module';
+import { AuthenticationController } from './authentication.controller';
 import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './strategy/local.strategy.js';
+import { LocalStrategy } from './strategy/local.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtStrategy } from './strategy/jwt.strategy.js';
-import { JwtRefreshTokenStrategy } from './strategy/jwt-refresh-token.strategy.js';
-import { HeaderApiKeyStrategy } from './strategy/auth-header-api-key.strategy.js';
+import { JwtStrategy } from './strategy/jwt.strategy';
+import { JwtRefreshTokenStrategy } from './strategy/jwt-refresh-token.strategy';
+import { HeaderApiKeyStrategy } from './strategy/auth-header-api-key.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import Joi from '@hapi/joi';
 

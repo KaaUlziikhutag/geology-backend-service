@@ -19,6 +19,7 @@ export enum Role {
 export enum ReceiptStatus {
   PAY = 'PAY', // Төлөх
   PAID = 'PAID', // Төлөгдсөн
+  INVOICE_PAID = 'INVOICE_PAID', // Нэхэмжлэх төлөгдсөн
   SUCCESS = 'SUCCESS', // Баримт гарсан
   CANCELLED = 'CANCELLED', // Баримт цуцласан
 }

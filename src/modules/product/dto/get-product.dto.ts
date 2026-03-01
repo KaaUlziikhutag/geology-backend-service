@@ -1,5 +1,5 @@
 import { IsEnum, IsNumberString, IsOptional } from 'class-validator';
-import { ProductType } from '../../../utils/enum-utils.js';
+import { ProductType } from '../../../utils/enum-utils';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export default class GetProductDto {

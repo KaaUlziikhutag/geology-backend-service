@@ -10,11 +10,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { BarcodeService } from './barcode.service.js';
-import { ResponseSuccess } from '../../utils/dto/response.dto.js';
-import { IResponse } from '../../utils/interfaces/response.interface.js';
+import { BarcodeService } from './barcode.service';
+import { ResponseSuccess } from '../../utils/dto/response.dto';
+import { IResponse } from '../../utils/interfaces/response.interface';
 import { AuthGuard } from '@nestjs/passport';
-import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard.js';
+import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
 
 @Controller('barcode')
 @UseInterceptors(ClassSerializerInterceptor)

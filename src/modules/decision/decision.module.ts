@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import Decision from './decision.entity.js';
-import { DecisionService } from './decision.service.js';
-import { DecisionController } from './decision.controller.js';
+import Decision from './decision.entity';
+import { DecisionService } from './decision.service';
+import { DecisionController } from './decision.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Decision])],

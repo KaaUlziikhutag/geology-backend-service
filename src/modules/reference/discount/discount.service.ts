@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Discount from './discount.entity.js';
+import Discount from './discount.entity';
 import { FindManyOptions, In, Repository } from 'typeorm';
-import GetDiscountDto from './dto/get-discount.dto.js';
+import GetDiscountDto from './dto/get-discount.dto';
 
 @Injectable()
 export class DiscountService {

@@ -6,15 +6,15 @@ import {
   OneToMany,
   Relation,
 } from 'typeorm';
-import Mineral from './mineral/mineral.entity.js';
-import Order from '../order/order.entity.js';
-import Customer from '../customer/customer.entity.js';
-import Warehouse from '../customer/warehouse/warehouse.entity.js';
-import { AbstractEntity } from '../../utils/abstract.entity.js';
+import Mineral from './mineral/mineral.entity';
+import Order from '../order/order.entity';
+import Customer from '../customer/customer.entity';
+import Warehouse from '../customer/warehouse/warehouse.entity';
+import { AbstractEntity } from '../../utils/abstract.entity';
 /** Харилцагчийн захиалга */
 @Entity('appointments')
 export default class Appointment extends AbstractEntity {
-  @Column('varchar', { length: 255, unique: true })
+  @Column('varchar', { length: 255, unique: true, nullable: true })
   code: string;
 
   @Column({ name: 'customer_id' })

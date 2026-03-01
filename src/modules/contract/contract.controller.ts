@@ -13,17 +13,17 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ContractService } from './contract.service.js';
-import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard.js';
+import { ContractService } from './contract.service';
+import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
-import RequestWithUser from '../authentication/interface/request-with-user.interface.js';
-import { IResponse } from '../../utils/interfaces/response.interface.js';
-import { ResponseSuccess } from '../../utils/dto/response.dto.js';
-import FindOneParams from '../../utils/find-one-params.js';
-import CreateContractDto from './dto/create-contract.dto.js';
-import GetContractDto from './dto/get-contract.dto.js';
-import UpdateContractDto from './dto/update-contract.dto.js';
-import { GetValidContractDto } from './dto/get-valid-contract.dto.js';
+import RequestWithUser from '../authentication/interface/request-with-user.interface';
+import { IResponse } from '../../utils/interfaces/response.interface';
+import { ResponseSuccess } from '../../utils/dto/response.dto';
+import FindOneParams from '../../utils/find-one-params';
+import CreateContractDto from './dto/create-contract.dto';
+import GetContractDto from './dto/get-contract.dto';
+import UpdateContractDto from './dto/update-contract.dto';
+import { GetValidContractDto } from './dto/get-valid-contract.dto';
 
 @Controller('contract')
 @ApiTags('contract')

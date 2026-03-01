@@ -13,18 +13,18 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AppointmentService } from './appointment.service.js';
-import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard.js';
+import { AppointmentService } from './appointment.service';
+import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
-import GetAppointmentDto from './dto/get-appointment.dto.js';
-import { IResponse } from '../../utils/interfaces/response.interface.js';
-import { ResponseSuccess } from '../../utils/dto/response.dto.js';
-import FindOneParams from '../../utils/find-one-params.js';
-import { ApiPaginatedResponse } from '../../utils/api-paginated-response.decorator.js';
-import CreateAppointmentDto from './dto/create-appointment.dto.js';
-import UpdateAppointmentDto from './dto/update-appointment.dto.js';
+import GetAppointmentDto from './dto/get-appointment.dto';
+import { IResponse } from '../../utils/interfaces/response.interface';
+import { ResponseSuccess } from '../../utils/dto/response.dto';
+import FindOneParams from '../../utils/find-one-params';
+import { ApiPaginatedResponse } from '../../utils/api-paginated-response.decorator';
+import CreateAppointmentDto from './dto/create-appointment.dto';
+import UpdateAppointmentDto from './dto/update-appointment.dto';
 import { ApiTags } from '@nestjs/swagger';
-import RequestWithUser from '../authentication/interface/request-with-user.interface.js';
+import RequestWithUser from '../authentication/interface/request-with-user.interface';
 
 @Controller('appointment')
 @ApiTags('appointment')

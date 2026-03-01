@@ -1,7 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import TaskUser from './task-user.entity.js';
+import TaskUser from './task-user.entity';
 import { Repository } from 'typeorm';
-import ITaskUser from './interface/task-user.interface.js';
+import ITaskUser from './interface/task-user.interface';
 
 export class TaskUserService {
   constructor(

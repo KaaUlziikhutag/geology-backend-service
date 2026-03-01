@@ -12,15 +12,15 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { MineralService } from './mineral.service.js';
-import JwtAuthenticationGuard from '../../authentication/guard/jwt-authentication.guard.js';
+import { MineralService } from './mineral.service';
+import JwtAuthenticationGuard from '../../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
-import GetMineralDto from './dto/get-mineral.dto.js';
-import { IResponse } from '../../../utils/interfaces/response.interface.js';
-import { ResponseSuccess } from '../../../utils/dto/response.dto.js';
-import FindOneParams from '../../../utils/find-one-params.js';
-import CreateMineralDto from './dto/create-mineral.dto.js';
-import UpdateMineralDto from './dto/update-mineral.dto.js';
+import GetMineralDto from './dto/get-mineral.dto';
+import { IResponse } from '../../../utils/interfaces/response.interface';
+import { ResponseSuccess } from '../../../utils/dto/response.dto';
+import FindOneParams from '../../../utils/find-one-params';
+import CreateMineralDto from './dto/create-mineral.dto';
+import UpdateMineralDto from './dto/update-mineral.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('mineral')

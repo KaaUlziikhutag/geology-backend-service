@@ -1,4 +1,4 @@
-import { CustomerType } from '../../utils/enum-utils.js';
+import { CustomerType } from '../../utils/enum-utils';
 import {
   Entity,
   Column,
@@ -7,14 +7,14 @@ import {
   ManyToOne,
   Relation,
 } from 'typeorm';
-import Warehouse from './warehouse/warehouse.entity.js';
-import { Direction } from '../reference/direction/direction.entity.js';
-import Section from '../reference/section-customer/section-customer.entity.js';
-import { AbstractEntity } from '../../utils/abstract.entity.js';
-import Province from '../reference/address/province.entity.js';
-import District from '../reference/address/district.entity.js';
-import Appointment from '../appointment/appointment.entity.js';
-import Payment from '../payment/payment.entity.js';
+import Warehouse from './warehouse/warehouse.entity';
+import { Direction } from '../reference/direction/direction.entity';
+import Section from '../reference/section-customer/section-customer.entity';
+import { AbstractEntity } from '../../utils/abstract.entity';
+import Province from '../reference/address/province.entity';
+import District from '../reference/address/district.entity';
+import Appointment from '../appointment/appointment.entity';
+import Payment from '../payment/payment.entity';
 /** Үйлчлүүлэгч */
 @Entity('customers')
 export default class Customer extends AbstractEntity {

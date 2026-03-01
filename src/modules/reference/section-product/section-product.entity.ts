@@ -1,4 +1,4 @@
-import Product from '../../product/product.entity.js';
+import Product from '../../product/product.entity';
 import {
   BaseEntity,
   Column,

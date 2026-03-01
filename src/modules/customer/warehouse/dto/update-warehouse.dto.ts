@@ -1,5 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
-import CreateWarehouseDto from './create-warehouse.dto.js';
+import CreateWarehouseDto from './create-warehouse.dto';
 import { IsNumber, IsOptional } from 'class-validator';
 
 class UpdateWarehouseDto extends PartialType(CreateWarehouseDto) {

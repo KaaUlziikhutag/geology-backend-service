@@ -1,20 +1,17 @@
-import Appointment from '../appointment/appointment.entity.js';
-import Payment from '../payment/payment.entity.js';
+import Appointment from '../appointment/appointment.entity';
+import Payment from '../payment/payment.entity';
 import {
-  BaseEntity,
   Column,
-  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
-import Price from '../price/price.entity.js';
-import { OrderState } from '../../utils/enum-utils.js';
-import Task from '../task/task.entity.js';
-import { AbstractEntity } from '../../utils/abstract.entity.js';
+import Price from '../price/price.entity';
+import { OrderState } from '../../utils/enum-utils';
+import Task from '../task/task.entity';
+import { AbstractEntity } from '../../utils/abstract.entity';
 
 /** Ажилын захиалга */
 @Entity('appointment_orders')
@@ -37,7 +34,7 @@ export default class Order extends AbstractEntity {
   @ManyToOne(() => Price, (price) => price.orders)
   price?: Relation<Price>;
 
-  @Column()
+  @Column({ type: 'float', default: 1 })
   quantity: number;
 
   @Column({

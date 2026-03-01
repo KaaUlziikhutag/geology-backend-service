@@ -1,11 +1,13 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module.js';
+import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { IoAdapter } from '@nestjs/platform-socket.io';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import path from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const config = new DocumentBuilder()
     .setTitle('Mongolian Central Geological Laboratory')
     .setDescription('When it comes to analyzing minerals in mongolia')
@@ -15,6 +17,10 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.enableCors();
+  app.useStaticAssets(path.join(__dirname, '..', 'public'), {
+    prefix: '/public',
+  });
+
   app.useWebSocketAdapter(new IoAdapter(app));
   await app.listen(process.env.PORT || 8000);
   console.log(`Application is running on: ${await app.getUrl()}`);

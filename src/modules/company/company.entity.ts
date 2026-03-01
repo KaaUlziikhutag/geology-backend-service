@@ -6,8 +6,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import Province from '../reference/address/province.entity.js';
-import District from '../reference/address/district.entity.js';
+import Province from '../reference/address/province.entity';
+import District from '../reference/address/district.entity';
 
 @Entity('companies')
 export default class Company extends BaseEntity {

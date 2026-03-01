@@ -8,14 +8,14 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { PriceService } from './price.service.js';
-import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard.js';
+import { PriceService } from './price.service';
+import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
-import { IResponse } from '../../utils/interfaces/response.interface.js';
-import { ResponseSuccess } from '../../utils/dto/response.dto.js';
+import { IResponse } from '../../utils/interfaces/response.interface';
+import { ResponseSuccess } from '../../utils/dto/response.dto';
 import { ApiTags } from '@nestjs/swagger';
-import GetPriceDto from './dto/get-price.dto.js';
-import FindOneParams from '../../utils/find-one-params.js';
+import GetPriceDto from './dto/get-price.dto';
+import FindOneParams from '../../utils/find-one-params';
 
 @Controller('price')
 @ApiTags('price')

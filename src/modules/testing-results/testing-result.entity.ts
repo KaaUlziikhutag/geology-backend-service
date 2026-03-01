@@ -1,8 +1,8 @@
-import { AbstractEntity } from '../../utils/abstract.entity.js';
+import { AbstractEntity } from '../../utils/abstract.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import Task from '../task/task.entity.js';
-import Users from '../users/users.entity.js';
-import ResultIndicator from './result-indicator.entity.js';
+import Task from '../task/task.entity';
+import Users from '../users/users.entity';
+import ResultIndicator from './result-indicator.entity';
 
 /** Шинжилгээний үр дүн */
 @Entity('testing_results')

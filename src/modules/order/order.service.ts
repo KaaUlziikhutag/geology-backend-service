@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Order from './order.entity.js';
+import Order from './order.entity';
 import {
   Between,
   Equal,
@@ -9,22 +9,22 @@ import {
   IsNull,
   Repository,
 } from 'typeorm';
-import CreateOrderDto from './dto/create-order.dto.js';
-import { MineralService } from '../appointment/mineral/mineral.service.js';
-import GetOrderDto from './dto/get-order.dto.js';
-import OrderNotFoundException from './exceptions/order-not-found.exception.js';
-import { ContractService } from '../contract/contract.service.js';
-import { MineralState, OrderState, Role } from '../../utils/enum-utils.js';
-import { AppointmentService } from '../appointment/appointment.service.js';
-import { PriceService } from '../price/price.service.js';
-import { CompleteOrderDto } from './dto/complete-order.dto.js';
-import GetUserDto from '../users/dto/get-user.dto.js';
-import { CreateReceiveDto } from './dto/create-receive.dto.js';
-import { NotificationService } from '../notification/notifcation.service.js';
-import { UsersService } from '../users/users.service.js';
-import { TaskService } from '../task/task.service.js';
-import { CreateAnalystOrderDto } from './dto/create-analyst-order.dto.js';
-import { GetAnalyticTaskDto } from '../task/dto/get-analytic-task.dto.js';
+import CreateOrderDto from './dto/create-order.dto';
+import { MineralService } from '../appointment/mineral/mineral.service';
+import GetOrderDto from './dto/get-order.dto';
+import OrderNotFoundException from './exceptions/order-not-found.exception';
+import { ContractService } from '../contract/contract.service';
+import { MineralState, OrderState, Role } from '../../utils/enum-utils';
+import { AppointmentService } from '../appointment/appointment.service';
+import { PriceService } from '../price/price.service';
+import { CompleteOrderDto } from './dto/complete-order.dto';
+import GetUserDto from '../users/dto/get-user.dto';
+import { CreateReceiveDto } from './dto/create-receive.dto';
+import { NotificationService } from '../notification/notifcation.service';
+import { UsersService } from '../users/users.service';
+import { TaskService } from '../task/task.service';
+import { CreateAnalystOrderDto } from './dto/create-analyst-order.dto';
+import { GetAnalyticTaskDto } from '../task/dto/get-analytic-task.dto';
 
 @Injectable()
 export class OrderService {

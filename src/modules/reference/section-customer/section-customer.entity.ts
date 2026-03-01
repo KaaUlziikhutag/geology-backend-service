@@ -5,7 +5,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import Customer from '../../customer/customer.entity.js';
+import Customer from '../../customer/customer.entity';
 
 /** Захиалагчийн бүлгүүд */
 @Entity('section_customers')

@@ -1,7 +1,4 @@
-import {
-  EbarimtPaymentCode,
-  PaymentStatus,
-} from '../../../utils/enum-utils.js';
+import { EbarimtPaymentCode, PaymentStatus } from '../../../utils/enum-utils';
 import {
   BaseEntity,
   Column,
@@ -11,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
-import Payment from '../payment.entity.js';
+import Payment from '../payment.entity';
 /** Төлбөр төлөлт */
 @Entity('payment_details')
 export default class PaymentDetail extends BaseEntity {
@@ -31,7 +28,7 @@ export default class PaymentDetail extends BaseEntity {
   })
   code: EbarimtPaymentCode;
 
-  @Column({ type: 'enum', enum: PaymentStatus })
+  @Column({ type: 'enum', enum: PaymentStatus, nullable: true })
   status: PaymentStatus;
 
   @Column('varchar', { name: 'exchange_code', length: 255, nullable: true })

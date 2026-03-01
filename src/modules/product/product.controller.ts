@@ -13,17 +13,17 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ProductService } from './product.service.js';
+import { ProductService } from './product.service';
 import { AuthGuard } from '@nestjs/passport';
-import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard.js';
-import CreateProductDto from './dto/create-product.dto.js';
-import { IResponse } from '../../utils/interfaces/response.interface.js';
-import { ResponseSuccess } from '../../utils/dto/response.dto.js';
-import FindOneParams from '../../utils/find-one-params.js';
-import { UpdateProductDto } from './dto/update-product.dto.js';
-import { ApiPaginatedResponse } from '../../utils/api-paginated-response.decorator.js';
-import PageProductDto from './dto/page-product.dto.js';
-import GetProductDto from './dto/get-product.dto.js';
+import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
+import CreateProductDto from './dto/create-product.dto';
+import { IResponse } from '../../utils/interfaces/response.interface';
+import { ResponseSuccess } from '../../utils/dto/response.dto';
+import FindOneParams from '../../utils/find-one-params';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { ApiPaginatedResponse } from '../../utils/api-paginated-response.decorator';
+import PageProductDto from './dto/page-product.dto';
+import GetProductDto from './dto/get-product.dto';
 
 @Controller('product')
 @ApiTags('product')

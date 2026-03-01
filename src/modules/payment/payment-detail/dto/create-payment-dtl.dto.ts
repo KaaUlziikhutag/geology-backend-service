@@ -2,7 +2,7 @@ import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import {
   EbarimtPaymentCode,
   PaymentStatus,
-} from '../../../../utils/enum-utils.js';
+} from '../../../../utils/enum-utils';
 
 export default class CreatePaymentDetailDto {
   @IsNumber()

@@ -12,12 +12,12 @@ import {
   Relation,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { Role } from '../../utils/enum-utils.js';
-import LocalFile from '../local-files/local-file.entity.js';
-import Company from '../company/company.entity.js';
-import Laboratory from '../reference/laboratory/laboratory.entity.js';
-import Order from '../order/order.entity.js';
-import Task from '../task/task.entity.js';
+import { Role } from '../../utils/enum-utils';
+import LocalFile from '../local-files/local-file.entity';
+import Company from '../company/company.entity';
+import Laboratory from '../reference/laboratory/laboratory.entity';
+import Order from '../order/order.entity';
+import Task from '../task/task.entity';
 @Entity('cloud_user_i')
 class Users extends BaseEntity {
   @PrimaryGeneratedColumn()

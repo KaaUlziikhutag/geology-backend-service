@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { AxiosError } from 'axios';
 import { firstValueFrom, catchError } from 'rxjs';
-import { OrgInfoDto } from './dto/org-info.dto.js';
+import { OrgInfoDto } from './dto/org-info.dto';
 
 @Injectable()
 export class EbarimtInfoService {

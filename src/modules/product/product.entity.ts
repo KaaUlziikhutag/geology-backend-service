@@ -9,11 +9,11 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
-import Classification from '../reference/classification/classification.entity.js';
-import { ProductType, TaxType } from '../../utils/enum-utils.js';
-import Contract from '../contract/contract.entity.js';
-import SectionProduct from '../reference/section-product/section-product.entity.js';
-import Price from '../price/price.entity.js';
+import Classification from '../reference/classification/classification.entity';
+import { ProductType, TaxType } from '../../utils/enum-utils';
+import Contract from '../contract/contract.entity';
+import SectionProduct from '../reference/section-product/section-product.entity';
+import Price from '../price/price.entity';
 /** Үйлчилгээ */
 @Entity('products')
 export default class Product extends BaseEntity {

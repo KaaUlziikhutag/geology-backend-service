@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
-import Customer from '../customer.entity.js';
+import Customer from '../customer.entity';
 /** Захиалагчийн агуулхууд */
 @Entity('customer_warehouses')
 export default class Warehouse extends BaseEntity {

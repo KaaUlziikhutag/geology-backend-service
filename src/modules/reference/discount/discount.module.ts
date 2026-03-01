@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import Discount from './discount.entity.js';
-import { DiscountService } from './discount.service.js';
+import Discount from './discount.entity';
+import { DiscountService } from './discount.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Discount])],

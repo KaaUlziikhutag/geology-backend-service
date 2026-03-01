@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
-import { EbarimtInquireService } from './ebarimt-inquire.service.js';
+import { EbarimtInquireService } from './ebarimt-inquire.service';
 import Joi from '@hapi/joi';
 
 @Module({

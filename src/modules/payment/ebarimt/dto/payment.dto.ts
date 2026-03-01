@@ -1,4 +1,4 @@
-import { EbarimtPaymentCode } from '../../../../utils/enum-utils.js';
+import { EbarimtPaymentCode } from '../../../../utils/enum-utils';
 import { IsEnum, IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 
 /** Төлбөрийн хэлбэр */

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Direction } from './direction.entity.js';
+import { Direction } from './direction.entity';
 import { FindManyOptions, ILike, Repository } from 'typeorm';
-import GetReferenceDto from '../dto/get-reference.dto.js';
+import GetReferenceDto from '../dto/get-reference.dto';
 
 @Injectable()
 export class DirectionService {

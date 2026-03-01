@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Measurement from './measurement.entity.js';
-import GetReferenceDto from '../dto/get-reference.dto.js';
+import Measurement from './measurement.entity';
+import GetReferenceDto from '../dto/get-reference.dto';
 import { FindManyOptions, ILike, Repository } from 'typeorm';
 
 @Injectable()

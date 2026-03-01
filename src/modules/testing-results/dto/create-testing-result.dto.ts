@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNumber, ValidateNested } from 'class-validator';
-import { CreateResultIndicatorDto } from './create-result-indicator.dto.js';
+import { CreateResultIndicatorDto } from './create-result-indicator.dto';
 
 export class CreateTestingResultDto {
   @ApiProperty()

@@ -14,18 +14,18 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { TaskService } from './task.service.js';
+import { TaskService } from './task.service';
 import { AuthGuard } from '@nestjs/passport';
-import { ResponseSuccess } from '../../utils/dto/response.dto.js';
-import { IResponse } from '../../utils/interfaces/response.interface.js';
-import FindOneParams from '../../utils/find-one-params.js';
-import { CreateTaskDto } from './dto/create-task.dto.js';
-import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard.js';
-import RequestWithUser from '../authentication/interface/request-with-user.interface.js';
-import { GetTaskDto } from './dto/get-task.dto.js';
-import UpdateTaskDto from './dto/update-task.dto.js';
-import { GetAnalyticTaskDto } from './dto/get-analytic-task.dto.js';
-import { TaskUsersDto } from './dto/task-users.dto.js';
+import { ResponseSuccess } from '../../utils/dto/response.dto';
+import { IResponse } from '../../utils/interfaces/response.interface';
+import FindOneParams from '../../utils/find-one-params';
+import { CreateTaskDto } from './dto/create-task.dto';
+import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
+import RequestWithUser from '../authentication/interface/request-with-user.interface';
+import { GetTaskDto } from './dto/get-task.dto';
+import UpdateTaskDto from './dto/update-task.dto';
+import { GetAnalyticTaskDto } from './dto/get-analytic-task.dto';
+import { TaskUsersDto } from './dto/task-users.dto';
 
 @Controller('task')
 @ApiTags('task')

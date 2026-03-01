@@ -5,8 +5,8 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { MineralState, TaskState } from '../../../utils/enum-utils.js';
-import { PageOptionsDto } from '../../../utils/dto/page-options.dto.js';
+import { MineralState, TaskState } from '../../../utils/enum-utils';
+import { PageOptionsDto } from '../../../utils/dto/page-options.dto';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class GetTaskDto extends PageOptionsDto {

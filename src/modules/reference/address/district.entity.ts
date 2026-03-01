@@ -6,7 +6,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import Province from './province.entity.js';
+import Province from './province.entity';
 
 @Entity('districts')
 export default class District extends BaseEntity {

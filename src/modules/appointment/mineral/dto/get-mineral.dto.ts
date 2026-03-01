@@ -1,5 +1,5 @@
-import { MineralState } from '../../../../utils/enum-utils.js';
-import { PageOptionsDto } from '../../../../utils/dto/page-options.dto.js';
+import { MineralState } from '../../../../utils/enum-utils';
+import { PageOptionsDto } from '../../../../utils/dto/page-options.dto';
 import {
   IsEnum,
   IsNotEmpty,

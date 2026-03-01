@@ -1,4 +1,4 @@
-import { Role } from '../../../utils/enum-utils.js';
+import { Role } from '../../../utils/enum-utils';
 
 export class GetUserDto {
   id: number;

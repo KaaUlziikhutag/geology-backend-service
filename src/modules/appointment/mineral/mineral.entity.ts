@@ -11,10 +11,10 @@ import {
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
-import Appointment from '../appointment.entity.js';
-import MineralType from '../../reference/mineral-type/mineral-type.entity.js';
-import { MineralState } from '../../../utils/enum-utils.js';
-import Task from '../../task/task.entity.js';
+import Appointment from '../appointment.entity';
+import MineralType from '../../reference/mineral-type/mineral-type.entity';
+import { MineralState } from '../../../utils/enum-utils';
+import Task from '../../task/task.entity';
 /** Дээж */
 @Entity('appointment_minerals')
 export default class Mineral extends BaseEntity {

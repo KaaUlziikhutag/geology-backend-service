@@ -1,11 +1,11 @@
 import { MailerModule } from '@nestjs-modules/mailer';
-import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter.js';
+import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
 import { Module } from '@nestjs/common';
-import EmailService from './email.service.js';
+import EmailService from './email.service';
 import { join } from 'path';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { EmailController } from './email.controller.js';
-import { ReportModule } from '../report/report.module.js';
+import { EmailController } from './email.controller';
+import { ReportModule } from '../report/report.module';
 import Joi from '@hapi/joi';
 
 @Module({

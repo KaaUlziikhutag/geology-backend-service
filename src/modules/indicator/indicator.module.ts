@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import Indicator from './indicator.entity.js';
-import { IndicatorService } from './indicator.service.js';
-import { IndicatorController } from './indicator.controller.js';
+import Indicator from './indicator.entity';
+import { IndicatorService } from './indicator.service';
+import { IndicatorController } from './indicator.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Indicator])],

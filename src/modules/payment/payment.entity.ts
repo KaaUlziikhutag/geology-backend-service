@@ -1,4 +1,4 @@
-import { EbarimtTaxType, ReceiptStatus } from '../../utils/enum-utils.js';
+import { EbarimtTaxType, ReceiptStatus } from '../../utils/enum-utils';
 import {
   BaseEntity,
   Column,
@@ -11,12 +11,12 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
-import Order from '../order/order.entity.js';
-import PaymentDetail from './payment-detail/payment-detail.entity.js';
-import Customer from '../customer/customer.entity.js';
-import Discount from '../reference/discount/discount.entity.js';
-import Addition from '../reference/addition/addition.entity.js';
-import Contract from '../contract/contract.entity.js';
+import Order from '../order/order.entity';
+import PaymentDetail from './payment-detail/payment-detail.entity';
+import Customer from '../customer/customer.entity';
+import Discount from '../reference/discount/discount.entity';
+import Addition from '../reference/addition/addition.entity';
+import Contract from '../contract/contract.entity';
 /** Төлбөрийн баримт */
 @Entity('payments')
 export default class Payment extends BaseEntity {

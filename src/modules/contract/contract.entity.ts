@@ -7,11 +7,11 @@ import {
   ManyToOne,
   Relation,
 } from 'typeorm';
-import { AbstractEntity } from '../../utils/abstract.entity.js';
-import Customer from '../customer/customer.entity.js';
-import Product from '../product/product.entity.js';
-import LocalFile from '../local-files/local-file.entity.js';
-import Discount from '../reference/discount/discount.entity.js';
+import { AbstractEntity } from '../../utils/abstract.entity';
+import Customer from '../customer/customer.entity';
+import Product from '../product/product.entity';
+import LocalFile from '../local-files/local-file.entity';
+import Discount from '../reference/discount/discount.entity';
 /** Үйлчлүүлэгчтэй байгуулах гэрээ */
 @Entity('contracts')
 export default class Contract extends AbstractEntity {

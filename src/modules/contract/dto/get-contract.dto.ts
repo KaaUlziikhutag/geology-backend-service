@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsNumberString, IsOptional, ValidateNested } from 'class-validator';
-import { GetRangeDateDto } from '../../../utils/dto/get-date.dto.js';
+import { GetRangeDateDto } from '../../../utils/dto/get-date.dto';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export default class GetContractDto {

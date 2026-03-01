@@ -7,7 +7,7 @@ import {
   IsIn,
   ValidateNested,
 } from 'class-validator';
-import { GetRangeDateDto } from '../../../utils/dto/get-date.dto.js';
+import { GetRangeDateDto } from '../../../utils/dto/get-date.dto';
 
 export class GetAnalyticTaskDto {
   @ApiPropertyOptional({ description: 'Зардалтай захиалгын тоо' })

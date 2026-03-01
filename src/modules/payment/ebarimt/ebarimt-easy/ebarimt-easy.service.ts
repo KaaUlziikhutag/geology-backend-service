@@ -2,11 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { AxiosError } from 'axios';
 import { firstValueFrom, catchError } from 'rxjs';
-import { ConsumerDto } from './dto/consumer.dto.js';
-import { ApproveQrDto } from './dto/approve-qr.dto.js';
-import { ProfileDto } from './dto/profile.dto.js';
-import { CreateApprovaQrDto } from './dto/create-approve-qr.dto.js';
-import { EbarimtAuthService } from '../ebarimt-auth/ebarimt-auth.service.js';
+import { ConsumerDto } from './dto/consumer.dto';
+import { ApproveQrDto } from './dto/approve-qr.dto';
+import { ProfileDto } from './dto/profile.dto';
+import { CreateApprovaQrDto } from './dto/create-approve-qr.dto';
+import { EbarimtAuthService } from '../ebarimt-auth/ebarimt-auth.service';
 
 @Injectable()
 export class EbarimtEasyService {

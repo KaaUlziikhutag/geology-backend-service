@@ -1,8 +1,8 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AuthToken } from './dto/auth-token.dto.js';
-import { AuthRequestDto } from './dto/auth-request.dto.js';
+import { AuthToken } from './dto/auth-token.dto';
+import { AuthRequestDto } from './dto/auth-request.dto';
 import { catchError, firstValueFrom } from 'rxjs';
 import { plainToClass } from 'class-transformer';
 
