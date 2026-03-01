@@ -2,19 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import DatabaseLogger from './database.logger';
-import Joi from '@hapi/joi';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      validationSchema: Joi.object({
-        POSTGRES_HOST: Joi.string().required(),
-        POSTGRES_PORT: Joi.string().required(),
-        POSTGRES_USER: Joi.string().required(),
-        POSTGRES_PASSWORD: Joi.string().required(),
-        POSTGRES_DB: Joi.string().required(),
-      }),
-    }),
     TypeOrmModule.forRootAsync({
       name: 'default',
       imports: [ConfigModule],
@@ -22,23 +12,22 @@ import Joi from '@hapi/joi';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         logger: new DatabaseLogger(),
-        host: configService.get('POSTGRES_HOST'),
-        port: configService.get('POSTGRES_PORT'),
-        username: configService.get('POSTGRES_USER'),
-        password: configService.get('POSTGRES_PASSWORD'),
-        database: configService.get('POSTGRES_DB'),
+        host: configService.get<string>('POSTGRES_HOST'),
+        port: Number(configService.get<number>('POSTGRES_PORT')),
+        username: configService.get<string>('POSTGRES_USER'),
+        password: configService.get<string>('POSTGRES_PASSWORD'),
+        database: configService.get<string>('POSTGRES_DB'),
         entities: ['./dist/**/*.entity'],
         autoLoadEntities: true,
         migrationsTableName: 'migration',
         migrations:
-          configService.get('MODE') != 'DEV'
+          configService.get('MODE') !== 'DEV'
             ? ['./dist/database/migration/*']
             : ['./src/database/migration/*.ts'],
-
         cli: {
           migrationsDir: 'src/database/migration',
         },
-        synchronize: true,
+        synchronize: configService.get('MODE') === 'DEV',
       }),
     }),
   ],
