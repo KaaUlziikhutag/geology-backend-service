@@ -2,7 +2,7 @@ import {
   AppointmentStatusType,
   HolidayState,
   WorkType,
-} from '../../../../utils/globalUtils';
+} from '@utils/enum-utils';
 import {
   Column,
   Entity,

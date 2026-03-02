@@ -1,18 +1,11 @@
-import { RequestType, TimePeriod } from '../../../../utils/globalUtils';
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  BaseEntity,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-  OneToMany,
-} from 'typeorm';
+import { RequestType, TimePeriod } from '@utils/enum-utils';
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { HierarchyDto } from './dto/hierarchy.dto';
 import TimeRequest from '../time-request.entity';
+import { AbstractEntity } from '@utils/abstract.entity';
+
 @Entity('time_access_time_request_time_state_i')
-export default class TimeState extends BaseEntity {
+export default class TimeState extends AbstractEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -95,21 +88,4 @@ export default class TimeState extends BaseEntity {
     (timeRequest: TimeRequest) => timeRequest.timeState,
   )
   timeRequest?: TimeRequest[];
-
-  @CreateDateColumn({
-    name: 'created_at',
-    type: 'timestamptz',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  createdAt: Date;
-
-  @UpdateDateColumn({
-    name: 'updated_at',
-    type: 'timestamptz',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ name: 'deleted_at' })
-  public deletedAt: Date;
 }

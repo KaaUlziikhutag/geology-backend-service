@@ -18,7 +18,7 @@ import { FieldService } from './field.service';
 import { CreateFieldDto } from './dto/create-field.dto';
 import { UpdateFieldDto } from './dto/update-field.dto';
 import { GetFieldDto } from './dto/get-field.dto';
-import FindOneParams from '../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 import { ResponseSuccess } from '../../../utils/dto/response.dto';
 import { IResponse } from '../../../utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../authentication/guard/jwt-authentication.guard';

@@ -19,7 +19,7 @@ import { AppTypeService } from './app-type.service';
 import { CreateAppTypeDto } from './dto/create-app-type.dto';
 import { UpdateAppTypeDto } from './dto/update-app-type.dto';
 import { GetAppTypeDto } from './dto/get-app-type.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';

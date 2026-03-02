@@ -1,9 +1,13 @@
-import { PartialType } from '@nestjs/swagger';
-import CreateContractDto from './create-contract.dto';
-import { IsNumber, IsOptional } from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types';
+import { IsBoolean, IsNumber, IsOptional } from 'class-validator';
+import { CreateContractDto } from './create-contract.dto';
 
-export default class UpdateContractDto extends PartialType(CreateContractDto) {
+export class UpdateContractDto extends PartialType(CreateContractDto) {
   @IsNumber()
   @IsOptional()
   id: number;
+
+  @IsBoolean()
+  @IsOptional()
+  isNotVoid: boolean;
 }

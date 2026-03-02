@@ -19,7 +19,7 @@ import { ContractService } from './contracts.service';
 import { CreateContractDto } from './dto/create-contracts.dto';
 import { UpdateContractDto } from './dto/update-contracts.dto';
 import { GetContractDto } from './dto/get-contracts.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';

@@ -44,7 +44,7 @@ export default class PublicViewUser extends BaseEntity {
 
   @Column({ name: 'user_id' }) //Хэрэглэгчийн id
   public userId: number;
-  @ManyToOne(() => Worker, (worker: Worker) => worker.viewUsers)
-  @JoinColumn({ name: 'user_id' })
-  public worker?: Worker;
+  // @ManyToOne(() => Worker, (worker: Worker) => worker.viewUsers)
+  // @JoinColumn({ name: 'user_id' })
+  // public worker?: Worker;
 }

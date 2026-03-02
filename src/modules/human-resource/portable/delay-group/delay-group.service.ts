@@ -5,11 +5,11 @@ import { GetDelayGroupDto } from './dto/get-delay-group.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import DelayGroups from './delay-group.entity';
 import DelayGroupNotFoundException from './exceptions/delay-group-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class DelayGroupService {
@@ -28,7 +28,7 @@ export class DelayGroupService {
    * A method that fetches the DelayGroup from the database
    * @returns A promise with the list of DelayGroups
    */
-  async getAllDelayGroups(query: GetDelayGroupDto, user: GetUserDto) {
+  async getAllDelayGroups(query: GetDelayGroupDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<DelayGroups>['where'] = {};
     if (query.note) {
@@ -65,7 +65,7 @@ export class DelayGroupService {
    */
   async getDelayGroupById(
     delayGroupId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<DelayGroups> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const delayGroup = await entityManager.findOne(DelayGroups, {
@@ -82,7 +82,7 @@ export class DelayGroupService {
    * @param DelayGroup createDelayGroup
    *
    */
-  async createDelayGroup(delayGroup: CreateDelayGroupDto, user: GetUserDto) {
+  async createDelayGroup(delayGroup: CreateDelayGroupDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newDelayGroup = entityManager.create(DelayGroups, delayGroup);
     await entityManager.save(newDelayGroup);
@@ -94,7 +94,7 @@ export class DelayGroupService {
    */
   async updateDelayGroup(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     delayGroup: UpdateDelayGroupDto,
   ): Promise<DelayGroups> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -111,7 +111,7 @@ export class DelayGroupService {
   /**
    * @deprecated Use deleteDelayGroup instead
    */
-  async deleteDelayGroupById(id: number, user: GetUserDto): Promise<void> {
+  async deleteDelayGroupById(id: number, user: IUser): Promise<void> {
     return this.deleteDelayGroup(id, user);
   }
 
@@ -119,7 +119,7 @@ export class DelayGroupService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteDelayGroup(id: number, user: GetUserDto): Promise<void> {
+  async deleteDelayGroup(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(DelayGroups, id);
     if (!deleteResponse.affected) {

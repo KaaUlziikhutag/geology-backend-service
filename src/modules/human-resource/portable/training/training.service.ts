@@ -5,11 +5,11 @@ import { GetTrainingDto } from './dto/get-training.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Trainings from './training.entity';
 import TrainingNotFoundException from './exceptions/training-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class TrainingService {
@@ -28,7 +28,7 @@ export class TrainingService {
    * A method that fetches the Training from the database
    * @returns A promise with the list of Trainings
    */
-  async getAllTrainings(query: GetTrainingDto, user: GetUserDto) {
+  async getAllTrainings(query: GetTrainingDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Trainings>['where'] = {};
     if (query.userId) {
@@ -64,10 +64,7 @@ export class TrainingService {
    * @example
    * const Training = await TrainingService.getTrainingById(1);
    */
-  async getTrainingById(
-    trainingId: number,
-    user: GetUserDto,
-  ): Promise<Trainings> {
+  async getTrainingById(trainingId: number, user: IUser): Promise<Trainings> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const training = await entityManager.findOne(Trainings, {
       where: { id: trainingId },
@@ -83,9 +80,9 @@ export class TrainingService {
    * @param Training createTraining
    *
    */
-  async createTraining(training: CreateTrainingDto, user: GetUserDto) {
+  async createTraining(training: CreateTrainingDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    training.autorId = user.workerId;
+    training.autorId = user.id;
     const newTraining = entityManager.create(Trainings, training);
     await entityManager.save(Trainings, newTraining);
     return newTraining;
@@ -96,7 +93,7 @@ export class TrainingService {
    */
   async updateTraining(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     training: UpdateTrainingDto,
   ): Promise<Trainings> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -113,7 +110,7 @@ export class TrainingService {
   /**
    * @deprecated Use deleteTraining instead
    */
-  async deleteTrainingById(id: number, user: GetUserDto): Promise<void> {
+  async deleteTrainingById(id: number, user: IUser): Promise<void> {
     return this.deleteTraining(id, user);
   }
 
@@ -121,7 +118,7 @@ export class TrainingService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteTraining(id: number, user: GetUserDto): Promise<void> {
+  async deleteTraining(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Trainings, id);
     if (!deleteResponse.affected) {

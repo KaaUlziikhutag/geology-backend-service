@@ -11,7 +11,7 @@ import {
   Situation,
   TypeOfPosition,
   TypeStatus,
-} from '../../../../utils/globalUtils';
+} from '@utils/enum-utils';
 import { Type } from 'class-transformer';
 export class CreateTreeDto {
   @IsOptional()

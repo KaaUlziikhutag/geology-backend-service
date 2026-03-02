@@ -5,11 +5,11 @@ import { GetAptitudeDto } from './dto/get-aptitudess.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Aptitudes from './aptitudes.entity';
 import AptitudeNotFoundException from './exceptions/aptitudes-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class AptitudeService {
@@ -28,7 +28,7 @@ export class AptitudeService {
    * A method that fetches the Aptitude from the database
    * @returns A promise with the list of Aptitudes
    */
-  async getAllAptitudes(query: GetAptitudeDto, user: GetUserDto) {
+  async getAllAptitudes(query: GetAptitudeDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Aptitudes>['where'] = {};
     if (query.userId) {
@@ -65,10 +65,7 @@ export class AptitudeService {
    * @example
    * const Aptitude = await AptitudeService.getAptitudeById(1);
    */
-  async getAptitudeById(
-    aptitudeId: number,
-    user: GetUserDto,
-  ): Promise<Aptitudes> {
+  async getAptitudeById(aptitudeId: number, user: IUser): Promise<Aptitudes> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const aptitude = await entityManager.findOne(Aptitudes, {
       where: { id: aptitudeId },
@@ -84,9 +81,9 @@ export class AptitudeService {
    * @param Aptitude createAptitude
    *
    */
-  async createAptitude(aptitude: CreateAptitudeDto, user: GetUserDto) {
+  async createAptitude(aptitude: CreateAptitudeDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    aptitude.authorId = user.workerId;
+    aptitude.authorId = user.id;
     const newAptitudes = entityManager.create(Aptitudes, aptitude);
     await entityManager.save(newAptitudes);
     return newAptitudes;
@@ -97,7 +94,7 @@ export class AptitudeService {
    */
   async updateAptitude(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     aptitude: UpdateAptitudeDto,
   ): Promise<Aptitudes> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -114,7 +111,7 @@ export class AptitudeService {
   /**
    * @deprecated Use deleteAptitude instead
    */
-  async deleteAptitudeById(id: number, user: GetUserDto): Promise<void> {
+  async deleteAptitudeById(id: number, user: IUser): Promise<void> {
     return this.deleteAptitude(id, user);
   }
 
@@ -122,7 +119,7 @@ export class AptitudeService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteAptitude(id: number, user: GetUserDto): Promise<void> {
+  async deleteAptitude(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Aptitudes, id);
     if (!deleteResponse.affected) {

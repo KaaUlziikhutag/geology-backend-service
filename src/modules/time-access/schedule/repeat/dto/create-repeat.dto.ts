@@ -6,10 +6,7 @@ import {
   IsEnum,
   IsDateString,
 } from 'class-validator';
-import {
-  AppointmentStatusType,
-  CalculationType,
-} from '../../../../../utils/globalUtils';
+import { AppointmentStatusType, CalculationType } from '@utils/enum-utils';
 import RepeatDetails from '../detail/entities/repeat-detail.entity';
 export class CreateRepeatDto {
   @IsOptional()

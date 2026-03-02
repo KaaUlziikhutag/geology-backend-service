@@ -1,4 +1,4 @@
-import { JobCategory } from '../../../../../utils/enumUtils';
+import { JobCategory } from '@utils/enum-utils';
 import {
   IsString,
   IsOptional,

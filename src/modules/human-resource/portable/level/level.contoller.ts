@@ -19,7 +19,7 @@ import { LevelService } from './level.service';
 import { CreateLevelDto } from './dto/create-level.dto';
 import { UpdateLevelDto } from './dto/update-level.dto';
 import { GetLevelDto } from './dto/get-level.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';

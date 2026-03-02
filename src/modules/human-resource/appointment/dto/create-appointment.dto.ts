@@ -15,7 +15,7 @@ import {
   AppointmentType,
   MoneyType,
   WorkType,
-} from '../../../../utils/globalUtils';
+} from '@utils/enum-utils';
 export class CreateAppointmentDto {
   @IsOptional()
   @IsString()

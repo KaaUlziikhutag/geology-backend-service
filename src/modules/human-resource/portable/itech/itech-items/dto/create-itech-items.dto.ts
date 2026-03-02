@@ -1,5 +1,5 @@
 import { IsEnum, IsNumber, IsOptional, ValidateNested } from 'class-validator';
-import { LevelType } from '../../../../../../utils/globalUtils';
+import { LevelType } from '@utils/enum-utils';
 import { Type } from 'class-transformer';
 export class CreateItechItemDto {
   @IsOptional()

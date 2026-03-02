@@ -1,7 +1,4 @@
-import {
-  AppointmentStatusType,
-  CalculationType,
-} from '../../../../../utils/globalUtils';
+import { AppointmentStatusType, CalculationType } from '@utils/enum-utils';
 import {
   Column,
   Entity,

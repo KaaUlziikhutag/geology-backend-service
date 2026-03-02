@@ -5,8 +5,8 @@ import MailUser from './users.entity';
 import UserNotFoundException from './exception/user-not-found.exception';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
 import { UpdateUserMailDto } from './dto/update-mail.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class MailUserService {
@@ -27,7 +27,7 @@ export class MailUserService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getUsersByMailId(mailId: number, user: GetUserDto) {
+  async getUsersByMailId(mailId: number, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const items = await entityManager.find(MailUser, {
       where: { mailId },
@@ -44,7 +44,7 @@ export class MailUserService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getUsersByUserId(userId: number, user: GetUserDto) {
+  async getUsersByUserId(userId: number, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const items = await entityManager.find(MailUser, {
       where: { userId },
@@ -65,7 +65,7 @@ export class MailUserService {
    * @param Contract createContract
    *
    */
-  async createMailUser(mailUser: CreateUserDto, user: GetUserDto) {
+  async createMailUser(mailUser: CreateUserDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newMailUser = entityManager.create(MailUser, mailUser);
     await entityManager.save(newMailUser);
@@ -74,7 +74,7 @@ export class MailUserService {
 
   async updateMailUser(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     mail: UpdateUserMailDto,
   ): Promise<MailUser> {
     const entityManager = await this.loadEntityManager(user.dataBase);

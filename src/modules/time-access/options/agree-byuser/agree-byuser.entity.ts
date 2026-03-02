@@ -18,9 +18,9 @@ export default class AgreeByusers extends BaseEntity {
 
   @Column({ name: 'user_id', nullable: true })
   userId: number;
-  @ManyToOne(() => Worker, (workers: Worker) => workers.timeRequestByusers)
-  @JoinColumn({ name: 'user_id' })
-  workers?: Worker;
+  // @ManyToOne(() => Worker, (workers: Worker) => workers.timeRequestByusers)
+  // @JoinColumn({ name: 'user_id' })
+  // workers?: Worker;
 
   @Column({ name: 'com_id', nullable: true }) //Company id
   comId: number;

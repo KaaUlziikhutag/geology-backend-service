@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { IsOptional, IsNumber } from 'class-validator';
-import { PageOptionsDto } from '../../../../utils/dto/pageOptions.dto';
+import { PageOptionsDto } from '@utils/dto/page-options.dto';
 
 export class GetPublicForumDto extends PartialType(PageOptionsDto) {
   @IsNumber()

@@ -1,4 +1,5 @@
-import { Education, FileDto } from '../../../../utils/globalUtils';
+import { RelationIdDto } from '@utils/dto/relation-id.dto';
+import { Education } from '@utils/enum-utils';
 import {
   Column,
   Entity,
@@ -32,7 +33,7 @@ export default class Educations extends BaseEntity {
   cityId: number;
 
   @Column({ type: 'jsonb', name: 'fileIds', nullable: true })
-  public fileIds: FileDto[]; // FILE UPLOAD
+  public fileIds: RelationIdDto[]; // FILE UPLOAD
 
   @Column({ name: 'start_year', nullable: true })
   startYear: number;

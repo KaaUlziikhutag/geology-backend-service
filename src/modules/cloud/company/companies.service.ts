@@ -5,8 +5,8 @@ import { GetCompaniesDto } from './dto/get-companies.dto';
 import { Equal, FindManyOptions, Repository } from 'typeorm';
 import Companies from './companies.entity';
 import CompaniesNotFoundException from './exceptions/companies-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()

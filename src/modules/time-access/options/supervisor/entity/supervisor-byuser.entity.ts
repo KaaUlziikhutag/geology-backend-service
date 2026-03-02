@@ -27,9 +27,9 @@ export default class SupervisorByusers extends BaseEntity {
 
   @Column({ name: 'user_id', nullable: true })
   userId: number;
-  @ManyToOne(() => Worker, (workers: Worker) => workers.supervisorByusers)
-  @JoinColumn({ name: 'user_id' })
-  workers?: Worker;
+  // @ManyToOne(() => Worker, (workers: Worker) => workers.supervisorByusers)
+  // @JoinColumn({ name: 'user_id' })
+  // workers?: Worker;
 
   @CreateDateColumn({
     name: 'created_at',

@@ -1,102 +1,47 @@
-import {
-  Entity,
-  ManyToOne,
-  JoinColumn,
-  PrimaryGeneratedColumn,
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  ManyToMany,
-  JoinTable,
-  Relation,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { Role } from '../../utils/enum-utils';
-import LocalFile from '../local-files/local-file.entity';
-import Company from '../company/company.entity';
-import Laboratory from '../reference/laboratory/laboratory.entity';
-import Order from '../order/order.entity';
-import Task from '../task/task.entity';
-@Entity('cloud_user_i')
-class Users extends BaseEntity {
+import { AbstractEntity } from '@utils/abstract.entity';
+
+@Entity('users')
+class Users extends AbstractEntity {
   @PrimaryGeneratedColumn()
   id: number;
+  // begining authentication info
+  @Column({ unique: true, nullable: true })
+  name: string; // #used login хэрэглэгчийн давхцахгүй нэр
 
-  @Column({ name: 'company_id' })
-  companyId: number;
-  // @JoinColumn({ name: 'company_id' })
-  // @ManyToOne(() => Company)
-  // company?: Company;
+  @Column({ unique: true, nullable: true })
+  email: string; // #used login хэрэглэгчийн давхцахгүй мэйл
 
-  @Column({ name: 'laboratory_id', nullable: true })
-  laboratoryId: number;
-  // @JoinColumn({ name: 'laboratory_id' })
-  // @ManyToOne(() => Laboratory)
-  // laboratory?: Laboratory;
+  @Column({ unique: true, nullable: true })
+  phone: string; // #used login хэрэглэгчийн давхцахгүй утасны дугаар
 
-  @Column('varchar', { name: 'first_name', length: 50, nullable: true })
-  firstName: string;
+  @Column()
+  @Exclude()
+  password: string;
 
-  @Column('varchar', { name: 'last_name', length: 50, nullable: true })
-  lastName: string;
+  @Column({ name: 'current_hashed_refresh_token', nullable: true })
+  @Exclude()
+  currentHashedRefreshToken: string;
 
-  @Column('varchar', { name: 'username', length: 255, nullable: true })
-  username: string;
+  @Column({ nullable: true })
+  dataBase: string;
 
-  @Column({ unique: true, length: 255, nullable: true })
-  email: string;
+  // ===========> begining activation info
+  @Column({ name: 'is_email_confirmed', type: 'boolean', default: false })
+  isEmailConfirmed: boolean;
 
-  @Column('varchar', { unique: true, length: 20, nullable: true })
-  phone: string;
-
-  @Column({
-    type: 'enum',
-    enum: Role,
-    default: Role.User,
-  })
-  role: Role;
+  @Column({ name: 'is_phone_confirmed', type: 'boolean', default: false })
+  isPhoneConfirmed: boolean;
 
   @Column({ name: 'is_active', type: 'boolean', default: false })
   isActive: boolean;
-
-  @Column({ name: 'avatar_id', nullable: true })
-  avatarId?: number;
-  // @JoinColumn({ name: 'avatar_id' })
-  // @ManyToOne(() => LocalFile, {
-  //   nullable: true,
-  //   onDelete: 'CASCADE',
-  //   onUpdate: 'CASCADE',
-  // })
-  // avatar?: LocalFile;
-
+  // ===========> begining profile info
   @Column({ nullable: true })
-  @Exclude()
-  password?: string;
+  avatar: string;
 
-  @Column('text', { nullable: true })
-  address: string;
-
-  @Column({
-    name: 'current_hashed_refresh_token',
-    nullable: true,
-  })
-  @Exclude()
-  currentHashedRefreshToken?: string;
-
-  @CreateDateColumn({
-    name: 'created_at',
-    type: 'timestamptz',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  createdAt: Date;
-
-  @UpdateDateColumn({
-    name: 'updated_at',
-    type: 'timestamptz',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  updatedAt: Date;
+  // @ManyToOne(() => Human, (human) => human.user)
+  // human: Human;
 }
 
 export default Users;

@@ -19,9 +19,9 @@ import { RepeatService } from './repeat.service';
 import { CreateRepeatDto } from './dto/create-repeat.dto';
 import { UpdateRepeatDto } from './dto/update-repeat.dto';
 import { GetRepeatDto } from './dto/get-repeat.dto';
-import FindOneParams from '../../../../utils/findOneParams';
-import { ResponseSuccess } from '../../../../utils/dto/response.dto';
-import { IResponse } from '../../../../utils/interfaces/response.interface';
+import FindOneParams from '@utils/find-one-params';
+import { ResponseSuccess } from '@utils/dto/response.dto';
+import { IResponse } from '@utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
 import RequestWithUser from '../../../authentication/interface/request-with-user.interface';
@@ -39,7 +39,7 @@ export class RepeatController {
   ): Promise<IResponse> {
     try {
       const { user } = request;
-      const data = await this.repeatService.getAllRepeat(query, user);
+      const data = await this.repeatService.getAllRepeat(query);
       return new ResponseSuccess('GET_REPEAT.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -55,8 +55,7 @@ export class RepeatController {
     @Query() query: GetRepeatDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.repeatService.getShiftRepeat(query, user);
+      const data = await this.repeatService.getShiftRepeat(query);
       return new ResponseSuccess('GET_REPEAT.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -66,13 +65,9 @@ export class RepeatController {
   @Get(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getOptionById(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async getOptionById(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.repeatService.getRepeatById(id, user);
+      const data = await this.repeatService.getRepeatById(id);
       return new ResponseSuccess('GET_REPEAT.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -85,11 +80,11 @@ export class RepeatController {
   @UseGuards(AuthGuard('api-key'))
   async createOption(
     @Req() request: RequestWithUser,
-    @Body() Repeat: CreateRepeatDto,
+    @Body() repeat: CreateRepeatDto,
   ): Promise<IResponse> {
     try {
       const { user } = request;
-      const data = await this.repeatService.createRepeat(Repeat, user);
+      const data = await this.repeatService.createRepeat(repeat);
       return new ResponseSuccess('CREATE_REPEAT.SUCCESS', data);
     } catch (error) {
       console.log('error', error);
@@ -102,12 +97,10 @@ export class RepeatController {
   @UseGuards(AuthGuard('api-key'))
   async updateRepeat(
     @Param() { id }: FindOneParams,
-    @Req() request: RequestWithUser,
-    @Body() Repeat: UpdateRepeatDto,
+    @Body() repeat: UpdateRepeatDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.repeatService.updateRepeat(id, user, Repeat);
+      const data = await this.repeatService.updateRepeat(id, repeat);
       return new ResponseSuccess('UPDATE_REPEAT.SUCCESS', data);
     } catch (error) {
       console.log('------------------>', error);
@@ -202,13 +195,9 @@ export class RepeatController {
   @Delete(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async deleteOption(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async deleteOption(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.repeatService.deleteRepeat(id, user);
+      const data = await this.repeatService.deleteRepeat(id);
       return new ResponseSuccess('DELETE_REPEAT.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

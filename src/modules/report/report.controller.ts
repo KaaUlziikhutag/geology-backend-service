@@ -57,7 +57,7 @@ export class ReportController {
     @Query() query: GetSectionDto,
   ) {
     try {
-      return await this.reportService.reportSectionProduct(user, query);
+      return await this.reportService.reportSectionProduct(query);
     } catch (error) {
       throw new BadRequestException(error.toString());
     }
@@ -70,7 +70,7 @@ export class ReportController {
     @Query() query: GetSectionDto,
   ) {
     try {
-      return await this.reportService.reportSectionCustomer(user, query);
+      return await this.reportService.reportSectionCustomer(query);
     } catch (error) {
       throw new BadRequestException(error.toString());
     }
@@ -115,15 +115,12 @@ export class ReportController {
   @Get('pdf-job-performance')
   // @UseGuards(JwtAuthenticationGuard)
   // @UseGuards(AuthGuard('api-key'))
-  async pdfJobPerformance(
-    @Req() { user }: RequestWithUser,
-    @Res() res: Response,
-  ) {
+  async pdfJobPerformance(@Res() res: Response) {
     try {
-      const pdfBuffer = await this.reportService.pdfJobPerformance(user);
+      const pdfBuffer = await this.reportService.pdfJobPerformance();
       res.set({
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename=${Math.floor(new Date().getTime() / 1000)}-invoice.pdf`,
+        'Content-Disposition': `attachment; filename=${Math.floor(new Date().getTime() / 1000)}-job-performance.pdf`,
       });
       return new StreamableFile(pdfBuffer);
     } catch (error) {

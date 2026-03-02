@@ -10,7 +10,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import Programs from '../programs/program.entity';
-import { AccessType } from '../../../utils/globalUtils';
+import { AccessType } from '@utils/enum-utils';
 @Entity('cloud_modules_i')
 // нийт ажилтан, ажлаас гарсан, амралт чөлөө авсан гэх мэт
 export default class Modules extends BaseEntity {

@@ -19,7 +19,7 @@ import { AwardService } from './awards.service';
 import { CreateAwardDto } from './dto/create-awards.dto';
 import { UpdateAwardDto } from './dto/update-awards.dto';
 import { GetAwardDto } from './dto/get-awards.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';

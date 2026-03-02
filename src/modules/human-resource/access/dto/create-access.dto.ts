@@ -1,5 +1,5 @@
 import { IsOptional, IsNumber, IsEnum, IsNotEmpty } from 'class-validator';
-import { AccessType } from '../../../../utils/globalUtils';
+import { AccessType } from '@utils/enum-utils';
 export class CreateAccessDto {
   // Системийн хандалт
   @IsNotEmpty()

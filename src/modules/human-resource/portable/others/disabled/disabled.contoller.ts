@@ -19,7 +19,7 @@ import { DisabledService } from './disabled.service';
 import { CreateDisabledDto } from './dto/create-disabled.dto';
 import { UpdateDisabledDto } from './dto/update-disabled.dto';
 import { GetDisabledDto } from './dto/get-disabled.dto';
-import FindOneParams from '../../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 import { ResponseSuccess } from '../../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../../utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../../../authentication/guard/jwt-authentication.guard';

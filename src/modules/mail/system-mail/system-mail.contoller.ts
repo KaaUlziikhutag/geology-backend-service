@@ -19,7 +19,7 @@ import { SystemMailService } from './system-mail.service';
 import { CreateSystemMailDto } from './dto/create-system-mail.dto';
 import { UpdateSystemMailDto } from './dto/update-system-mail.dto';
 import { GetSystemMailDto } from './dto/get-system-mail.dto';
-import FindOneParams from '../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../utils/dto/response.dto';
 import { IResponse } from '../../../utils/interfaces/response.interface';

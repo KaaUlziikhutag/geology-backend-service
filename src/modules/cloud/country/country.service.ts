@@ -6,7 +6,7 @@ import { Equal, FindManyOptions, ILike, In, Repository } from 'typeorm';
 import Country from './country.entity';
 import CountryNotFoundException from './exceptions/country.exception';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CountryType } from '../../../utils/enumUtils';
+import { CountryType } from '@utils/enum-utils';
 
 @Injectable()
 export class CountryService {

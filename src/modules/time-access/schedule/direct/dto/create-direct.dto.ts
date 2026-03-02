@@ -9,10 +9,7 @@ import {
 } from 'class-validator';
 import MainSchedules from '../main-schedule/main-schedule.entity';
 import Trees from '../../../../human-resource/tree/tree.entity';
-import {
-  AppointmentStatusType,
-  CalculationType,
-} from '../../../../../utils/globalUtils';
+import { AppointmentStatusType, CalculationType } from '@utils/enum-utils';
 import DirectLosts from '../../../shared/lost/lost.entity';
 export class CreateDirectDto {
   @IsOptional()

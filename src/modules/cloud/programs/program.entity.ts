@@ -9,7 +9,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import Modules from '../module/modules.entity';
-import { AccessType } from '../../../utils/globalUtils';
+import { AccessType } from '@utils/enum-utils';
 @Entity('cloud_programs_i')
 export default class Programs extends BaseEntity {
   //Хянах самбар, хүний нөөц, Имэйл, гэрээний бүртгэл, Тушаал шиидвэр,

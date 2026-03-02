@@ -10,29 +10,34 @@ import {
   In,
   MoreThan,
   Raw,
+  Repository,
 } from 'typeorm';
 import Directs from './entities/direct.entity';
 import DirectNotFoundException from './exceptions/direct-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
 import MainSchedules from './main-schedule/main-schedule.entity';
 import Trees from '../../../human-resource/tree/tree.entity';
 import DirectViewUser from './entities/direct-view-user.entity';
-import { AppointmentStatusType } from '../../../../utils/globalUtils';
+import { AppointmentStatusType } from '@utils/enum-utils';
 import DirectLosts from '../../shared/lost/lost.entity';
 import DirectHistory from './entities/direct-view-history.entity';
 import Worker from '../../../human-resource/member/worker/worker.entity';
 import DirectSchedules from './schedule/schedule.entity';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class DirectService {
   /**
    * @ignore
    */
-  constructor(private moduleRef: ModuleRef) {}
+  constructor(
+    @InjectRepository(Directs)
+    private readonly directRepository: Repository<Directs>,
+    private moduleRef: ModuleRef,
+  ) {}
 
   private async loadEntityManager(systemId: string): Promise<EntityManager> {
     return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
@@ -44,7 +49,7 @@ export class DirectService {
    * A method that fetches the Direct from the database
    * @returns A promise with the list of Directs
    */
-  async getAllDirect(query: GetDirectDto, user: GetUserDto) {
+  async getAllDirect(query: GetDirectDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Directs>['where'] = {};
     if (query.comId) where.comId = Equal(query.comId);
@@ -95,7 +100,7 @@ export class DirectService {
     const page = query.page && query.page > 0 ? Number(query.page) : 1;
     const limit = query.limit && query.limit > 0 ? Number(query.limit) : 10;
     const skip = (page - 1) * limit;
-    const [items, count] = await entityManager.findAndCount(Directs, {
+    const [items, count] = await this.directRepository.findAndCount({
       where,
       order: { createdAt: 'DESC' },
       relations: [
@@ -112,7 +117,7 @@ export class DirectService {
     return new PageDto(items, pageMetaDto);
   }
 
-  async getAllDirectShift(query: GetDirectDto, user: GetUserDto) {
+  async getAllDirectShift(query: GetDirectDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<DirectHistory>['where'] = {};
     if (query.comId) {
@@ -150,7 +155,7 @@ export class DirectService {
    * @example
    * const Direct = await DirectService.getDirectById(1);
    */
-  async getDirectById(directId: number, user: GetUserDto): Promise<Directs> {
+  async getDirectById(directId: number, user: IUser): Promise<Directs> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const direct = await entityManager.findOne(Directs, {
       where: { id: directId },
@@ -174,10 +179,10 @@ export class DirectService {
    *
    */
 
-  async createDirect(direct: CreateDirectDto, user: GetUserDto) {
+  async createDirect(direct: CreateDirectDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     direct.status = AppointmentStatusType.Expected;
-    direct.authorId = user.workerId;
+    direct.authorId = user.id;
     if (direct.treeIds && direct.treeIds.length > 0) {
       const trees = await entityManager.find(Trees, {
         where: { id: In(direct.treeIds) },
@@ -256,19 +261,16 @@ export class DirectService {
     }
     const newDirectHistory = entityManager.create(DirectHistory, {
       directId: newDirect.id,
-      comId: user.companyId,
+      comId: null,
       status: direct.status,
-      authorId: user.workerId,
+      authorId: user.id,
       confirmId: newDirect.confirmId,
     });
     await entityManager.save(newDirectHistory);
     return newDirect;
   }
 
-  async createDirectViewUsers(
-    directViewUser: DirectViewUser,
-    user: GetUserDto,
-  ) {
+  async createDirectViewUsers(directViewUser: DirectViewUser, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newOption = entityManager.create(DirectViewUser, directViewUser);
     await entityManager.save(newOption);
@@ -280,7 +282,7 @@ export class DirectService {
    */
   async updateDirect(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     direct: UpdateDirectDto,
   ): Promise<Directs> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -342,7 +344,7 @@ export class DirectService {
 
   async updateDirectConfirm(
     ids: number[],
-    user: GetUserDto,
+    user: IUser,
     direct: UpdateDirectDto,
   ): Promise<Directs[]> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -359,10 +361,10 @@ export class DirectService {
       }
       const newDirectHistory = entityManager.create(DirectHistory, {
         directId: updatedDirect.id,
-        comId: user.companyId,
+        comId: null,
         status: updatedDirect.status,
-        authorId: user.workerId,
-        confirmId: user.workerId,
+        authorId: user.id,
+        confirmId: user.id,
         confirmDate: new Date(),
       });
 
@@ -375,7 +377,7 @@ export class DirectService {
 
   async updateDirectTransfer(
     ids: number[],
-    user: GetUserDto,
+    user: IUser,
     direct: UpdateDirectDto,
   ): Promise<Directs[]> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -405,18 +407,18 @@ export class DirectService {
       }
       const newDirectHistory = entityManager.create(DirectHistory, {
         directId: updatedDirect.id,
-        comId: user.companyId,
+        comId: null,
         status: AppointmentStatusType.Transfer,
-        authorId: user.workerId,
+        authorId: user.id,
         confirmId: reveiverData.confirmId,
         confirmDate: new Date(),
       });
       await entityManager.save(newDirectHistory);
       const newDirectHistoryData = entityManager.create(DirectHistory, {
         directId: updatedDirect.id,
-        comId: user.companyId,
+        comId: null,
         status: AppointmentStatusType.Expected,
-        authorId: user.workerId,
+        authorId: user.id,
         confirmId: direct.confirmId,
         confirmDate: new Date(),
       });
@@ -428,7 +430,7 @@ export class DirectService {
 
   async updateDirectCancelled(
     ids: number[],
-    user: GetUserDto,
+    user: IUser,
     direct: UpdateDirectDto,
   ): Promise<Directs[]> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -445,11 +447,11 @@ export class DirectService {
       }
       const newDirectHistory = entityManager.create(DirectHistory, {
         directId: updatedDirect.id,
-        comId: user.companyId,
+        comId: null,
         status: updatedDirect.status,
-        authorId: user.workerId,
+        authorId: user.id,
         closeNote: direct.closeNote || null, // Утга нь байвал хадгална, үгүй бол null
-        confirmId: user.workerId,
+        confirmId: user.id,
         confirmDate: new Date(),
       });
       await entityManager.save(newDirectHistory);
@@ -461,7 +463,7 @@ export class DirectService {
   /**
    * @deprecated Use deleteDirect instead
    */
-  async deleteDirectById(id: number, user: GetUserDto): Promise<void> {
+  async deleteDirectById(id: number, user: IUser): Promise<void> {
     return this.deleteDirect(id, user);
   }
 
@@ -469,7 +471,7 @@ export class DirectService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteDirect(id: number, user: GetUserDto): Promise<void> {
+  async deleteDirect(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Directs, id);
     if (!deleteResponse.affected) {

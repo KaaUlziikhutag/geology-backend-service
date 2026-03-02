@@ -19,7 +19,7 @@ import { SoldiersService } from './soldier.service';
 import { CreateSoldiersDto } from './dto/create-soldier.dto';
 import { UpdateSoldiersDto } from './dto/update-soldier.dto';
 import { GetSoldiersDto } from './dto/get-soldier.dto';
-import FindOneParams from '../../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../../utils/interfaces/response.interface';

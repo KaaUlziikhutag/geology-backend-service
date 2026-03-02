@@ -10,7 +10,7 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { CountryType } from '../../../utils/enumUtils';
+import { CountryType } from '@utils/enum-utils';
 @Entity('cloud_countries_i')
 export default class Country extends BaseEntity {
   @PrimaryGeneratedColumn()

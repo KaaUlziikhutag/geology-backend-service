@@ -19,7 +19,7 @@ import { AppDeclareService } from './app-declare.service';
 import { CreateAppDeclareDto } from './dto/create-app-declare.dto';
 import { UpdateAppDeclareDto } from './dto/update-app-declare.dto';
 import { GetAppDeclareDto } from './dto/get-app-declare.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';

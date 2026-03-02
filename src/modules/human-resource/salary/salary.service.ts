@@ -5,11 +5,11 @@ import { GetSalaryDto } from './dto/get-salary.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Salary from './salary.entity';
 import SalaryNotFoundException from './exceptions/salary-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class SalaryService {
@@ -28,7 +28,7 @@ export class SalaryService {
    * A method that fetches the Salary from the database
    * @returns A promise with the list of Salarys
    */
-  async getAllSalarys(query: GetSalaryDto, user: GetUserDto) {
+  async getAllSalarys(query: GetSalaryDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Salary>['where'] = {};
     if (query.autorId) {
@@ -63,7 +63,7 @@ export class SalaryService {
    * @example
    * const Salary = await SalaryService.getSalaryById(1);
    */
-  async getSalaryById(salaryId: number, user: GetUserDto): Promise<Salary> {
+  async getSalaryById(salaryId: number, user: IUser): Promise<Salary> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const salary = await entityManager.findOne(Salary, {
       where: { id: salaryId },
@@ -79,7 +79,7 @@ export class SalaryService {
    * @param Salary createSalary
    *
    */
-  async createSalary(salary: CreateSalaryDto, user: GetUserDto) {
+  async createSalary(salary: CreateSalaryDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newSalary = entityManager.create(Salary, salary);
     await entityManager.save(newSalary);
@@ -91,7 +91,7 @@ export class SalaryService {
    */
   async updateSalary(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     salary: UpdateSalaryDto,
   ): Promise<Salary> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -108,7 +108,7 @@ export class SalaryService {
   /**
    * @deprecated Use deleteSalary instead
    */
-  async deleteSalaryById(id: number, user: GetUserDto): Promise<void> {
+  async deleteSalaryById(id: number, user: IUser): Promise<void> {
     return this.deleteSalary(id, user);
   }
 
@@ -116,7 +116,7 @@ export class SalaryService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteSalary(id: number, user: GetUserDto): Promise<void> {
+  async deleteSalary(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(Salary, id);
     if (!deleteResponse.affected) {

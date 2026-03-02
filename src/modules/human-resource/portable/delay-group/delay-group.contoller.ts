@@ -19,7 +19,7 @@ import { DelayGroupService } from './delay-group.service';
 import { CreateDelayGroupDto } from './dto/create-delay-group.dto';
 import { UpdateDelayGroupDto } from './dto/update-delay-group.dto';
 import { GetDelayGroupDto } from './dto/get-delay-group.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';

@@ -1,4 +1,4 @@
-import { float } from 'aws-sdk/clients/cloudfront';
+// import { float } from 'aws-sdk/clients/cloudfront';
 import {
   Column,
   Entity,
@@ -30,5 +30,5 @@ export default class Files extends BaseEntity {
   originalName: string; //Файлын нэр original
 
   @Column({ nullable: true })
-  size: float; //Файл хэмжээ
+  size: number; //Файл хэмжээ
 }

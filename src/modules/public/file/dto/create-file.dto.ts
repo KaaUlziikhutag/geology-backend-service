@@ -1,4 +1,5 @@
-import { FileDto, FileType } from '../../../../utils/globalUtils';
+import { RelationIdDto } from '@utils/dto/relation-id.dto';
+import { FileType } from '@utils/enum-utils';
 import { Type } from 'class-transformer';
 import {
   IsString,
@@ -26,8 +27,8 @@ export class CreatePublicFileDto {
 
   @IsOptional()
   @ValidateNested({ each: true })
-  @Type(() => FileDto)
-  fileIds: FileDto[];
+  @Type(() => RelationIdDto)
+  fileIds: RelationIdDto[];
 
   @IsOptional()
   @IsArray()

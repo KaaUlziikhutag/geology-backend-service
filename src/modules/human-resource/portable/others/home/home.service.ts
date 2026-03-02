@@ -5,11 +5,11 @@ import { GetHomesDto } from './dto/get-home.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Homes from './home.entity';
 import HomesNotFoundException from './exceptions/home-not-found.exception';
-import { PageDto } from '../../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class HomesService {
@@ -28,7 +28,7 @@ export class HomesService {
    * A method that fetches the Homes from the database
    * @returns A promise with the list of Homess
    */
-  async getAllHomess(query: GetHomesDto, user: GetUserDto) {
+  async getAllHomess(query: GetHomesDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Homes>['where'] = {};
     if (query.comId) {
@@ -61,7 +61,7 @@ export class HomesService {
    * @example
    * const Homes = await HomesService.getHomesById(1);
    */
-  async getHomesById(homesId: number, user: GetUserDto): Promise<Homes> {
+  async getHomesById(homesId: number, user: IUser): Promise<Homes> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const homes = await entityManager.findOne(Homes, {
       where: { id: homesId },
@@ -77,9 +77,9 @@ export class HomesService {
    * @param Homes createHomes
    *
    */
-  async createHomes(homes: CreateHomesDto, user: GetUserDto) {
+  async createHomes(homes: CreateHomesDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    homes.authorId = user.workerId;
+    homes.authorId = user.id;
     const newHomes = entityManager.create(Homes, homes);
     await entityManager.save(newHomes);
     return newHomes;
@@ -90,7 +90,7 @@ export class HomesService {
    */
   async updateHomes(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     homes: UpdateHomesDto,
   ): Promise<Homes> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -107,7 +107,7 @@ export class HomesService {
   /**
    * @deprecated Use deleteHomes instead
    */
-  async deleteHomesById(id: number, user: GetUserDto): Promise<void> {
+  async deleteHomesById(id: number, user: IUser): Promise<void> {
     return this.deleteHomes(id, user);
   }
 
@@ -115,7 +115,7 @@ export class HomesService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteHomes(id: number, user: GetUserDto): Promise<void> {
+  async deleteHomes(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Homes, id);
     if (!deleteResponse.affected) {

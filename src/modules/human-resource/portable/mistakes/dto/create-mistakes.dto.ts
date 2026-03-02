@@ -7,7 +7,8 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { FileDto, MistakesType } from '../../../../../utils/globalUtils';
+import { MistakesType } from '@utils/enum-utils';
+import { RelationIdDto } from '@utils/dto/relation-id.dto';
 export class CreateMistakesDto {
   // Алдаа дутагдал
   @IsOptional()
@@ -24,8 +25,8 @@ export class CreateMistakesDto {
 
   @IsOptional()
   @ValidateNested({ each: true })
-  @Type(() => FileDto)
-  fileIds: FileDto[];
+  @Type(() => RelationIdDto)
+  fileIds: RelationIdDto[];
 
   @IsOptional()
   @IsString()

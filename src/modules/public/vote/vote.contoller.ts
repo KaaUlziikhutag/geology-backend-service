@@ -19,7 +19,7 @@ import { PublicVoteService } from './vote.service';
 import { CreatePublicVoteDto } from './dto/create-vote.dto';
 import { UpdatePublicVoteDto } from './dto/update-vote.dto';
 import { GetPublicVoteDto } from './dto/get-vote.dto';
-import FindOneParams from '../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../utils/dto/response.dto';
 import { IResponse } from '../../../utils/interfaces/response.interface';
@@ -35,13 +35,9 @@ export class PublicVoteController {
   @Get()
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getAllVote(
-    @Req() request: RequestWithUser,
-    @Query() query: GetPublicVoteDto,
-  ): Promise<IResponse> {
+  async getAllVote(@Query() query: GetPublicVoteDto): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicVoteService.getAllVote(query, user);
+      const data = await this.publicVoteService.getAllVote(query);
       return new ResponseSuccess('GET_VOTES.SUCCESS', data);
     } catch (error) {
       console.log('------------------>', error);
@@ -52,13 +48,9 @@ export class PublicVoteController {
   @Get(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getVoteById(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async getVoteById(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicVoteService.getVoteById(id, user);
+      const data = await this.publicVoteService.getVoteById(id);
       return new ResponseSuccess('GET_VOTE.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -88,12 +80,10 @@ export class PublicVoteController {
   @UseGuards(AuthGuard('api-key'))
   async updateVote(
     @Param() { id }: FindOneParams,
-    @Req() request: RequestWithUser,
     @Body() vote: UpdatePublicVoteDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicVoteService.updateVote(id, user, vote);
+      const data = await this.publicVoteService.updateVote(id, vote);
       return new ResponseSuccess('UPDATE_VOTE.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -103,13 +93,9 @@ export class PublicVoteController {
   @Delete(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async deleteVote(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async deleteVote(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicVoteService.deleteVote(id, user);
+      const data = await this.publicVoteService.deleteVote(id);
       return new ResponseSuccess('DELETE_VOTE.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

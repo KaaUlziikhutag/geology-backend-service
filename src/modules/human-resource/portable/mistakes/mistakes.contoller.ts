@@ -19,7 +19,7 @@ import { MistakesService } from './mistakes.service';
 import { CreateMistakesDto } from './dto/create-mistakes.dto';
 import { UpdateMistakesDto } from './dto/update-mistakes.dto';
 import { GetMistakesDto } from './dto/get-mistakes.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../../authentication/guard/jwt-authentication.guard';

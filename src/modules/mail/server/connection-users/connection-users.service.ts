@@ -5,7 +5,7 @@ import ServerConnectionUser from './connection-users.entity';
 import ConnectionUserNotFoundException from './exception/connection-user-not-found.exception';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class ConnectionUserService {
@@ -26,7 +26,7 @@ export class ConnectionUserService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getConnectionUsersByServerId(serverId: number, user: GetUserDto) {
+  async getConnectionUsersByServerId(serverId: number, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const items = await entityManager.find(ServerConnectionUser, {
       where: { serverId },
@@ -43,7 +43,7 @@ export class ConnectionUserService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getConnectionUsersByUserId(userId: number, user: GetUserDto) {
+  async getConnectionUsersByUserId(userId: number, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const items = await entityManager.find(ServerConnectionUser, {
       where: { userId },
@@ -64,10 +64,7 @@ export class ConnectionUserService {
    * @param Contract createContract
    *
    */
-  async createConnectionUser(
-    viewUser: CreateConnectionUserDto,
-    user: GetUserDto,
-  ) {
+  async createConnectionUser(viewUser: CreateConnectionUserDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newConnUser = entityManager.create(ServerConnectionUser, viewUser);
     await entityManager.save(newConnUser);

@@ -1,23 +1,50 @@
+import { PartialType } from '@nestjs/mapped-types';
+import {
+  IsString,
+  IsOptional,
+  IsNumberString,
+  IsDate,
+  IsBooleanString,
+} from 'class-validator';
+import { PageOptionsDto } from '@utils/dto/page-options.dto';
 import { Type } from 'class-transformer';
-import { IsNumberString, IsOptional, ValidateNested } from 'class-validator';
-import { GetRangeDateDto } from '../../../utils/dto/get-date.dto';
-import { ApiPropertyOptional } from '@nestjs/swagger';
 
-export default class GetContractDto {
-  @ApiPropertyOptional()
+export class GetContractDto extends PartialType(PageOptionsDto) {
+  @IsString()
+  @IsOptional()
+  comId: number;
+
   @IsNumberString()
   @IsOptional()
-  customerId?: number;
+  accessType: number;
 
-  @ApiPropertyOptional()
+  @IsNumberString()
   @IsOptional()
-  @ValidateNested()
-  @Type(() => GetRangeDateDto)
-  currentAt?: GetRangeDateDto;
+  type: number;
 
-  @ApiPropertyOptional()
+  @IsNumberString()
   @IsOptional()
-  @ValidateNested()
-  @Type(() => GetRangeDateDto)
-  endAt?: GetRangeDateDto;
+  typeId: number;
+
+  @IsNumberString()
+  @IsOptional()
+  parentId: number;
+
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  startDate: Date;
+
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  endDate: Date;
+
+  @IsOptional()
+  @IsBooleanString()
+  isDraft: boolean; //
+
+  @IsString()
+  @IsOptional()
+  state: string;
 }

@@ -20,7 +20,7 @@ import { PagesService } from './pages.service';
 import { CreatePagesDto } from './dto/create-pages.dto';
 import { UpdatePagesDto } from './dto/update-pages.dto';
 import { GetPagesDto } from './dto/get-pages.dto';
-import FindOneParams from '../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../utils/dto/response.dto';
 import { IResponse } from '../../../utils/interfaces/response.interface';

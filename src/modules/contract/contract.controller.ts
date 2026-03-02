@@ -1,102 +1,120 @@
 import {
-  BadRequestException,
-  Body,
-  ClassSerializerInterceptor,
   Controller,
   Get,
-  Param,
-  Patch,
   Post,
-  Query,
-  Req,
+  Body,
+  Patch,
+  Param,
+  Delete,
   UseGuards,
+  Query,
   UseInterceptors,
+  ClassSerializerInterceptor,
+  HttpCode,
+  HttpStatus,
+  BadRequestException,
+  Req,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
 import { ContractService } from './contract.service';
+import { CreateContractDto } from './dto/create-contract.dto';
+import { UpdateContractDto } from './dto/update-contract.dto';
+import { GetContractDto } from './dto/get-contract.dto';
+import FindOneParams from '@utils/find-one-params';
+import { ResponseSuccess } from '@utils/dto/response.dto';
+import { IResponse } from '@utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
 import RequestWithUser from '../authentication/interface/request-with-user.interface';
-import { IResponse } from '../../utils/interfaces/response.interface';
-import { ResponseSuccess } from '../../utils/dto/response.dto';
-import FindOneParams from '../../utils/find-one-params';
-import CreateContractDto from './dto/create-contract.dto';
-import GetContractDto from './dto/get-contract.dto';
-import UpdateContractDto from './dto/update-contract.dto';
-import { GetValidContractDto } from './dto/get-valid-contract.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('contract')
-@ApiTags('contract')
+@ApiTags('Энгийн гэрээ')
 @UseInterceptors(ClassSerializerInterceptor)
 export class ContractController {
   constructor(private readonly contractService: ContractService) {}
 
-  @Post()
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
-  async createContract(
-    @Req() { user }: RequestWithUser,
-    @Body() contract: CreateContractDto,
-  ): Promise<IResponse> {
-    try {
-      const data = await this.contractService.createContract(user, contract);
-      return new ResponseSuccess('CREATE_CONTRACT.SUCCESS', data);
-    } catch (error) {
-      throw new BadRequestException(error.toString());
-    }
-  }
   @Get()
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getAllContract(@Query() query: GetContractDto): Promise<IResponse> {
-    try {
-      const data = await this.contractService.getAllContract(query);
-      return new ResponseSuccess('GET_CONTRACT', data);
-    } catch (error) {
-      throw new BadRequestException(error.toString());
-    }
-  }
-  @Get(':id/detail')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
-  async getContractById(@Param() { id }: FindOneParams): Promise<IResponse> {
-    try {
-      const data = await this.contractService.getContractById(id);
-      return new ResponseSuccess('GET_CONTRACT', data);
-    } catch (error) {
-      throw new BadRequestException(error.toString());
-    }
-  }
-  @Get('valid')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
-  async getValidContract(
-    @Query() query: GetValidContractDto,
+  async getAllContract(
+    @Req() request: RequestWithUser,
+    @Query() query: GetContractDto,
   ): Promise<IResponse> {
     try {
-      const data = await this.contractService.getValidContract(query);
-      return new ResponseSuccess('GET_CONTRACT', data);
+      const { user } = request;
+      const data = await this.contractService.getAllContracts(query, user);
+      return new ResponseSuccess('GET_CONTRACTS.SUCCESS', data);
     } catch (error) {
-      throw new BadRequestException(error.toString());
+      console.log('------------------>', error);
+      throw new BadRequestException(error);
     }
   }
+
+  @Get(':id')
+  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(AuthGuard('api-key'))
+  async getContractById(
+    @Req() request: RequestWithUser,
+    @Param() { id }: FindOneParams,
+  ): Promise<IResponse> {
+    try {
+      const { user } = request;
+      const data = await this.contractService.getContractById(id);
+      return new ResponseSuccess('GET_CONTRACT.SUCCESS', data);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(AuthGuard('api-key'))
+  async createAccess(
+    @Req() request: RequestWithUser,
+    @Body() access: CreateContractDto,
+  ): Promise<IResponse> {
+    try {
+      const { user } = request;
+      const data = await this.contractService.createContract(access, user);
+      return new ResponseSuccess('CREATE_CONTRACT.SUCCESS', data);
+    } catch (error) {
+      console.log('------------------>', error);
+      throw new BadRequestException(error);
+    }
+  }
+
   @Patch(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async updateContract(
-    @Req() { user }: RequestWithUser,
+  async updateAccess(
     @Param() { id }: FindOneParams,
+    @Req() request: RequestWithUser,
     @Body() contract: UpdateContractDto,
   ): Promise<IResponse> {
     try {
-      const data = await this.contractService.updateContract(
-        user,
-        id,
-        contract,
-      );
-      return new ResponseSuccess('UPDATE_CONTRACT', data);
+      const { user } = request;
+      const data = await this.contractService.updateContract(id, contract);
+      return new ResponseSuccess('UPDATE_CONTRACT.SUCCESS', data);
     } catch (error) {
-      throw new BadRequestException(error.toString());
+      console.log('------------------>', error);
+      throw new BadRequestException(error);
+    }
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(AuthGuard('api-key'))
+  async deleteAccess(
+    @Req() request: RequestWithUser,
+    @Param() { id }: FindOneParams,
+  ): Promise<IResponse> {
+    try {
+      const { user } = request;
+      const data = await this.contractService.deleteContract(id);
+      return new ResponseSuccess('DELETE_CONTRACT.SUCCESS', data);
+    } catch (error) {
+      throw new BadRequestException(error);
     }
   }
 }

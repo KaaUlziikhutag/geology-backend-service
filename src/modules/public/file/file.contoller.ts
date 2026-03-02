@@ -19,7 +19,7 @@ import { PublicFileService } from './file.service';
 import { CreatePublicFileDto } from './dto/create-file.dto';
 import { UpdatePublicFileDto } from './dto/update-file.dto';
 import { GetPublicFileDto } from './dto/get-file.dto';
-import FindOneParams from '../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../utils/dto/response.dto';
 import { IResponse } from '../../../utils/interfaces/response.interface';
@@ -35,13 +35,9 @@ export class PublicFileController {
   @Get()
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getAllSignature(
-    @Req() request: RequestWithUser,
-    @Query() query: GetPublicFileDto,
-  ): Promise<IResponse> {
+  async getAllSignature(@Query() query: GetPublicFileDto): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicFileService.getAllFiles(query, user);
+      const data = await this.publicFileService.getAllFiles(query);
       return new ResponseSuccess('GET_FILES.SUCCESS', data);
     } catch (error) {
       console.log('------------------>', error);
@@ -53,15 +49,10 @@ export class PublicFileController {
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
   async getAllFilesDeletePhotos(
-    @Req() request: RequestWithUser,
     @Query() query: GetPublicFileDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicFileService.getAllFilesDeletePhotos(
-        query,
-        user,
-      );
+      const data = await this.publicFileService.getAllFilesDeletePhotos(query);
       return new ResponseSuccess('DELETE_FILES_PHOTOS.SUCCESS', data);
     } catch (error) {
       console.log('------------------>', error);
@@ -72,13 +63,9 @@ export class PublicFileController {
   @Get(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getFileById(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async getFileById(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicFileService.getFileById(id, user);
+      const data = await this.publicFileService.getFileById(id);
       return new ResponseSuccess('GET_FILE.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -108,12 +95,10 @@ export class PublicFileController {
   @UseGuards(AuthGuard('api-key'))
   async updateFile(
     @Param() { id }: FindOneParams,
-    @Req() request: RequestWithUser,
     @Body() file: UpdatePublicFileDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicFileService.updateFile(id, user, file);
+      const data = await this.publicFileService.updateFile(id, file);
       return new ResponseSuccess('UPDATE_FILE.SUCCESS', data);
     } catch (error) {
       console.log('------------------>', error);
@@ -124,13 +109,9 @@ export class PublicFileController {
   @Delete(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async deleteAccess(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async deleteAccess(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicFileService.deleteFile(id, user);
+      const data = await this.publicFileService.deleteFile(id);
       return new ResponseSuccess('DELETE_FILE.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

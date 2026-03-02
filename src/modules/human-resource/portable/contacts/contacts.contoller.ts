@@ -19,7 +19,7 @@ import { ContactService } from './contacts.service';
 import { CreateContactDto } from './dto/create-contacts.dto';
 import { UpdateContactDto } from './dto/update-contacts.dto';
 import { GetContactDto } from './dto/get-contacts.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../../authentication/guard/jwt-authentication.guard';

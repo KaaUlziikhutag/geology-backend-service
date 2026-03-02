@@ -5,7 +5,7 @@ import {
   IsDefined,
   IsNumber,
 } from 'class-validator';
-import { CountryType } from '../../../../utils/enumUtils';
+import { CountryType } from '@utils/enum-utils';
 
 export class CreateCountryDto {
   @IsDefined()

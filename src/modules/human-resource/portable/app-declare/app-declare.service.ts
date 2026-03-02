@@ -5,11 +5,11 @@ import { GetAppDeclareDto } from './dto/get-app-declare.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import AppDeclare from './app-declare.entity';
 import AppDeclareNotFoundException from './exceptions/app-declare-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class AppDeclareService {
@@ -28,7 +28,7 @@ export class AppDeclareService {
    * A method that fetches the AppDeclare from the database
    * @returns A promise with the list of AppDeclares
    */
-  async getAllAppDeclares(query: GetAppDeclareDto, user: GetUserDto) {
+  async getAllAppDeclares(query: GetAppDeclareDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<AppDeclare>['where'] = {};
     if (query.appId) {
@@ -65,7 +65,7 @@ export class AppDeclareService {
    */
   async getAppDeclareById(
     appDeclareId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<AppDeclare> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const appDeclare = await entityManager.findOne(AppDeclare, {
@@ -82,7 +82,7 @@ export class AppDeclareService {
    * @param appDeclare createAppDeclare
    *
    */
-  async createAppDeclare(appDeclare: CreateAppDeclareDto, user: GetUserDto) {
+  async createAppDeclare(appDeclare: CreateAppDeclareDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newAppDeclare = entityManager.create(AppDeclare, appDeclare);
     await entityManager.save(newAppDeclare);
@@ -94,7 +94,7 @@ export class AppDeclareService {
    */
   async updateAppDeclare(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     appDeclare: UpdateAppDeclareDto,
   ): Promise<AppDeclare> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -111,7 +111,7 @@ export class AppDeclareService {
   /**
    * @deprecated Use deleteAppDeclare instead
    */
-  async deleteAppDeclareById(id: number, user: GetUserDto): Promise<void> {
+  async deleteAppDeclareById(id: number, user: IUser): Promise<void> {
     return this.deleteAppDeclare(id, user);
   }
 
@@ -119,7 +119,7 @@ export class AppDeclareService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteAppDeclare(id: number, user: GetUserDto): Promise<void> {
+  async deleteAppDeclare(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(AppDeclare, id);
     if (!deleteResponse.affected) {

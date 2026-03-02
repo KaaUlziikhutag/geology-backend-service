@@ -2,17 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { CreatePublicVoteDto } from './dto/create-vote.dto';
 import { UpdatePublicVoteDto } from './dto/update-vote.dto';
 import { GetPublicVoteDto } from './dto/get-vote.dto';
-import { EntityManager, Equal, FindManyOptions, In } from 'typeorm';
+import { EntityManager, Equal, FindManyOptions, In, Repository } from 'typeorm';
 import PublicVote from './vote.entity';
 import PublicVoteNotFoundException from './exceptions/vote-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../cloud/user/dto/get-user.dto';
+import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
 
 import { VoteQuestionService } from './question/question.service';
 import Trees from '../../human-resource/tree/tree.entity';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class PublicVoteService {
@@ -20,6 +20,8 @@ export class PublicVoteService {
    * @ignore
    */
   constructor(
+    @InjectRepository(PublicVote)
+    private readonly publicVoteRepository: Repository<PublicVote>,
     private moduleRef: ModuleRef,
     private readonly voteQuestionService: VoteQuestionService,
   ) {}
@@ -34,8 +36,7 @@ export class PublicVoteService {
    * A method that fetches the Contract from the database
    * @returns A promise with the list of Contract
    */
-  async getAllVote(query: GetPublicVoteDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getAllVote(query: GetPublicVoteDto) {
     const where: FindManyOptions<PublicVote>['where'] = {};
     if (query.exp) {
       where.exp = Equal(query.exp);
@@ -52,7 +53,7 @@ export class PublicVoteService {
         ? Number(query.limit)
         : 10;
     const skip = (page - 1) * limit;
-    const [items, count] = await entityManager.findAndCount(PublicVote, {
+    const [items, count] = await this.publicVoteRepository.findAndCount({
       where,
       order: {
         createdAt: 'DESC',
@@ -72,9 +73,8 @@ export class PublicVoteService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getVoteById(voteId: number, user: GetUserDto): Promise<PublicVote> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const vote = await entityManager.findOne(PublicVote, {
+  async getVoteById(voteId: number): Promise<PublicVote> {
+    const vote = await this.publicVoteRepository.findOne({
       where: { id: voteId },
       relations: ['questions', 'questions.voteAnswer'],
     });
@@ -89,32 +89,24 @@ export class PublicVoteService {
    * @param SystemMail createSystemMail
    *
    */
-  async createVote(vote: CreatePublicVoteDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-
+  async createVote(vote: CreatePublicVoteDto, user: IUser) {
     // Assign author details
-    vote.authorId = user.workerId;
-    vote.author = {
-      lastName: user.lastName,
-      firstName: user.firstName,
-    };
+    vote.authorId = user.id;
 
     // Validate treeIds
     if (vote.treeIds?.length) {
-      const trees = await entityManager.find(Trees, {
-        where: { id: In(vote.treeIds) },
-      });
-
-      if (trees.length !== vote.treeIds.length) {
-        throw new Error('Some of the treeIds are invalid');
-      }
-
-      vote.trees = trees;
+      // const trees = await entityManager.find(Trees, {
+      //   where: { id: In(vote.treeIds) },
+      // });
+      // if (trees.length !== vote.treeIds.length) {
+      //   throw new Error('Some of the treeIds are invalid');
+      // }
+      // vote.trees = trees;
     }
 
     // Create a new PublicVote entity (excluding ID)
-    const newVote = entityManager.create(PublicVote, { ...vote });
-    await entityManager.save(newVote); // Now, newVote has an id
+    const newVote = this.publicVoteRepository.create({ ...vote });
+    await this.publicVoteRepository.save(newVote); // Now, newVote has an id
 
     // Ensure vote.questions exist before iterating
     if (vote.questions?.length) {
@@ -136,30 +128,25 @@ export class PublicVoteService {
   /**
    * See the [definition of the UpdateContractDto file]{@link UpdateSystemMailDto} to see a list of required properties
    */
-  async updateVote(
-    id: number,
-    user: GetUserDto,
-    vote: UpdatePublicVoteDto,
-  ): Promise<PublicVote> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const existingVote = await entityManager.findOne(PublicVote, {
+  async updateVote(id: number, vote: UpdatePublicVoteDto): Promise<PublicVote> {
+    const existingVote = await this.publicVoteRepository.findOne({
       where: { id },
     });
     if (!existingVote) {
       throw new PublicVoteNotFoundException(id);
     }
-    if (vote.treeIds?.length) {
-      const trees = await entityManager.find(Trees, {
-        where: { id: In(vote.treeIds) },
-      });
-      if (trees.length !== vote.treeIds.length) {
-        throw new Error('Some of the treeIds are invalid');
-      }
-      vote.trees = trees;
-    }
-    await entityManager.update(PublicVote, id, vote);
-    const updatedVote = await entityManager.findOne(PublicVote, {
-      where: { id: id },
+    // if (vote.treeIds?.length) {
+    //   const trees = await entityManager.find(Trees, {
+    //     where: { id: In(vote.treeIds) },
+    //   });
+    //   if (trees.length !== vote.treeIds.length) {
+    //     throw new Error('Some of the treeIds are invalid');
+    //   }
+    //   vote.trees = trees;
+    // }
+    await this.publicVoteRepository.update(id, vote);
+    const updatedVote = await this.publicVoteRepository.findOne({
+      where: { id },
     });
     if (!updatedVote) {
       throw new PublicVoteNotFoundException(id);
@@ -170,17 +157,16 @@ export class PublicVoteService {
   /**
    * @deprecated Use deleteContract instead
    */
-  async deleteVoteById(id: number, user: GetUserDto): Promise<void> {
-    return this.deleteVote(id, user);
+  async deleteVoteById(id: number): Promise<void> {
+    return this.deleteVote(id);
   }
 
   /**
    * A method that deletes a contract from the database
    * @param id An id of a contract. A contract with this id should exist in the database
    */
-  async deleteVote(id: number, user: GetUserDto): Promise<void> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const deleteResponse = await entityManager.softDelete(PublicVote, id);
+  async deleteVote(id: number): Promise<void> {
+    const deleteResponse = await this.publicVoteRepository.softDelete(id);
     if (!deleteResponse.affected) {
       throw new PublicVoteNotFoundException(id);
     }

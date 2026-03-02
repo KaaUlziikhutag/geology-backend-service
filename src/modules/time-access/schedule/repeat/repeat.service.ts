@@ -2,17 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { CreateRepeatDto } from './dto/create-repeat.dto';
 import { UpdateRepeatDto } from './dto/update-repeat.dto';
 import { GetRepeatDto } from './dto/get-repeat.dto';
-import { Between, EntityManager, Equal, FindManyOptions, ILike } from 'typeorm';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import { Between, Equal, FindManyOptions, ILike, Repository } from 'typeorm';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
 import Repeats from './entities/repeat.entity';
 import RepeatNotFoundException from './exceptions/repeat-not-found.exception';
 import { RepeatDetailService } from './detail/repeat-detail.service';
-import { AppointmentStatusType } from '../../../../utils/globalUtils';
+import { AppointmentStatusType } from '@utils/enum-utils';
 import RepeatHistory from './entities/repeat-history.entity';
+import GetUserDto from '@modules/users/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class RepeatService {
@@ -20,22 +21,14 @@ export class RepeatService {
    * @ignore
    */
   constructor(
-    private moduleRef: ModuleRef,
+    @InjectRepository(Repeats)
+    private readonly repeatRepository: Repository<Repeats>,
+    @InjectRepository(RepeatHistory)
+    private readonly repeatHistoryRepository: Repository<RepeatHistory>,
     private readonly repeatDetailService: RepeatDetailService,
   ) {}
 
-  private async loadEntityManager(systemId: string): Promise<EntityManager> {
-    return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
-      strict: false,
-    });
-  }
-
-  /**
-   * A method that fetches the Repeat from the database
-   * @returns A promise with the list of Repeats
-   */
-  async getAllRepeat(query: GetRepeatDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getAllRepeat(query: GetRepeatDto) {
     const where: FindManyOptions<Repeats>['where'] = {};
     if (query.comId) {
       where.comId = Equal(query.comId);
@@ -69,7 +62,7 @@ export class RepeatService {
         ? Number(query.limit)
         : 10;
     const skip = (page - 1) * limit;
-    const [items, count] = await entityManager.findAndCount(Repeats, {
+    const [items, count] = await this.repeatRepository.findAndCount({
       where,
       order: {
         createdAt: 'DESC',
@@ -83,8 +76,7 @@ export class RepeatService {
     return new PageDto(items, pageMetaDto);
   }
 
-  async getShiftRepeat(query: GetRepeatDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getShiftRepeat(query: GetRepeatDto) {
     const where: FindManyOptions<RepeatHistory>['where'] = {};
     if (query.comId) {
       where.comId = Equal(query.comId);
@@ -101,7 +93,7 @@ export class RepeatService {
         ? Number(query.limit)
         : 10;
     const skip = (page - 1) * limit;
-    const [items, count] = await entityManager.findAndCount(RepeatHistory, {
+    const [items, count] = await this.repeatHistoryRepository.findAndCount({
       where,
       order: {
         createdAt: 'DESC',
@@ -115,15 +107,8 @@ export class RepeatService {
     return new PageDto(items, pageMetaDto);
   }
 
-  /**
-   * A method that fetches a Repeat with a given id. Example:
-   *
-   * @example
-   * const Repeat = await RepeatService.getRepeatById(1);
-   */
-  async getRepeatById(repeatId: number, user: GetUserDto): Promise<Repeats> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const repeat = await entityManager.findOne(Repeats, {
+  async getRepeatById(repeatId: number): Promise<Repeats> {
+    const repeat = await this.repeatRepository.findOne({
       where: { id: repeatId },
       relations: [
         'repeatDetails',
@@ -139,14 +124,7 @@ export class RepeatService {
     throw new RepeatNotFoundException(repeatId);
   }
 
-  /**
-   *
-   * @param Repeat createRepeat
-   *
-   */
-
-  async createRepeat(repeat: CreateRepeatDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async createRepeat(repeat: CreateRepeatDto) {
     console.log('=================>repeat', repeat.startDate, repeat.endDate);
     if (
       repeat.startDate &&
@@ -182,35 +160,30 @@ export class RepeatService {
         ),
       );
     }
-    const newRepeat = entityManager.create(Repeats, repeat);
+    const newRepeat = this.repeatRepository.create(repeat);
     console.log('==================>newRepeat', newRepeat);
-    await entityManager.save(newRepeat);
+    await this.repeatRepository.save(newRepeat);
     if (repeat.detail) {
       const repeatDetail = await Promise.all(
         repeat.detail.map(async (repeatDetail) =>
-          this.repeatDetailService.createRepeatDetail(
-            { ...repeatDetail, repeatId: newRepeat.id },
-            user,
-          ),
+          this.repeatDetailService.createRepeatDetail({
+            ...repeatDetail,
+            repeatId: newRepeat.id,
+          }),
         ),
       );
-      await entityManager.save(repeatDetail);
+      await this.repeatRepository.save(repeatDetail);
     }
     return newRepeat;
   }
 
-  /**
-   * See the [definition of the UpdateRepeatDto file]{@link UpdateRepeatDto} to see a list of required properties
-   */
   async updateRepeat(
     repeatId: number,
-    user: GetUserDto,
     repeat: UpdateRepeatDto,
   ): Promise<Repeats> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
     const { detail, ...repeatData } = repeat;
-    await entityManager.update(Repeats, repeatId, repeatData);
-    const updatedRepeat = await entityManager.findOne(Repeats, {
+    await this.repeatRepository.update(repeatId, repeatData);
+    const updatedRepeat = await this.repeatRepository.findOne({
       where: { id: repeatId },
     });
     if (!updatedRepeat) {
@@ -219,7 +192,7 @@ export class RepeatService {
     if (detail?.length) {
       await Promise.all(
         detail.map((item) =>
-          this.repeatDetailService.updateMultipleRepeatDetails(user, [
+          this.repeatDetailService.updateMultipleRepeatDetails([
             { ...item, repeatId },
           ]),
         ),
@@ -230,29 +203,28 @@ export class RepeatService {
 
   async updateRepeatConfirm(
     ids: number[],
-    user: GetUserDto,
+    user: IUser,
     repeat: UpdateRepeatDto,
   ): Promise<Repeats[]> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
     repeat.status = AppointmentStatusType.Comfirm;
     const updatedRepeats: Repeats[] = [];
     for (const id of ids) {
-      await entityManager.update(Repeats, id, repeat);
-      const updatedRepeat = await entityManager.findOne(Repeats, {
+      await this.repeatRepository.update(id, repeat);
+      const updatedRepeat = await this.repeatRepository.findOne({
         where: { id },
       });
       if (!updatedRepeat) {
         throw new RepeatNotFoundException(id);
       }
-      const newRepeatHistory = entityManager.create(RepeatHistory, {
+      const newRepeatHistory = this.repeatHistoryRepository.create({
         repeatId: updatedRepeat.id,
-        comId: user.companyId,
+        comId: null,
         status: updatedRepeat.status,
-        authorId: user.workerId,
-        confirmId: user.workerId,
+        authorId: user.id,
+        confirmId: user.id,
         confirmDate: new Date(),
       });
-      await entityManager.save(newRepeatHistory);
+      await this.repeatHistoryRepository.save(newRepeatHistory);
       updatedRepeats.push(updatedRepeat);
     }
     return updatedRepeats;
@@ -260,30 +232,29 @@ export class RepeatService {
 
   async updateRepeatCancelled(
     ids: number[],
-    user: GetUserDto,
+    user: IUser,
     repeat: UpdateRepeatDto,
   ): Promise<Repeats[]> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
     repeat.status = AppointmentStatusType.Cancelled;
     const updatedRepeats: Repeats[] = [];
     for (const id of ids) {
-      await entityManager.update(Repeats, id, repeat);
-      const updatedRepeat = await entityManager.findOne(Repeats, {
+      await this.repeatRepository.update(id, repeat);
+      const updatedRepeat = await this.repeatRepository.findOne({
         where: { id },
       });
       if (!updatedRepeat) {
         throw new RepeatNotFoundException(id);
       }
-      const newRepeatHistory = entityManager.create(RepeatHistory, {
+      const newRepeatHistory = this.repeatHistoryRepository.create({
         repeatId: updatedRepeat.id,
-        comId: user.companyId,
+        comId: null,
         status: updatedRepeat.status,
-        authorId: user.workerId,
-        confirmId: user.workerId,
+        authorId: user.id,
+        confirmId: user.id,
         closeNote: repeat.closeNote,
         confirmDate: new Date(),
       });
-      await entityManager.save(newRepeatHistory);
+      await this.repeatHistoryRepository.save(newRepeatHistory);
       updatedRepeats.push(updatedRepeat);
     }
     return updatedRepeats;
@@ -291,21 +262,20 @@ export class RepeatService {
 
   async updateRepeatTransfer(
     ids: number[],
-    user: GetUserDto,
+    user: IUser,
     repeat: UpdateRepeatDto,
   ): Promise<Repeats[]> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
     const updatedRepeats: Repeats[] = [];
     for (const id of ids) {
       repeat.status = AppointmentStatusType.Expected;
-      await entityManager.update(Repeats, id, repeat);
-      const updatedRepeat = await entityManager.findOne(Repeats, {
+      await this.repeatRepository.update(id, repeat);
+      const updatedRepeat = await this.repeatRepository.findOne({
         where: { id },
       });
       if (!updatedRepeat) {
         throw new RepeatNotFoundException(id);
       }
-      const reveiverData = await entityManager.findOne(RepeatHistory, {
+      const reveiverData = await this.repeatHistoryRepository.findOne({
         where: {
           repeatId: id,
           status: AppointmentStatusType.Expected,
@@ -319,46 +289,38 @@ export class RepeatService {
           `Receiver data not found for appointment with ID ${id}`,
         );
       }
-      const newRepeatHistory = entityManager.create(RepeatHistory, {
+      const newRepeatHistory = this.repeatHistoryRepository.create({
         repeatId: updatedRepeat.id,
-        comId: user.companyId,
+        comId: null,
         status: AppointmentStatusType.Transfer,
-        authorId: user.workerId,
+        authorId: user.id,
         confirmId: reveiverData.confirmId,
         closeNote: repeat.closeNote,
         confirmDate: new Date(),
       });
-      await entityManager.save(newRepeatHistory);
+      await this.repeatHistoryRepository.save(newRepeatHistory);
 
-      const newRepeatHistoryData = entityManager.create(RepeatHistory, {
+      const newRepeatHistoryData = this.repeatHistoryRepository.create({
         repeatId: updatedRepeat.id,
-        comId: user.companyId,
+        comId: null,
         status: AppointmentStatusType.Expected,
-        authorId: user.workerId,
+        authorId: user.id,
         confirmId: repeat.confirmId,
         closeNote: repeat.closeNote,
         confirmDate: new Date(),
       });
-      await entityManager.save(newRepeatHistoryData);
+      await this.repeatHistoryRepository.save(newRepeatHistoryData);
       updatedRepeats.push(updatedRepeat);
     }
     return updatedRepeats;
   }
 
-  /**
-   * @deprecated Use deleteRepeat instead
-   */
-  async deleteRepeatById(id: number, user: GetUserDto): Promise<void> {
-    return this.deleteRepeat(id, user);
+  async deleteRepeatById(id: number): Promise<void> {
+    return this.deleteRepeat(id);
   }
 
-  /**
-   * A method that deletes a department from the database
-   * @param id An id of a department. A department with this id should exist in the database
-   */
-  async deleteRepeat(id: number, user: GetUserDto): Promise<void> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const deleteResponse = await entityManager.softDelete(Repeats, id);
+  async deleteRepeat(id: number): Promise<void> {
+    const deleteResponse = await this.repeatRepository.softDelete(id);
     if (!deleteResponse.affected) {
       throw new RepeatNotFoundException(id);
     }

@@ -2,34 +2,37 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTreeDto } from './dto/create-tree.dto';
 import { UpdateTreeDto } from './dto/update-tree.dto';
 import { GetTreeDto } from './dto/get-tree.dto';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import { EntityManager, Equal, FindManyOptions, ILike } from 'typeorm';
+import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
+import {
+  EntityManager,
+  Equal,
+  FindManyOptions,
+  ILike,
+  Repository,
+} from 'typeorm';
 import Trees from './tree.entity';
 import TreeNotFoundException from './exceptions/tree-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import GetUserDto from '../../cloud/user/dto/get-user.dto';
 import Worker from '../member/worker/worker.entity';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class TreeService {
   /**
    * @ignore
    */
-  constructor(private moduleRef: ModuleRef) {}
+  constructor(
+    @InjectRepository(Trees)
+    private readonly treeRepository: Repository<Trees>,
+  ) {}
 
-  private async loadEntityManager(systemId: string): Promise<EntityManager> {
-    return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
-      strict: false,
-    });
-  }
   /**
    * A method that fetches the companies from the database
    * @returns A promise with the list of Trees
    */
-  async getAllTrees(query: GetTreeDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getAllTrees(query: GetTreeDto, user: IUser) {
     const where: FindManyOptions<Trees>['where'] = {};
     if (query.name) {
       where.name = ILike('%' + query.name + '%');
@@ -39,7 +42,7 @@ export class TreeService {
       where.type = Equal(query.type);
     }
 
-    const trees = await entityManager.find(Trees, {
+    const trees = await this.treeRepository.find({
       where,
       order: {
         createdAt: 'ASC',
@@ -112,14 +115,13 @@ export class TreeService {
     return relations;
   };
 
-  async getTreeById(treeId: number, user: GetUserDto): Promise<any> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getTreeById(treeId: number, user: IUser): Promise<any> {
     const depth = 10;
     const parent = 1;
     const childRelations = this.generateRelations('children', depth);
     const parentRelations = this.generateRelations('parent', parent);
     const relations = [...childRelations, ...parentRelations, 'occupations'];
-    const tree = await entityManager.findOne(Trees, {
+    const tree = await this.treeRepository.findOne({
       where: { id: treeId },
       relations,
     });
@@ -150,11 +152,10 @@ export class TreeService {
    * @param Tree createTree
    *
    */
-  async createTree(tree: CreateTreeDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    tree.autorId = user.workerId;
-    tree.autorName = `${user.lastName} ${user.firstName}`;
-    const treeFilter = await entityManager.findOne(Trees, {
+  async createTree(tree: CreateTreeDto, user: IUser) {
+    tree.autorId = user.id;
+    // tree.autorName = `${user.lastName} ${user.firstName}`;
+    const treeFilter = await this.treeRepository.findOne({
       where: {
         name: tree.name,
         departmentType: tree.departmentType,
@@ -171,8 +172,8 @@ export class TreeService {
         HttpStatus.BAD_REQUEST,
       );
     } else {
-      const newTree = entityManager.create(Trees, tree);
-      await entityManager.save(newTree);
+      const newTree = this.treeRepository.create(tree);
+      await this.treeRepository.save(newTree);
       return newTree;
     }
   }
@@ -183,12 +184,11 @@ export class TreeService {
   async updateTree(
     id: number,
     tree: UpdateTreeDto,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<Trees> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    await entityManager.update(Trees, id, tree);
-    const updatedTree = await entityManager.findOne(Trees, {
-      where: { id: id },
+    await this.treeRepository.update(id, tree);
+    const updatedTree = await this.treeRepository.findOne({
+      where: { id },
     });
     if (updatedTree) {
       return updatedTree;
@@ -199,7 +199,7 @@ export class TreeService {
   /**
    * @deprecated Use deleteTree instead
    */
-  async deleteTreeById(id: number, user: GetUserDto): Promise<void> {
+  async deleteTreeById(id: number, user: IUser): Promise<void> {
     return this.deleteTree(id, user);
   }
 
@@ -207,31 +207,30 @@ export class TreeService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteTree(id: number, user: GetUserDto): Promise<void> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const children = await entityManager.find(Trees, {
+  async deleteTree(id: number, user: IUser): Promise<void> {
+    const children = await this.treeRepository.find({
       where: { mid: id },
     });
 
-    const workers = await entityManager.find(Worker, {
-      where: { depId: id },
-    });
-    const workersApp = await entityManager.find(Worker, {
-      where: { appId: id },
-    });
+    // const workers = await this.workerRepository.find({
+    //   where: { depId: id },
+    // });
+    // const workersApp = await this.workerRepository.find({
+    //   where: { appId: id },
+    // });
     if (children.length > 0) {
       throw new HttpException(
         `Tree with ID ${id} has children and cannot be deleted.`,
         HttpStatus.BAD_REQUEST, // 400 алдаа код
       );
     }
-    if (workers.length > 0 || workersApp.length > 0) {
-      throw new HttpException(
-        `Тухайн байгууллага/Салбар/Алба, хэлтэст ажилтан бүртгэгдсэн байна`,
-        HttpStatus.BAD_REQUEST, // 400 алдаа код
-      );
-    }
-    const deleteResponse = await entityManager.softDelete(Trees, id);
+    // if (workers.length > 0 || workersApp.length > 0) {
+    //   throw new HttpException(
+    //     `Тухайн байгууллага/Салбар/Алба, хэлтэст ажилтан бүртгэгдсэн байна`,
+    //     HttpStatus.BAD_REQUEST, // 400 алдаа код
+    //   );
+    // }
+    const deleteResponse = await this.treeRepository.softDelete(id);
     if (!deleteResponse.affected) {
       throw new HttpException(
         `Tree with ID ${id} not found.`,

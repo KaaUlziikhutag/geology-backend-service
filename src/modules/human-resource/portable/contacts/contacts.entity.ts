@@ -1,7 +1,4 @@
-import {
-  ContactPersonStatus,
-  JobTypeStatus,
-} from '../../../../utils/enumUtils';
+import { ContactPersonStatus, JobTypeStatus } from '@utils/enum-utils';
 import {
   Column,
   Entity,

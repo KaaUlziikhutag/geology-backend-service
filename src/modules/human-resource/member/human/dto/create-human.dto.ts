@@ -11,7 +11,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { GenderType, MaritalStatus } from '../../../../../utils/globalUtils';
+import { GenderType, MaritalStatus } from '@utils/enum-utils';
 import { ContactDto } from './contact.dto';
 export class CreateHumanDto {
   @IsOptional()

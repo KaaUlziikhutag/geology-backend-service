@@ -2,24 +2,28 @@ import { Injectable } from '@nestjs/common';
 import { CreateDirectScheduleDto } from './dto/create-schedule.dto';
 import { UpdateDirectScheduleDto } from './dto/update-schedule.dto';
 import { GetDirectScheduleDto } from './dto/get-schedule.dto';
-import { EntityManager, Equal, FindManyOptions } from 'typeorm';
+import { EntityManager, Equal, FindManyOptions, Repository } from 'typeorm';
 import DirectSchedules from './schedule.entity';
 import DirectScheduleNotFoundException from './exceptions/schedule-not-found.exception';
-import { PageDto } from '../../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../../cloud/user/dto/get-user.dto';
+import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
+// import IUser from '@modules/cloud/user/interface/user.interface';
 import Directs from '../entities/direct.entity';
-import { calculateAttendanceStatus } from '../../../../../utils/dateUtils';
-import { ScheduleStatus } from '../../../../../utils/globalUtils';
+import { calculateAttendanceStatus } from '@utils/helper-utils';
+import { ScheduleStatus } from '@utils/enum-utils';
 
 @Injectable()
 export class DirectScheduleService {
   /**
    * @ignore
    */
-  constructor(private moduleRef: ModuleRef) {}
+  constructor(
+    @InjectRepository(DirectSchedules)
+    private readonly directScheduleRepository: Repository<DirectSchedules>,
+    private moduleRef: ModuleRef,
+  ) {}
 
   private async loadEntityManager(systemId: string): Promise<EntityManager> {
     return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
@@ -31,8 +35,7 @@ export class DirectScheduleService {
    * A method that fetches the DirectSchedule from the database
    * @returns A promise with the list of DirectSchedules
    */
-  async getAllDirectSchedules(query: GetDirectScheduleDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getAllDirectSchedules(query: GetDirectScheduleDto) {
     const where: FindManyOptions<DirectSchedules>['where'] = {};
     if (query.directId) {
       where.directId = Equal(query.directId);
@@ -46,7 +49,7 @@ export class DirectScheduleService {
         ? Number(query.limit)
         : 10;
     const skip = (page - 1) * limit;
-    const [items, count] = await entityManager.findAndCount(DirectSchedules, {
+    const [items, count] = await this.directScheduleRepository.findAndCount({
       where,
       order: {
         createdAt: 'DESC',
@@ -67,10 +70,8 @@ export class DirectScheduleService {
    */
   async getDirectScheduleById(
     directScheduleId: number,
-    user: GetUserDto,
   ): Promise<DirectSchedules> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const directSchedule = await entityManager.findOne(DirectSchedules, {
+    const directSchedule = await this.directScheduleRepository.findOne({
       where: { id: directScheduleId },
     });
     if (directSchedule) {
@@ -84,16 +85,10 @@ export class DirectScheduleService {
    * @param DirectSchedule createDirectSchedule
    *
    */
-  async createDirectSchedule(
-    directSchedule: CreateDirectScheduleDto,
-    user: GetUserDto,
-  ) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const newDirectSchedule = entityManager.create(
-      DirectSchedules,
-      directSchedule,
-    );
-    await entityManager.save(newDirectSchedule);
+  async createDirectSchedule(directSchedule: CreateDirectScheduleDto) {
+    const newDirectSchedule =
+      this.directScheduleRepository.create(directSchedule);
+    await this.directScheduleRepository.save(newDirectSchedule);
     return newDirectSchedule;
   }
 
@@ -160,11 +155,9 @@ export class DirectScheduleService {
    */
   async updateDirectSchedule(
     id: number,
-    user: GetUserDto,
     directSchedule: UpdateDirectScheduleDto,
   ): Promise<DirectSchedules> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const schedule = await entityManager.findOne(DirectSchedules, {
+    const schedule = await this.directScheduleRepository.findOne({
       where: { id },
       select: ['startTime', 'endTime'],
     });
@@ -185,8 +178,8 @@ export class DirectScheduleService {
         ? ScheduleStatus.OnLeave
         : ScheduleStatus.Ongoing,
     };
-    await entityManager.update(DirectSchedules, id, updateData);
-    const updatedDirectSchedule = await entityManager.findOne(DirectSchedules, {
+    await this.directScheduleRepository.update(id, updateData);
+    const updatedDirectSchedule = await this.directScheduleRepository.findOne({
       where: { id: id },
     });
     if (updatedDirectSchedule) {
@@ -198,17 +191,16 @@ export class DirectScheduleService {
   /**
    * @deprecated Use deleteDirectSchedule instead
    */
-  async deleteDirectScheduleById(id: number, user: GetUserDto): Promise<void> {
-    return this.deleteDirectSchedule(id, user);
+  async deleteDirectScheduleById(id: number): Promise<void> {
+    return this.deleteDirectSchedule(id);
   }
 
   /**
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteDirectSchedule(id: number, user: GetUserDto): Promise<void> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const deleteResponse = await entityManager.delete(DirectSchedules, id);
+  async deleteDirectSchedule(id: number): Promise<void> {
+    const deleteResponse = await this.directScheduleRepository.delete(id);
     if (!deleteResponse.affected) {
       throw new DirectScheduleNotFoundException(id);
     }

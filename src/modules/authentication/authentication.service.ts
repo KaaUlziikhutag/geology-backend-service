@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import TokenPayload from './interface/token-payload.interface';
 import { JwtService } from '@nestjs/jwt';
+import { AccessService } from '@modules/human-resource/access/access.service';
 
 @Injectable()
 export class AuthenticationService {
@@ -13,6 +14,7 @@ export class AuthenticationService {
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
+    private readonly accessService: AccessService,
   ) {}
 
   public async register(registrationData: RegisterDto) {
@@ -40,7 +42,11 @@ export class AuthenticationService {
   }
 
   async getUserById(id: number) {
-    return await this.usersService.getById(id);
+    const user = await this.usersService.getById(id);
+    let access = null;
+
+    access = await this.accessService.getAccessByWorkId(user.id);
+    return { ...user, access };
   }
 
   public getJwtAccessToken(userId: number) {
@@ -87,36 +93,12 @@ export class AuthenticationService {
   }
 
   public async getAuthenticatedUser(email: string, plainTextPassword: string) {
-    try {
-      const user = await this.usersService.getByEmail(email);
-      console.log('user ==========>', user);
-      await this.verifyPassword(plainTextPassword, user.password);
-      return user;
-    } catch (error) {
-      console.log('error ==========>', error);
-      throw new BadRequestException('Authentication credentials provided');
+    const user = await this.usersService.getByEmail(email);
+    if (!user) {
+      throw new BadRequestException('User with this email does not exist');
     }
-  }
-
-  public async getAdminModuleAuthenticatedUser(
-    email: string,
-    plainTextPassword: string,
-  ) {
-    try {
-      const user = await this.usersService.getByEmail(email);
-      await this.verifyPassword(plainTextPassword, user.password);
-      const accessToken = this.getJwtAccessToken(user.id);
-      const refreshToken = this.getJwtRefreshToken(user.id);
-      await this.usersService.setCurrentRefreshToken(refreshToken, user.id);
-      const data = {
-        user: user,
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-      };
-      return data;
-    } catch (error) {
-      throw new BadRequestException('Authentication credentials provided');
-    }
+    await this.verifyPassword(plainTextPassword, user.password);
+    return user;
   }
 
   private async verifyPassword(

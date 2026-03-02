@@ -5,7 +5,7 @@ import {
   IsNumberString,
   IsBooleanString,
 } from 'class-validator';
-import { PageOptionsDto } from '../../../../utils/dto/pageOptions.dto';
+import { PageOptionsDto } from '@utils/dto/page-options.dto';
 
 export class GetMailDto extends PartialType(PageOptionsDto) {
   @IsString()

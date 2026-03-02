@@ -5,11 +5,11 @@ import { GetContractDto } from './dto/get-contracts.dto';
 import { EntityManager, Equal, FindManyOptions, ILike } from 'typeorm';
 import Contracts from './contracts.entity';
 import ContractNotFoundException from './exceptions/contracts-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class ContractService {
@@ -28,7 +28,7 @@ export class ContractService {
    * A method that fetches the Contract from the database
    * @returns A promise with the list of Contracts
    */
-  async getAllContracts(query: GetContractDto, user: GetUserDto) {
+  async getAllContracts(query: GetContractDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Contracts>['where'] = {};
     if (query.userId) {
@@ -71,10 +71,7 @@ export class ContractService {
    * @example
    * const Contract = await ContractService.getContractById(1);
    */
-  async getContractById(
-    contractId: number,
-    user: GetUserDto,
-  ): Promise<Contracts> {
+  async getContractById(contractId: number, user: IUser): Promise<Contracts> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const contract = await entityManager.findOne(Contracts, {
       where: { id: contractId },
@@ -90,7 +87,7 @@ export class ContractService {
    * @param Contract createContract
    *
    */
-  async createContract(contract: CreateContractDto, user: GetUserDto) {
+  async createContract(contract: CreateContractDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newContract = entityManager.create(Contracts, contract);
     await entityManager.save(newContract);
@@ -102,7 +99,7 @@ export class ContractService {
    */
   async updateContract(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     contract: UpdateContractDto,
   ): Promise<Contracts> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -119,7 +116,7 @@ export class ContractService {
   /**
    * @deprecated Use deleteContract instead
    */
-  async deleteContractById(id: number, user: GetUserDto): Promise<void> {
+  async deleteContractById(id: number, user: IUser): Promise<void> {
     return this.deleteContract(id, user);
   }
 
@@ -127,7 +124,7 @@ export class ContractService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteContract(id: number, user: GetUserDto): Promise<void> {
+  async deleteContract(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(Contracts, id);
     if (!deleteResponse.affected) {

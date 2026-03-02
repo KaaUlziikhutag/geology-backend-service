@@ -19,7 +19,7 @@ import { ExcuseService } from './excuse.service';
 import { CreateExcuseDto } from './dto/create-excuse.dto';
 import { UpdateExcuseDto } from './dto/update-excuse.dto';
 import { GetExcuseDto } from './dto/get-excuse.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';

@@ -25,7 +25,7 @@ import { ApiPaginatedResponse } from '../../utils/api-paginated-response.decorat
 import PageProductDto from './dto/page-product.dto';
 import GetProductDto from './dto/get-product.dto';
 
-@Controller('product')
+@Controller('p-product')
 @ApiTags('product')
 @UseInterceptors(ClassSerializerInterceptor)
 export class ProductController {

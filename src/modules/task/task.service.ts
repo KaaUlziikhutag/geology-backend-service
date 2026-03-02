@@ -16,6 +16,7 @@ import { GetAnalyticTaskDto } from './dto/get-analytic-task.dto';
 import { BarcodeService } from '../barcode/barcode.service';
 import { TaskUsersDto } from './dto/task-users.dto';
 import { UsersService } from '../users/users.service';
+import IUser from '@modules/cloud/user/interface/user.interface';
 @Injectable()
 export class TaskService {
   constructor(
@@ -26,7 +27,7 @@ export class TaskService {
     private readonly barcodeService: BarcodeService,
   ) {}
 
-  async createTask(user: GetUserDto, task: CreateTaskDto): Promise<Task> {
+  async createTask(user: IUser, task: CreateTaskDto): Promise<Task> {
     const { barcode } = await this.barcodeService.getBarcode();
     const newTask = this.taskRepository.create({
       ...task,
@@ -124,14 +125,14 @@ export class TaskService {
   }
 
   async updateTask(
-    user: GetUserDto,
+    user: IUser,
     id: number,
     task: UpdateTaskDto,
   ): Promise<Task> {
     const updatedTask = await this.getTaskById(id);
     if (
       task.state === TaskState.Completed &&
-      updatedTask.order.price.product.type === ProductType.Industry
+      updatedTask.order.price.product.type === ProductType.variable
     ) {
       const mineral = await this.mineralService.updateMineral(
         updatedTask.mineralId,

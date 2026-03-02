@@ -18,7 +18,7 @@ import {
 import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
 import LocalFilesService from './local-files.service';
 import LocalFilesInterceptor from './local-files.interceptor';
-import FileUploadDto from '../../utils/dto/file-upload.dto';
+import FileUploadDto from './dto/file-upload.dto';
 import { Response } from 'express';
 import { createReadStream } from 'fs';
 import { join } from 'path';

@@ -6,7 +6,7 @@ import {
   IsString,
   IsEnum,
 } from 'class-validator';
-import { MailAddressType } from '../../../../../utils/enumUtils';
+import { MailAddressType } from '@utils/enum-utils';
 
 export class CreateAddressDto {
   @IsDefined()

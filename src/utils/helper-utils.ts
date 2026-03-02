@@ -112,3 +112,98 @@ export const getYearDates = (date: Date): GetRangeDateDto => {
   const endAt = new Date(year, 11, 31, 23, 59, 59, 999);
   return { startAt, endAt };
 };
+
+function getMinutesDifference(
+  a: string | undefined | null,
+  b: string | undefined | null,
+): number {
+  if (!a || !b) return 0;
+  const [aHours, aMinutes] = a.split(':').map(Number);
+  const [bHours, bMinutes] = b.split(':').map(Number);
+  return aHours * 60 + aMinutes - (bHours * 60 + bMinutes);
+}
+
+function toTimeString(totalMinutes: number): string {
+  const hours = Math.floor(totalMinutes / 60)
+    .toString()
+    .padStart(2, '0');
+  const minutes = (totalMinutes % 60).toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
+}
+export function calculateAttendanceStatus(
+  time1: string | null,
+  time2: string | null,
+  startTime: string,
+  endTime: string,
+) {
+  const result = {
+    lateMinutes: 0,
+    leftEarlyMinutes: 0,
+    overTimeMinutes: 0,
+    isAbsent: false,
+    lostTime1: '00:00',
+    lostTime2: '00:00',
+    overTime1: '00:00',
+    overTime2: '00:00',
+  };
+
+  if (!time1 || !time2) {
+    result.isAbsent = true;
+    return result;
+  }
+
+  const late = getMinutesDifference(time1, startTime); // хоцорсон
+  const leftEarly = getMinutesDifference(endTime, time2); // эрт явсан
+  const overTimeAfter = getMinutesDifference(time2, endTime); // ажлын дараа
+  const overTimeBefore = getMinutesDifference(startTime, time1); // ажлын өмнө
+
+  if (late > 0) {
+    result.lateMinutes = late;
+    result.lostTime1 = toTimeString(late);
+  }
+
+  if (leftEarly > 0) {
+    result.leftEarlyMinutes = leftEarly;
+    result.lostTime2 = toTimeString(leftEarly);
+  }
+
+  if (overTimeAfter > 0) {
+    result.overTimeMinutes += overTimeAfter;
+    result.overTime2 = toTimeString(overTimeAfter);
+  }
+
+  if (overTimeBefore > 0) {
+    result.overTimeMinutes += overTimeBefore;
+    result.overTime1 = toTimeString(overTimeBefore);
+  }
+
+  return result;
+}
+export function extractBirthDateFromRegNumber(
+  regNumber: string,
+): string | null {
+  const numericRegNumber = regNumber.replace(/\D/g, '');
+  if (!/^\d{8,10}$/.test(numericRegNumber)) {
+    return null; // Invalid format
+  }
+  const yearFragment = parseInt(numericRegNumber.slice(0, 2), 10);
+  let month = parseInt(numericRegNumber.slice(2, 4), 10);
+  const day = parseInt(numericRegNumber.slice(4, 6), 10);
+
+  if (month > 12) {
+    month -= 20;
+  }
+  if (month < 1 || month > 12 || day < 1 || day > 31) {
+    return null; // Invalid date
+  }
+
+  const currentYear = new Date().getFullYear();
+  const fullYear =
+    yearFragment + (yearFragment <= currentYear % 100 ? 2000 : 1900);
+
+  // Format the date as "YYYY-MM-DD"
+  return `${fullYear}-${String(month).padStart(2, '0')}-${String(day).padStart(
+    2,
+    '0',
+  )}`;
+}

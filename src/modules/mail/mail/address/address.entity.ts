@@ -7,7 +7,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import Mail from '../mail.entity';
-import { MailAddressType } from '../../../../utils/enumUtils';
+import { MailAddressType } from '@utils/enum-utils';
 
 @Entity('mail_addresses')
 export default class Address extends BaseEntity {

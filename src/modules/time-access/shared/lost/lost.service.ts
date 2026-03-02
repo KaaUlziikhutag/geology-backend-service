@@ -2,34 +2,28 @@ import { Injectable } from '@nestjs/common';
 import { CreateDirectLostDto } from './dto/create-lost.dto';
 import { UpdateDirectLostDto } from './dto/update-lost.dto';
 import { GetDirectLostDto } from './dto/get-lost.dto';
-import { EntityManager, Equal, FindManyOptions } from 'typeorm';
+import { Equal, FindManyOptions, Repository } from 'typeorm';
 import DirectLosts from './lost.entity';
 import DirectLostNotFoundException from './exceptions/lost-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
-import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class DirectLostService {
   /**
    * @ignore
    */
-  constructor(private moduleRef: ModuleRef) {}
-
-  private async loadEntityManager(systemId: string): Promise<EntityManager> {
-    return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
-      strict: false,
-    });
-  }
+  constructor(
+    @InjectRepository(DirectLosts)
+    private readonly directLostRepository: Repository<DirectLosts>,
+  ) {}
 
   /**
    * A method that fetches the DirectLost from the database
    * @returns A promise with the list of DirectLosts
    */
-  async getAllDirectLosts(query: GetDirectLostDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getAllDirectLosts(query: GetDirectLostDto) {
     const where: FindManyOptions<DirectLosts>['where'] = {};
     if (query.directId) {
       where.directId = Equal(query.directId);
@@ -43,7 +37,7 @@ export class DirectLostService {
         ? Number(query.limit)
         : 10;
     const skip = (page - 1) * limit;
-    const [items, count] = await entityManager.findAndCount(DirectLosts, {
+    const [items, count] = await this.directLostRepository.findAndCount({
       where,
       order: {
         createdAt: 'DESC',
@@ -62,12 +56,8 @@ export class DirectLostService {
    * @example
    * const DirectLost = await DirectLostService.getDirectLostById(1);
    */
-  async getDirectLostById(
-    directLostId: number,
-    user: GetUserDto,
-  ): Promise<DirectLosts> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const directLost = await entityManager.findOne(DirectLosts, {
+  async getDirectLostById(directLostId: number): Promise<DirectLosts> {
+    const directLost = await this.directLostRepository.findOne({
       where: { id: directLostId },
     });
     if (directLost) {
@@ -81,11 +71,9 @@ export class DirectLostService {
    * @param DirectLost createDirectLost
    *
    */
-  async createDirectLost(directLost: CreateDirectLostDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const newDirectLost = entityManager.create(DirectLosts, directLost);
-    await entityManager.save(newDirectLost);
-    return newDirectLost;
+  async createDirectLost(directLost: CreateDirectLostDto) {
+    const newDirectLost = this.directLostRepository.create(directLost);
+    return await this.directLostRepository.save(newDirectLost);
   }
 
   /**
@@ -93,13 +81,11 @@ export class DirectLostService {
    */
   async updateDirectLost(
     id: number,
-    user: GetUserDto,
     directLost: UpdateDirectLostDto,
   ): Promise<DirectLosts> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    await entityManager.update(DirectLosts, id, directLost);
-    const updatedDirectLost = await entityManager.findOne(DirectLosts, {
-      where: { id: id },
+    await this.directLostRepository.update(id, directLost);
+    const updatedDirectLost = await this.directLostRepository.findOne({
+      where: { id },
     });
     if (updatedDirectLost) {
       return updatedDirectLost;
@@ -110,17 +96,16 @@ export class DirectLostService {
   /**
    * @deprecated Use deleteDirectLost instead
    */
-  async deleteDirectLostById(id: number, user: GetUserDto): Promise<void> {
-    return this.deleteDirectLost(id, user);
+  async deleteDirectLostById(id: number): Promise<void> {
+    return this.deleteDirectLost(id);
   }
 
   /**
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteDirectLost(id: number, user: GetUserDto): Promise<void> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const deleteResponse = await entityManager.delete(DirectLosts, id);
+  async deleteDirectLost(id: number): Promise<void> {
+    const deleteResponse = await this.directLostRepository.delete(id);
     if (!deleteResponse.affected) {
       throw new DirectLostNotFoundException(id);
     }

@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { ContactPersonStatus } from '../../../../../utils/enumUtils';
+import { ContactPersonStatus } from '@utils/enum-utils';
 
 export class ContactDto {
   @IsOptional()

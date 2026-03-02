@@ -1,4 +1,3 @@
-import { FileDto } from '../../../utils/globalUtils';
 import {
   Column,
   Entity,
@@ -10,6 +9,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import PublicViewUser from '../view-users/view-users.entity';
+import LocalFile from '@modules/local-files/local-file.entity';
 
 @Entity('public_gallery_i')
 export default class PublicGallery extends BaseEntity {
@@ -35,7 +35,7 @@ export default class PublicGallery extends BaseEntity {
   access: number; //Хэрэглэгчийн хязгаарлалтай эсэх
 
   @Column({ type: 'jsonb', name: 'fileIds', nullable: true })
-  public fileIds: FileDto[]; // FILE UPLOAD
+  public fileIds: LocalFile[]; // FILE UPLOAD
 
   @Column({ nullable: true })
   share: number; //Private | Public

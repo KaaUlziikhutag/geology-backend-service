@@ -5,14 +5,14 @@ import { GetSignatureDto } from './dto/get-signature.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Signature from './signature.entity';
 import SystemMailNotFoundException from './exceptions/signature-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../cloud/user/dto/get-user.dto';
 import SignatureNotFoundException from './exceptions/signature-not-found.exception';
 import SignatureViewUser from './view-users/view-users.entity';
 import { UpdateSignatureViewUserDto } from './view-users/dto/update-signature.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class SignatureService {
@@ -31,7 +31,7 @@ export class SignatureService {
    * A method that fetches the Contract from the database
    * @returns A promise with the list of Contract
    */
-  async getAllSystemMails(query: GetSignatureDto, user: GetUserDto) {
+  async getAllSystemMails(query: GetSignatureDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Signature>['where'] = {};
     if (query.authorId) {
@@ -67,10 +67,7 @@ export class SignatureService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getSignatureById(
-    signatureId: number,
-    user: GetUserDto,
-  ): Promise<Signature> {
+  async getSignatureById(signatureId: number, user: IUser): Promise<Signature> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const signature = await entityManager.findOne(Signature, {
       where: { id: signatureId },
@@ -87,15 +84,15 @@ export class SignatureService {
    * @param SystemMail createSystemMail
    *
    */
-  async createSignature(signature: CreateSignatureDto, user: GetUserDto) {
+  async createSignature(signature: CreateSignatureDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    signature.authorId = user.workerId;
+    signature.authorId = user.id;
     const newSignature = entityManager.create(Signature, { ...signature });
     await entityManager.save(newSignature);
-    if (user.workerId) {
+    if (user.id) {
       const signatureViewUser = entityManager.create(SignatureViewUser, {
         signatureId: newSignature.id,
-        userId: user.workerId,
+        userId: user.id,
         isActive: signature.isActive,
       });
       await entityManager.save(signatureViewUser);
@@ -108,7 +105,7 @@ export class SignatureService {
    */
   async updateSignature(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     signature: UpdateSignatureDto,
   ): Promise<Signature> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -124,7 +121,7 @@ export class SignatureService {
 
   async updateSignatureVewUser(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     signatureViewUser: UpdateSignatureViewUserDto,
   ): Promise<SignatureViewUser> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -144,7 +141,7 @@ export class SignatureService {
   /**
    * @deprecated Use deleteContract instead
    */
-  async deleteSignatureById(id: number, user: GetUserDto): Promise<void> {
+  async deleteSignatureById(id: number, user: IUser): Promise<void> {
     return this.deleteSignature(id, user);
   }
 
@@ -152,7 +149,7 @@ export class SignatureService {
    * A method that deletes a contract from the database
    * @param id An id of a contract. A contract with this id should exist in the database
    */
-  async deleteSignature(id: number, user: GetUserDto): Promise<void> {
+  async deleteSignature(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(Signature, id);
     if (!deleteResponse.affected) {

@@ -19,7 +19,7 @@ import { DirectService } from './direct.service';
 import { CreateDirectDto } from './dto/create-direct.dto';
 import { UpdateDirectDto } from './dto/update-direct.dto';
 import { GetDirectDto } from './dto/get-direct.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../../authentication/guard/jwt-authentication.guard';

@@ -5,11 +5,11 @@ import { GetExcuseDto } from './dto/get-excuse.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Excuses from './excuse.entity';
 import ExcuseNotFoundException from './exceptions/excuse-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class ExcuseService {
@@ -28,7 +28,7 @@ export class ExcuseService {
    * A method that fetches the Excuse from the database
    * @returns A promise with the list of Excuses
    */
-  async getAllExcuses(query: GetExcuseDto, user: GetUserDto) {
+  async getAllExcuses(query: GetExcuseDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Excuses>['where'] = {};
     if (query.comId) {
@@ -63,7 +63,7 @@ export class ExcuseService {
    * @example
    * const Excuse = await ExcuseService.getExcuseById(1);
    */
-  async getExcuseById(excuseId: number, user: GetUserDto): Promise<Excuses> {
+  async getExcuseById(excuseId: number, user: IUser): Promise<Excuses> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const excuse = await entityManager.findOne(Excuses, {
       where: { id: excuseId },
@@ -79,9 +79,9 @@ export class ExcuseService {
    * @param Excuse createExcuse
    *
    */
-  async createExcuse(excuse: CreateExcuseDto, user: GetUserDto) {
+  async createExcuse(excuse: CreateExcuseDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    excuse.authorId = user.workerId;
+    excuse.authorId = user.id;
     const newExcuse = entityManager.create(Excuses, excuse);
     await entityManager.save(newExcuse);
     return newExcuse;
@@ -92,7 +92,7 @@ export class ExcuseService {
    */
   async updateExcuse(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     excuse: UpdateExcuseDto,
   ): Promise<Excuses> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -109,7 +109,7 @@ export class ExcuseService {
   /**
    * @deprecated Use deleteExcuse instead
    */
-  async deleteExcuseById(id: number, user: GetUserDto): Promise<void> {
+  async deleteExcuseById(id: number, user: IUser): Promise<void> {
     return this.deleteExcuse(id, user);
   }
 
@@ -117,7 +117,7 @@ export class ExcuseService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteExcuse(id: number, user: GetUserDto): Promise<void> {
+  async deleteExcuse(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Excuses, id);
     if (!deleteResponse.affected) {

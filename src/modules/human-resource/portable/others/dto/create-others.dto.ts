@@ -6,7 +6,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ExamType } from '../../../../../utils/globalUtils';
+import { ExamType } from '@utils/enum-utils';
 export class CreateOthersDto {
   @IsOptional()
   @IsNumber()

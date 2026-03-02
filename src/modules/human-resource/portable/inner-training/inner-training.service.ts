@@ -5,11 +5,11 @@ import { GetInnerTrainingDto } from './dto/get-inner-training.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import InnerTrainings from './inner-training.entity';
 import InnerTrainingNotFoundException from './exceptions/inner-training-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class InnerTrainingService {
@@ -28,7 +28,7 @@ export class InnerTrainingService {
    * A method that fetches the InnerTraining from the database
    * @returns A promise with the list of InnerTrainings
    */
-  async getAllInnerTrainings(query: GetInnerTrainingDto, user: GetUserDto) {
+  async getAllInnerTrainings(query: GetInnerTrainingDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<InnerTrainings>['where'] = {};
     if (query.userId) {
@@ -66,7 +66,7 @@ export class InnerTrainingService {
    */
   async getInnerTrainingById(
     innerTrainingId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<InnerTrainings> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const InnerTraining = await entityManager.findOne(InnerTrainings, {
@@ -85,10 +85,10 @@ export class InnerTrainingService {
    */
   async createInnerTraining(
     innerTraining: CreateInnerTrainingDto,
-    user: GetUserDto,
+    user: IUser,
   ) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    innerTraining.authorId = user.workerId;
+    innerTraining.authorId = user.id;
     const newInnerTraining = entityManager.create(
       InnerTrainings,
       innerTraining,
@@ -102,7 +102,7 @@ export class InnerTrainingService {
    */
   async updateInnerTraining(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     innerTraining: UpdateInnerTrainingDto,
   ): Promise<InnerTrainings> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -119,7 +119,7 @@ export class InnerTrainingService {
   /**
    * @deprecated Use deleteInnerTraining instead
    */
-  async deleteInnerTrainingById(id: number, user: GetUserDto): Promise<void> {
+  async deleteInnerTrainingById(id: number, user: IUser): Promise<void> {
     return this.deleteInnerTraining(id, user);
   }
 
@@ -127,7 +127,7 @@ export class InnerTrainingService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteInnerTraining(id: number, user: GetUserDto): Promise<void> {
+  async deleteInnerTraining(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(InnerTrainings, id);
     if (!deleteResponse.affected) {

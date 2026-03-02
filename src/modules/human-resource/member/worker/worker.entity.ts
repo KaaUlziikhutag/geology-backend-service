@@ -17,7 +17,7 @@ import {
   TemporaryOptions,
   TimeAccessType,
   WorkType,
-} from '../../../../utils/globalUtils';
+} from '@utils/enum-utils';
 import Human from '../human/human.entity';
 import AppointmentByuser from '../../../human-resource/appointment/entities/appointment-byuser.entity';
 import HolidayByuser from '../../../human-resource/holiday/entities/holiday-byuser.entity';
@@ -223,84 +223,84 @@ export default class Worker extends BaseEntity {
   @OneToMany(() => NewsLike, (newsLike: NewsLike) => newsLike.workers)
   newsLikes: NewsLike[];
 
-  @OneToMany(
-    () => AppointmentByuser,
-    (appointmentByuser: AppointmentByuser) => appointmentByuser.workers,
-  )
-  appointmentByusers?: AppointmentByuser[];
+  // @OneToMany(
+  //   () => AppointmentByuser,
+  //   (appointmentByuser: AppointmentByuser) => appointmentByuser.workers,
+  // )
+  // appointmentByusers?: AppointmentByuser[];
 
-  @OneToMany(
-    () => HolidayByuser,
-    (holidayByusers: HolidayByuser) => holidayByusers.workers,
-  )
-  holidayByusers?: HolidayByuser[];
+  // @OneToMany(
+  //   () => HolidayByuser,
+  //   (holidayByusers: HolidayByuser) => holidayByusers.workers,
+  // )
+  // holidayByusers?: HolidayByuser[];
 
-  @OneToMany(
-    () => EmploymentContract,
-    (employmentContract: EmploymentContract) => employmentContract.workers,
-  )
-  employmentContract?: EmploymentContract[];
+  // @OneToMany(
+  //   () => EmploymentContract,
+  //   (employmentContract: EmploymentContract) => employmentContract.workers,
+  // )
+  // employmentContract?: EmploymentContract[];
 
-  @OneToMany(
-    () => EmploymentContract,
-    (employmentContract: EmploymentContract) =>
-      employmentContract.ourConfirmWorker,
-  )
-  employmentContractOur?: EmploymentContract[];
+  // @OneToMany(
+  //   () => EmploymentContract,
+  //   (employmentContract: EmploymentContract) =>
+  //     employmentContract.ourConfirmWorker,
+  // )
+  // employmentContractOur?: EmploymentContract[];
 
-  @OneToMany(
-    () => TimeRequestByusers,
-    (timeRequestByusers: TimeRequestByusers) => timeRequestByusers.workers,
-  )
-  timeRequestByusers?: TimeRequestByusers[];
+  // @OneToMany(
+  //   () => TimeRequestByusers,
+  //   (timeRequestByusers: TimeRequestByusers) => timeRequestByusers.workers,
+  // )
+  // timeRequestByusers?: TimeRequestByusers[];
 
-  @OneToMany(
-    () => TimeIpAddressByusers,
-    (timeIpAddressByusers: TimeIpAddressByusers) =>
-      timeIpAddressByusers.workers,
-  )
-  timeIpAddressByusers?: TimeIpAddressByusers[];
+  // @OneToMany(
+  //   () => TimeIpAddressByusers,
+  //   (timeIpAddressByusers: TimeIpAddressByusers) =>
+  //     timeIpAddressByusers.workers,
+  // )
+  // timeIpAddressByusers?: TimeIpAddressByusers[];
 
-  @OneToMany(
-    () => SupervisorByusers,
-    (supervisorByusers: SupervisorByusers) => supervisorByusers.workers,
-  )
-  supervisorByusers?: SupervisorByusers[];
+  // @OneToMany(
+  //   () => SupervisorByusers,
+  //   (supervisorByusers: SupervisorByusers) => supervisorByusers.workers,
+  // )
+  // supervisorByusers?: SupervisorByusers[];
 
-  @OneToMany(() => Contract, (contract: Contract) => contract.ourConfirmWorker)
-  contract?: Contract[];
+  // @OneToMany(() => Contract, (contract: Contract) => contract.ourConfirmWorker)
+  // contract?: Contract[];
 
-  @OneToMany(
-    () => DecisionViewUser,
-    (decisionViewUser: DecisionViewUser) => decisionViewUser.workers,
-  )
-  decisionViewUser?: DecisionViewUser[];
+  // @OneToMany(
+  //   () => DecisionViewUser,
+  //   (decisionViewUser: DecisionViewUser) => decisionViewUser.workers,
+  // )
+  // decisionViewUser?: DecisionViewUser[];
 
-  @OneToMany(() => Inner, (inner: Inner) => inner.confirmInnerWorker)
-  confirmInner?: Inner[];
+  // @OneToMany(() => Inner, (inner: Inner) => inner.confirmInnerWorker)
+  // confirmInner?: Inner[];
 
-  @OneToMany(() => Above, (above: Above) => above.authorAboveWorker)
-  authorAbove?: Above[];
+  // @OneToMany(() => Above, (above: Above) => above.authorAboveWorker)
+  // authorAbove?: Above[];
 
-  @OneToMany(
-    () => WorkerApp,
-    (workerApp: WorkerApp) => workerApp.appConfirmWorker,
-  )
-  workerAppConfirm?: WorkerApp[];
+  // @OneToMany(
+  //   () => WorkerApp,
+  //   (workerApp: WorkerApp) => workerApp.appConfirmWorker,
+  // )
+  // workerAppConfirm?: WorkerApp[];
 
-  @OneToMany(() => Above, (above: Above) => above.signAboveWorker)
-  above?: Above[];
+  // @OneToMany(() => Above, (above: Above) => above.signAboveWorker)
+  // above?: Above[];
 
-  @OneToMany(
-    () => ContractDelegateOur,
-    (contractDelegateOur: ContractDelegateOur) => contractDelegateOur.worker,
-  )
-  contractDelegateOur?: ContractDelegateOur[];
+  // @OneToMany(
+  //   () => ContractDelegateOur,
+  //   (contractDelegateOur: ContractDelegateOur) => contractDelegateOur.worker,
+  // )
+  // contractDelegateOur?: ContractDelegateOur[];
 
-  @OneToMany(
-    () => ContractViewUser,
-    (contractViewUser: ContractViewUser) => contractViewUser.worker,
-    { onUpdate: 'CASCADE' },
-  )
-  viewUsers?: ContractViewUser[];
+  // @OneToMany(
+  //   () => ContractViewUser,
+  //   (contractViewUser: ContractViewUser) => contractViewUser.worker,
+  //   { onUpdate: 'CASCADE' },
+  // )
+  // viewUsers?: ContractViewUser[];
 }

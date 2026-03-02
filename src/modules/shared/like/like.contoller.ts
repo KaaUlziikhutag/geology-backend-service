@@ -19,7 +19,7 @@ import { NewsLikeService } from './like.service';
 import { CreateNewsLikeDto } from './dto/create-like.dto';
 import { UpdateNewsLikeDto } from './dto/update-like.dto';
 import { GetNewsLikeDto } from './dto/get-like.dto';
-import FindOneParams from '../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../utils/dto/response.dto';
 import { IResponse } from '../../../utils/interfaces/response.interface';
@@ -35,13 +35,9 @@ export class NewsLikeController {
   @Get()
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getAllNewsLike(
-    @Req() request: RequestWithUser,
-    @Query() query: GetNewsLikeDto,
-  ): Promise<IResponse> {
+  async getAllNewsLike(@Query() query: GetNewsLikeDto): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.newsLikeService.getAllNewsLike(query, user);
+      const data = await this.newsLikeService.getAllNewsLike(query);
       return new ResponseSuccess('GET_NEWS_lIKES_SUCCESS', data);
     } catch (error) {
       console.log('------------------>', error);
@@ -52,13 +48,9 @@ export class NewsLikeController {
   @Get(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getNewsLikeById(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async getNewsLikeById(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.newsLikeService.getNewsLikeById(id, user);
+      const data = await this.newsLikeService.getNewsLikeById(id);
       return new ResponseSuccess('GET_NEWS_lIKE_SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -88,16 +80,10 @@ export class NewsLikeController {
   @UseGuards(AuthGuard('api-key'))
   async updateNewsLike(
     @Param() { id }: FindOneParams,
-    @Req() request: RequestWithUser,
     @Body() newsLike: UpdateNewsLikeDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.newsLikeService.updateNewsLike(
-        id,
-        user,
-        newsLike,
-      );
+      const data = await this.newsLikeService.updateNewsLike(id, newsLike);
       return new ResponseSuccess('UPDATE_NEWS_lIKE_SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -107,13 +93,9 @@ export class NewsLikeController {
   @Delete(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async deleteNewsLike(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async deleteNewsLike(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.newsLikeService.deleteNewsLike(id, user);
+      const data = await this.newsLikeService.deleteNewsLike(id);
       return new ResponseSuccess('DELETE_NEWS_lIKE_SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

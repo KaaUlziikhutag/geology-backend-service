@@ -15,7 +15,7 @@ import {
   Situation,
   TypeOfPosition,
   TypeStatus,
-} from '../../../utils/globalUtils';
+} from '@utils/enum-utils';
 import InsuranceType from './insurance-type/insurance-type.entity';
 import Worker from '../member/worker/worker.entity';
 import Occupation from './cccupation/cccupation.entity';
@@ -124,11 +124,11 @@ export default class Trees extends BaseEntity {
   @OneToMany(() => Worker, (worker: Worker) => worker.depTree)
   workerDep?: Worker[];
 
-  @OneToMany(
-    () => EmploymentContract,
-    (employmentContract: EmploymentContract) => employmentContract.tree,
-  )
-  employmentContract?: EmploymentContract[];
+  // @OneToMany(
+  //   () => EmploymentContract,
+  //   (employmentContract: EmploymentContract) => employmentContract.tree,
+  // )
+  // employmentContract?: EmploymentContract[];
 
   @OneToMany(() => WorkerApp, (workerApp: WorkerApp) => workerApp.appTree)
   workerApp?: WorkerApp[];

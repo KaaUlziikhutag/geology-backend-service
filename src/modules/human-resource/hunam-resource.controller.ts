@@ -16,14 +16,14 @@ import {
   Delete,
 } from '@nestjs/common';
 import { HumanResourceService } from './hunam-resource.service';
-import { ResponseSuccess } from '../../utils/dto/response.dto';
-import { IResponse } from '../../utils/interfaces/response.interface';
+import { ResponseSuccess } from '@utils/dto/response.dto';
+import { IResponse } from '@utils/interfaces/response.interface';
 import { AuthGuard } from '@nestjs/passport';
 import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
 import RequestWithUser from '../authentication/interface/request-with-user.interface';
 import { HumanResourceDto } from './dto/human-resource.dto';
 import { GetHumanResourceDto } from './dto/get-human-resource.dto';
-import FindOneParams from '../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 @Controller('human-resource')
 @UseInterceptors(ClassSerializerInterceptor)

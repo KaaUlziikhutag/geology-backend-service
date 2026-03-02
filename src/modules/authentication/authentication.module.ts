@@ -10,6 +10,7 @@ import { JwtRefreshTokenStrategy } from './strategy/jwt-refresh-token.strategy';
 import { HeaderApiKeyStrategy } from './strategy/auth-header-api-key.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import Joi from '@hapi/joi';
+import { AccessModule } from '@modules/human-resource/access/access.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import Joi from '@hapi/joi';
       }),
       inject: [ConfigService],
     }),
+    AccessModule,
   ],
   providers: [
     AuthenticationService,

@@ -5,11 +5,11 @@ import { GetOthersDto } from './dto/get-others.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Others from './others.entity';
 import OthersNotFoundException from './exceptions/others-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class OthersService {
@@ -28,7 +28,7 @@ export class OthersService {
    * A method that fetches the Others from the database
    * @returns A promise with the list of Otherss
    */
-  async getAllOtherss(query: GetOthersDto, user: GetUserDto) {
+  async getAllOtherss(query: GetOthersDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Others>['where'] = {};
     if (query.comId) {
@@ -61,7 +61,7 @@ export class OthersService {
    * @example
    * const Others = await OthersService.getOthersById(1);
    */
-  async getOthersById(othersId: number, user: GetUserDto): Promise<Others> {
+  async getOthersById(othersId: number, user: IUser): Promise<Others> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const others = await entityManager.findOne(Others, {
       where: { id: othersId },
@@ -77,9 +77,9 @@ export class OthersService {
    * @param Others createOthers
    *
    */
-  async createOthers(others: CreateOthersDto, user: GetUserDto) {
+  async createOthers(others: CreateOthersDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    others.authorId = user.workerId;
+    others.authorId = user.id;
     const newOthers = entityManager.create(Others, others);
     await entityManager.save(newOthers);
     return newOthers;
@@ -90,7 +90,7 @@ export class OthersService {
    */
   async updateOthers(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     others: UpdateOthersDto,
   ): Promise<Others> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -107,7 +107,7 @@ export class OthersService {
   /**
    * @deprecated Use deleteOthers instead
    */
-  async deleteOthersById(id: number, user: GetUserDto): Promise<void> {
+  async deleteOthersById(id: number, user: IUser): Promise<void> {
     return this.deleteOthers(id, user);
   }
 
@@ -115,7 +115,7 @@ export class OthersService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteOthers(id: number, user: GetUserDto): Promise<void> {
+  async deleteOthers(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Others, id);
     if (!deleteResponse.affected) {

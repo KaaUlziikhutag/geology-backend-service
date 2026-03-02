@@ -2,16 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { CreateAccessDto } from './dto/create-access.dto';
 import { UpdateAccessDto } from './dto/update-access.dto';
 import { GetAccessDto } from './dto/get-access.dto';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import { EntityManager, Equal, FindManyOptions, Not } from 'typeorm';
+import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
+import {
+  EntityManager,
+  Equal,
+  FindManyOptions,
+  Not,
+  Repository,
+} from 'typeorm';
 import Access from './access.entity';
 import AccessNotFoundException from './exceptions/access-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import GetUserDto from '../../cloud/user/dto/get-user.dto';
 import { ProgramService } from '../../cloud/programs/program.service';
 import { ModuleService } from '../../cloud/module/modules.service';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class AccessService {
@@ -19,23 +25,17 @@ export class AccessService {
    * @ignore
    */
   constructor(
-    private moduleRef: ModuleRef,
+    @InjectRepository(Access)
+    private accessRepository: Repository<Access>,
     private readonly programService: ProgramService,
     private readonly modulService: ModuleService,
   ) {}
-
-  private async loadEntityManager(systemId: string): Promise<EntityManager> {
-    return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
-      strict: false,
-    });
-  }
 
   /**
    * A method that fetches the Access from the database
    * @returns A promise with the list of Accesss
    */
-  async getAllAccesss(query: GetAccessDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getAllAccesss(query: GetAccessDto) {
     const where: FindManyOptions<Access>['where'] = {};
 
     if (query.workerId) {
@@ -54,7 +54,7 @@ export class AccessService {
 
     const skip = (page - 1) * (limit || 0);
 
-    const [items, count] = await entityManager.findAndCount(Access, {
+    const [items, count] = await this.accessRepository.findAndCount({
       where,
       order: {
         createdAt: 'DESC',
@@ -74,9 +74,8 @@ export class AccessService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getAccessById(accessId: number, user: GetUserDto): Promise<Access> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const access = await entityManager.findOne(Access, {
+  async getAccessById(accessId: number): Promise<Access> {
+    const access = await this.accessRepository.findOne({
       where: { id: accessId },
     });
     if (access) {
@@ -85,10 +84,9 @@ export class AccessService {
     throw new AccessNotFoundException(accessId);
   }
 
-  async getAccessByWorkId(workerId: number, user: GetUserDto): Promise<any[]> {
+  async getAccessByWorkId(workerId: number): Promise<any[]> {
     try {
-      const entityManager = await this.loadEntityManager(user.dataBase);
-      const accessList = await entityManager.find(Access, {
+      const accessList = await this.accessRepository.find({
         where: { workerId: workerId, modId: 0 },
       });
       const programs = [];
@@ -99,7 +97,7 @@ export class AccessService {
           );
           const modules = [];
 
-          const modeleList = await entityManager.find(Access, {
+          const modeleList = await this.accessRepository.find({
             where: { workerId: workerId, proId: access.proId, modId: Not(0) },
           });
 
@@ -143,25 +141,18 @@ export class AccessService {
    * @param Access createAccess
    *
    */
-  async createAccess(access: CreateAccessDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const newAccess = entityManager.create(Access, access);
-    await entityManager.save(newAccess);
-    return newAccess;
+  async createAccess(access: CreateAccessDto) {
+    const newAccess = this.accessRepository.create(access);
+    return await this.accessRepository.save(newAccess);
   }
 
   /**
    * See the [definition of the UpdateAccessDto file]{@link UpdateAccessDto} to see a list of required properties
    */
-  async updateAccess(
-    id: number,
-    user: GetUserDto,
-    access: UpdateAccessDto,
-  ): Promise<Access> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    await entityManager.update(Access, id, access);
-    const updatedAccess = await entityManager.findOne(Access, {
-      where: { id: id },
+  async updateAccess(id: number, access: UpdateAccessDto): Promise<Access> {
+    await this.accessRepository.update(id, access);
+    const updatedAccess = await this.accessRepository.findOne({
+      where: { id },
     });
     if (updatedAccess) {
       return updatedAccess;
@@ -171,11 +162,9 @@ export class AccessService {
 
   async updateAccessProgram(
     id: number,
-    user: GetUserDto,
     access: UpdateAccessDto,
   ): Promise<Access[]> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const existingAccessRecords = await entityManager.find(Access, {
+    const existingAccessRecords = await this.accessRepository.find({
       where: { workerId: id, proId: access.accessId },
     });
     if (!existingAccessRecords.length) {
@@ -184,19 +173,14 @@ export class AccessService {
     const updatedAccessRecords: Access[] = [];
     for (const existingAccess of existingAccessRecords) {
       existingAccess.access = access.accessType;
-      await entityManager.save(Access, existingAccess);
+      await this.accessRepository.save(existingAccess);
       updatedAccessRecords.push(existingAccess);
     }
     return updatedAccessRecords;
   }
 
-  async updateAccessModule(
-    id: number,
-    user: GetUserDto,
-    access: UpdateAccessDto,
-  ): Promise<Access[]> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const existingAccessRecords = await entityManager.find(Access, {
+  async updateAccessModule(access: UpdateAccessDto): Promise<Access[]> {
+    const existingAccessRecords = await this.accessRepository.find({
       where: { id: access.accessId },
     });
     if (!existingAccessRecords.length) {
@@ -206,7 +190,7 @@ export class AccessService {
 
     for (const existingAccess of existingAccessRecords) {
       existingAccess.access = access.accessType;
-      await entityManager.save(Access, existingAccess);
+      await this.accessRepository.save(existingAccess);
       updatedAccessRecords.push(existingAccess);
     }
     return updatedAccessRecords;
@@ -216,9 +200,8 @@ export class AccessService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteAccess(id: number, user: GetUserDto): Promise<void> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const deleteResponse = await entityManager.delete(Access, id);
+  async deleteAccess(id: number, user: IUser): Promise<void> {
+    const deleteResponse = await this.accessRepository.delete(id);
     if (!deleteResponse.affected) {
       throw new AccessNotFoundException(id);
     }

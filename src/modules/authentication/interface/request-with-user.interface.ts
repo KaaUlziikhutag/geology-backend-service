@@ -1,8 +1,8 @@
 import { Request } from 'express';
-import Users from '../../users/users.entity';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 interface RequestWithUser extends Request {
-  user: Users;
+  user: IUser;
 }
 
 export default RequestWithUser;

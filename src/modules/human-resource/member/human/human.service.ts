@@ -6,10 +6,10 @@ import { getEntityManagerToken } from '@nestjs/typeorm';
 import { EntityManager, Equal, FindManyOptions, ILike } from 'typeorm';
 import Human from './human.entity';
 import HumanNotFoundException from './exceptions/human-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 import { CountryService } from '../../../cloud/country/country.service';
 
 @Injectable()
@@ -32,7 +32,7 @@ export class HumanService {
    * A method that fetches the Human from the database
    * @returns A promise with the list of Humans
    */
-  async getAllHumans(user: GetUserDto, query: GetHumanDto) {
+  async getAllHumans(user: IUser, query: GetHumanDto) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Human>['where'] = {};
 
@@ -91,7 +91,7 @@ export class HumanService {
    * @example
    * const Human = await HumanService.getHumanById(1);
    */
-  async getHumanById(user: GetUserDto, humanId: number): Promise<Human> {
+  async getHumanById(user: IUser, humanId: number): Promise<Human> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const human = await entityManager.findOne(Human, {
       where: { id: humanId },
@@ -107,7 +107,7 @@ export class HumanService {
    * @param Human createHuman
    *
    */
-  async createHuman(user: GetUserDto, human: CreateHumanDto) {
+  async createHuman(user: IUser, human: CreateHumanDto) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newHuman = entityManager.create(Human, human);
     await entityManager.save(newHuman);
@@ -119,7 +119,7 @@ export class HumanService {
    */
   async updateHuman(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     human: UpdateHumanDto,
   ): Promise<Human> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -136,7 +136,7 @@ export class HumanService {
   /**
    * @deprecated Use deleteHuman instead
    */
-  async deleteHumanById(id: number, user: GetUserDto): Promise<void> {
+  async deleteHumanById(id: number, user: IUser): Promise<void> {
     return this.deleteHuman(user, id);
   }
 
@@ -144,7 +144,7 @@ export class HumanService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteHuman(user: GetUserDto, id: number): Promise<void> {
+  async deleteHuman(user: IUser, id: number): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(Human, id);
     if (!deleteResponse.affected) {

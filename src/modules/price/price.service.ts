@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import Price from './price.entity';
 import { Repository } from 'typeorm';
 import GetPriceDto from './dto/get-price.dto';
-import Decision from '../decision/decision.entity';
 import PriceNotFoundException from './exceptions/price-not-found.exception';
 import PageDto from '../../utils/dto/page.dto';
 import PageMetaDto from '../../utils/dto/page-meta.dto';
@@ -24,19 +23,19 @@ export class PriceService {
     qb.leftJoinAndSelect('price.mineralType', 'mineralType');
     qb.leftJoinAndSelect('price.element', 'element');
     qb.leftJoinAndSelect('price.technology', 'technology');
-    qb.innerJoinAndMapOne(
-      'price.decision',
-      (subQuery) => {
-        return subQuery
-          .select('id')
-          .from(Decision, 'decision')
-          .where('decision.ruleAt < :now', { now: new Date() })
-          .orderBy('decision.ruleAt', 'DESC')
-          .limit(1);
-      },
-      'decision',
-      'decision.id = price.decisionId',
-    );
+    // qb.innerJoinAndMapOne(
+    //   'price.decision',
+    //   (subQuery) => {
+    //     return subQuery
+    //       .select('id')
+    //       .from(Decision, 'decision')
+    //       .where('decision.ruleAt < :now', { now: new Date() })
+    //       .orderBy('decision.ruleAt', 'DESC')
+    //       .limit(1);
+    //   },
+    //   'decision',
+    //   'decision.id = price.decisionId',
+    // );
     qb.skip(skip);
     qb.take(limit);
     qb.orderBy('price.amount', order);
@@ -83,19 +82,19 @@ export class PriceService {
     qb.leftJoinAndSelect('price.mineralType', 'mineralType');
     qb.leftJoinAndSelect('price.element', 'element');
     qb.leftJoinAndSelect('price.technology', 'technology');
-    qb.innerJoinAndMapOne(
-      'price.decision',
-      (subQuery) => {
-        return subQuery
-          .select('id')
-          .from(Decision, 'decision')
-          .where('decision.ruleAt < :now', { now: new Date() })
-          .orderBy('decision.ruleAt', 'DESC')
-          .limit(1);
-      },
-      'decision',
-      'decision.id = price.decisionId',
-    );
+    // qb.innerJoinAndMapOne(
+    //   'price.decision',
+    //   (subQuery) => {
+    //     return subQuery
+    //       .select('id')
+    //       .from(Decision, 'decision')
+    //       .where('decision.ruleAt < :now', { now: new Date() })
+    //       .orderBy('decision.ruleAt', 'DESC')
+    //       .limit(1);
+    //   },
+    //   'decision',
+    //   'decision.id = price.decisionId',
+    // );
     qb.where('price.isActive = :isActive', { isActive: true });
     qb.andWhere('price.id = :id', { id });
     const price = await qb.getOne();

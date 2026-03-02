@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager } from 'typeorm';
+import { Repository } from 'typeorm';
 import ContractViewUser from './view-users.entity';
-import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../cloud/user/dto/get-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
 import CreateViewUserDto from '@modules/decision/view-users/dto/create-view-user.dto';
 import ViewUserNotFoundException from '@modules/decision/view-users/exception/view-user-not-found.exception';
 
@@ -12,13 +10,10 @@ export class ViewUserService {
   /**
    * @ignore
    */
-  constructor(private moduleRef: ModuleRef) {}
-
-  private async loadEntityManager(systemId: string): Promise<EntityManager> {
-    return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
-      strict: false,
-    });
-  }
+  constructor(
+    @InjectRepository(ContractViewUser)
+    private readonly contractViewUserRepository: Repository<ContractViewUser>,
+  ) {}
 
   /**
    * A method that fetches a Access with a given id. Example:
@@ -26,10 +21,9 @@ export class ViewUserService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getViewUsersByContractId(contractId: number, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const items = await entityManager.find(ContractViewUser, {
-      where: { id: contractId },
+  async getViewUsersByContractId(id: number) {
+    const items = await this.contractViewUserRepository.find({
+      where: { id },
     });
     if (items) {
       return items;
@@ -43,9 +37,8 @@ export class ViewUserService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getViewUsersByUserId(userId: number, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const items = await entityManager.find(ContractViewUser, {
+  async getViewUsersByUserId(userId: number) {
+    const items = await this.contractViewUserRepository.find({
       where: { userId },
     });
     if (items) {
@@ -64,10 +57,9 @@ export class ViewUserService {
    * @param Contract createContract
    *
    */
-  async createViewUser(viewUser: CreateViewUserDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const newViewUser = entityManager.create(ContractViewUser, viewUser);
-    await entityManager.save(newViewUser);
+  async createViewUser(viewUser: CreateViewUserDto) {
+    const newViewUser = this.contractViewUserRepository.create(viewUser);
+    await this.contractViewUserRepository.save(newViewUser);
     return newViewUser;
   }
 }

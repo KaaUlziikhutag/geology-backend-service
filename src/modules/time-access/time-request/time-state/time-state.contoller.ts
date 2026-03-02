@@ -19,7 +19,7 @@ import { TimeStateService } from './time-state.service';
 import { CreateTimeStateDto } from './dto/create-time-state.dto';
 import { UpdateTimeStateDto } from './dto/update-time-state.dto';
 import { GetTimeStateDto } from './dto/get-time-state.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '../../../../utils/find-one-params';
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../../authentication/guard/jwt-authentication.guard';
@@ -91,12 +91,7 @@ export class TimeStateController {
     @Body() timeState: UpdateTimeStateDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.timeStateService.updateTimeState(
-        id,
-        user,
-        timeState,
-      );
+      const data = await this.timeStateService.updateTimeState(id, timeState);
       return new ResponseSuccess('UPDATE_TIME_STATE.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

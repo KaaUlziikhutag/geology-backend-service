@@ -2,21 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { GetCompanyDto } from './dto/get-company.dto';
-import { EntityManager, Equal, FindManyOptions } from 'typeorm';
+import { EntityManager, Equal, FindManyOptions, Repository } from 'typeorm';
 import Companies from '../access/entities/company-limit.entity';
 import CompanyNotFoundException from './exceptions/company-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../cloud/user/dto/get-user.dto';
+import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class CompanyService {
   /**
    * @ignore
    */
-  constructor(private moduleRef: ModuleRef) {}
+  constructor(
+    @InjectRepository(Companies)
+    private readonly companyRepository: Repository<Companies>,
+    private moduleRef: ModuleRef,
+  ) {}
 
   private async loadEntityManager(systemId: string): Promise<EntityManager> {
     return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
@@ -28,8 +31,7 @@ export class CompanyService {
    * A method that fetches the Company from the database
    * @returns A promise with the list of Companys
    */
-  async getAllCompanys(query: GetCompanyDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getAllCompanys(query: GetCompanyDto) {
     const where: FindManyOptions<Companies>['where'] = {};
     if (query.itemId) {
       where.itemId = Equal(query.itemId);
@@ -39,7 +41,7 @@ export class CompanyService {
     }
     const skip = (query.page - 1) * query.limit;
 
-    const [items, count] = await entityManager.findAndCount(Companies, {
+    const [items, count] = await this.companyRepository.findAndCount({
       where,
       order: {
         createdAt: 'DESC',
@@ -63,12 +65,8 @@ export class CompanyService {
    * @example
    * const Company = await CompanyService.getCompanyById(1);
    */
-  async getCompanyById(
-    companyId: number,
-    user: GetUserDto,
-  ): Promise<Companies> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const company = await entityManager.findOne(Companies, {
+  async getCompanyById(companyId: number): Promise<Companies> {
+    const company = await this.companyRepository.findOne({
       where: { id: companyId },
     });
     if (company) {
@@ -82,11 +80,9 @@ export class CompanyService {
    * @param Company createCompany
    *
    */
-  async createCompany(company: CreateCompanyDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const newCompany = entityManager.create(Companies, company);
-    await entityManager.save(newCompany);
-    return newCompany;
+  async createCompany(company: CreateCompanyDto) {
+    const newCompany = this.companyRepository.create(company);
+    return await this.companyRepository.save(newCompany);
   }
 
   /**
@@ -94,12 +90,10 @@ export class CompanyService {
    */
   async updateCompany(
     id: number,
-    user: GetUserDto,
     company: UpdateCompanyDto,
   ): Promise<Companies> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    await entityManager.update(Companies, id, company);
-    const updatedCompany = await entityManager.findOne(Companies, {
+    await this.companyRepository.update(id, company);
+    const updatedCompany = await this.companyRepository.findOne({
       where: { id: id },
     });
     if (updatedCompany) {
@@ -111,17 +105,16 @@ export class CompanyService {
   /**
    * @deprecated Use deleteCompany instead
    */
-  async deleteCompanyById(id: number, user: GetUserDto): Promise<void> {
-    return this.deleteCompany(id, user);
+  async deleteCompanyById(id: number): Promise<void> {
+    return this.deleteCompany(id);
   }
 
   /**
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteCompany(id: number, user: GetUserDto): Promise<void> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const deleteResponse = await entityManager.delete(Companies, id);
+  async deleteCompany(id: number): Promise<void> {
+    const deleteResponse = await this.companyRepository.delete(id);
     if (!deleteResponse.affected) {
       throw new CompanyNotFoundException(id);
     }

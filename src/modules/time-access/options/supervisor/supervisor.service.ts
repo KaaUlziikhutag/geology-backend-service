@@ -7,11 +7,11 @@ import Supervisor from './entity/supervisor.entity';
 import SupervisorByusers from './entity/supervisor-byuser.entity';
 import SupervisorNotFoundException from './exceptions/supervisor-not-found.exception';
 import SupervisorByUsersNotFoundException from './exceptions/supervisor-byusers-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class SupervisorService {
@@ -30,7 +30,7 @@ export class SupervisorService {
    * A method that fetches the IpSetting from the database
    * @returns A promise with the list of IpSettings
    */
-  async getAllSupervisor(query: GetSupervisorDto, user: GetUserDto) {
+  async getAllSupervisor(query: GetSupervisorDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Supervisor>['where'] = {};
     if (query.comId) {
@@ -66,7 +66,7 @@ export class SupervisorService {
    */
   async getSupervisorId(
     supervisorId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<Supervisor> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const supervisor = await entityManager.findOne(Supervisor, {
@@ -84,11 +84,11 @@ export class SupervisorService {
    * @param supervisor createSupervisor
    *
    */
-  async createSupervisor(supervisor: CreateSupervisorDto, user: GetUserDto) {
+  async createSupervisor(supervisor: CreateSupervisorDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newSupervisor = entityManager.create(Supervisor, supervisor);
     newSupervisor.autorId = user.id;
-    newSupervisor.comId = user.companyId;
+    newSupervisor.comId = null;
     await entityManager.save(newSupervisor);
 
     if (supervisor.workerIds && supervisor.workerIds.length > 0) {
@@ -108,7 +108,7 @@ export class SupervisorService {
    */
   async updateSupervisor(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     supervisor: UpdateSupervisorDto,
   ): Promise<Supervisor> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -137,7 +137,7 @@ export class SupervisorService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteSupervisor(id: number, user: GetUserDto): Promise<void> {
+  async deleteSupervisor(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     await this.deleteSupervisorByUsers(id, user);
     const deleteResponse = await entityManager.delete(Supervisor, id);
@@ -152,7 +152,7 @@ export class SupervisorService {
    */
   async deleteSupervisorByUsers(
     supervisorId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(SupervisorByusers, {

@@ -18,7 +18,7 @@ import {
 import { AgreeByuserService } from './agree-byuser.service';
 import { UserIdsDto } from './dto/create-agree-byuser.dto';
 import { GetAgreeByuserDto } from './dto/get-agree-byuser.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';

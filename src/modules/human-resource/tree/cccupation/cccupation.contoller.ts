@@ -19,7 +19,7 @@ import { OccupationService } from './cccupation.service';
 import { CreateoccupationDto } from './dto/create-cccupation.dto';
 import { UpdateoccupationDto } from './dto/update-cccupation.dto';
 import { GetOccupationDto } from './dto/get-cccupation.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../../authentication/guard/jwt-authentication.guard';

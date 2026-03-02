@@ -19,7 +19,7 @@ import { ItechItemService } from './itech-items.service';
 import { CreateItechItemDto } from './dto/create-itech-items.dto';
 import { UpdateItechItemDto } from './dto/update-itech-items.dto';
 import { GetItechItemDto } from './dto/get-itech-items.dto';
-import FindOneParams from '../../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 import { ResponseSuccess } from '../../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../../utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../../../authentication/guard/jwt-authentication.guard';

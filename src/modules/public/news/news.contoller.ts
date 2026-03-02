@@ -19,8 +19,7 @@ import { PublicNewsService } from './news.service';
 import { CreatePublicNewsDto } from './dto/create-news.dto';
 import { UpdatePublicNewsDto } from './dto/update-news.dto';
 import { GetPublicNewsDto } from './dto/get-news.dto';
-import FindOneParams from '../../../utils/findOneParams';
-
+import FindOneParams from '@utils/find-one-params';
 import { ResponseSuccess } from '../../../utils/dto/response.dto';
 import { IResponse } from '../../../utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../authentication/guard/jwt-authentication.guard';
@@ -37,13 +36,9 @@ export class PublicNewsController {
   @Get()
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getAllNews(
-    @Req() request: RequestWithUser,
-    @Query() query: GetPublicNewsDto,
-  ): Promise<IResponse> {
+  async getAllNews(@Query() query: GetPublicNewsDto): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicNewsService.getAllNews(query, user);
+      const data = await this.publicNewsService.getAllNews(query);
       return new ResponseSuccess('GET_NEWS.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -53,13 +48,9 @@ export class PublicNewsController {
   @Get(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getNewsById(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async getNewsById(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicNewsService.getNewsById(id, user);
+      const data = await this.publicNewsService.getNewsById(id);
       return new ResponseSuccess('GET_NEWS.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -87,13 +78,9 @@ export class PublicNewsController {
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async addUserView(
-    @Req() request: RequestWithUser,
-    @Body() userViews: CreateUserViewDto,
-  ): Promise<IResponse> {
+  async addUserView(@Body() userViews: CreateUserViewDto): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicNewsService.addUserView(userViews, user);
+      const data = await this.publicNewsService.addUserView(userViews);
       return new ResponseSuccess('CREATE_NEWS.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -122,12 +109,10 @@ export class PublicNewsController {
   @UseGuards(AuthGuard('api-key'))
   async updateNews(
     @Param() { id }: FindOneParams,
-    @Req() request: RequestWithUser,
     @Body() news: UpdatePublicNewsDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicNewsService.updateNews(id, user, news);
+      const data = await this.publicNewsService.updateNews(id, news);
       return new ResponseSuccess('UPDATE_NEWS.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -137,13 +122,9 @@ export class PublicNewsController {
   @Delete(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async deleteNews(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async deleteNews(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicNewsService.deleteNews(id, user);
+      const data = await this.publicNewsService.deleteNews(id);
       return new ResponseSuccess('DELETE_NEWS.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -153,13 +134,9 @@ export class PublicNewsController {
   @Delete('comment/:id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async deleteComment(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async deleteComment(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicNewsService.deleteComment(id, user);
+      const data = await this.publicNewsService.deleteComment(id);
       return new ResponseSuccess('DELETE_COMMENT.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

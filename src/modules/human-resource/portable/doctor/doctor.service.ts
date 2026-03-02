@@ -5,11 +5,11 @@ import { GetDoctorDto } from './dto/get-doctor.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Doctors from './doctor.entity';
 import DoctorNotFoundException from './exceptions/doctor-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class DoctorService {
@@ -28,7 +28,7 @@ export class DoctorService {
    * A method that fetches the Doctor from the database
    * @returns A promise with the list of Doctors
    */
-  async getAllDoctors(query: GetDoctorDto, user: GetUserDto) {
+  async getAllDoctors(query: GetDoctorDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Doctors>['where'] = {};
     if (query.authorId) {
@@ -71,7 +71,7 @@ export class DoctorService {
    * @example
    * const Doctor = await DoctorService.getDoctorById(1);
    */
-  async getDoctorById(doctorId: number, user: GetUserDto): Promise<Doctors> {
+  async getDoctorById(doctorId: number, user: IUser): Promise<Doctors> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const doctor = await entityManager.findOne(Doctors, {
       where: { id: doctorId },
@@ -87,9 +87,9 @@ export class DoctorService {
    * @param Doctor createDoctor
    *
    */
-  async createDoctor(doctor: CreateDoctorDto, user: GetUserDto) {
+  async createDoctor(doctor: CreateDoctorDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    doctor.authorId = user.workerId;
+    doctor.authorId = user.id;
     const newDoctor = entityManager.create(Doctors, doctor);
     await entityManager.save(newDoctor);
     return newDoctor;
@@ -100,7 +100,7 @@ export class DoctorService {
    */
   async updateDoctor(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     doctor: UpdateDoctorDto,
   ): Promise<Doctors> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -117,7 +117,7 @@ export class DoctorService {
   /**
    * @deprecated Use deleteDoctor instead
    */
-  async deleteDoctorById(id: number, user: GetUserDto): Promise<void> {
+  async deleteDoctorById(id: number, user: IUser): Promise<void> {
     return this.deleteDoctor(id, user);
   }
 
@@ -125,7 +125,7 @@ export class DoctorService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteDoctor(id: number, user: GetUserDto): Promise<void> {
+  async deleteDoctor(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Doctors, id);
     if (!deleteResponse.affected) {

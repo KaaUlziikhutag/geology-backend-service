@@ -2,21 +2,25 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { GetCategoryDto } from './dto/get-category.dto';
-import { EntityManager, FindManyOptions, ILike } from 'typeorm';
+import { EntityManager, FindManyOptions, ILike, Repository } from 'typeorm';
 import CategoryOrganization from './category.entity';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../cloud/user/dto/get-user.dto';
+import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
 import CategoryNotFoundException from './exceptions/category-not-found.exception';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class CategoryService {
   /**
    * @ignore
    */
-  constructor(private moduleRef: ModuleRef) {}
+  constructor(
+    @InjectRepository(CategoryOrganization)
+    private categoryRepository: Repository<CategoryOrganization>,
+    private moduleRef: ModuleRef,
+  ) {}
 
   private async loadEntityManager(systemId: string): Promise<EntityManager> {
     return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
@@ -28,9 +32,7 @@ export class CategoryService {
    * A method that fetches the Category from the database
    * @returns A promise with the list of Category
    */
-  async getAllCategories(query: GetCategoryDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-
+  async getAllCategories(query: GetCategoryDto) {
     let where: FindManyOptions<CategoryOrganization>['where'] = {}; // const-ийг let болгон өөрчилнө
 
     if (query.name) {
@@ -58,17 +60,14 @@ export class CategoryService {
         : undefined;
     const skip = limit ? (page - 1) * limit : undefined;
 
-    const [items, count] = await entityManager.findAndCount(
-      CategoryOrganization,
-      {
-        where,
-        order: {
-          createdAt: 'DESC',
-        },
-        skip,
-        take: limit,
+    const [items, count] = await this.categoryRepository.findAndCount({
+      where,
+      order: {
+        createdAt: 'DESC',
       },
-    );
+      skip,
+      take: limit,
+    });
 
     const itemCount = count;
     const pageMetaDto = new PageMetaDto({ page, limit, itemCount });
@@ -81,12 +80,8 @@ export class CategoryService {
    * @example
    * const Category = await categoryService.getCategoryById(1);
    */
-  async getCategoryById(
-    categoryId: number,
-    user: GetUserDto,
-  ): Promise<CategoryOrganization> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const category = await entityManager.findOne(CategoryOrganization, {
+  async getCategoryById(categoryId: number): Promise<CategoryOrganization> {
+    const category = await this.categoryRepository.findOne({
       where: { id: categoryId },
     });
     if (category) {
@@ -100,10 +95,9 @@ export class CategoryService {
    * @param Category createCategory
    *
    */
-  async createCategory(category: CreateCategoryDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async createCategory(category: CreateCategoryDto, user: IUser) {
     category.authorId = user.id;
-    const checkRegNumber = await entityManager.findOne(CategoryOrganization, {
+    const checkRegNumber = await this.categoryRepository.findOne({
       where: { register: category.register },
     });
     if (checkRegNumber) {
@@ -112,8 +106,8 @@ export class CategoryService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const newCategory = entityManager.create(CategoryOrganization, category);
-    await entityManager.save(newCategory);
+    const newCategory = this.categoryRepository.create(category);
+    await this.categoryRepository.save(newCategory);
     return newCategory;
   }
 
@@ -122,13 +116,11 @@ export class CategoryService {
    */
   async updateCategory(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     category: UpdateCategoryDto,
   ): Promise<CategoryOrganization> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-
     // Одоогийн category-г шалгах
-    const existingCategory = await entityManager.findOne(CategoryOrganization, {
+    const existingCategory = await this.categoryRepository.findOne({
       where: { id },
     });
     if (!existingCategory) {
@@ -137,7 +129,7 @@ export class CategoryService {
 
     // Регистрийн дугаар давхардлыг шалгах
     if (category.register && category.register !== existingCategory.register) {
-      const checkRegNumber = await entityManager.findOne(CategoryOrganization, {
+      const checkRegNumber = await this.categoryRepository.findOne({
         where: { register: category.register },
       });
 
@@ -150,8 +142,8 @@ export class CategoryService {
     }
 
     // Шинэчлэх процесс
-    await entityManager.update(CategoryOrganization, id, category);
-    const updatedCategory = await entityManager.findOne(CategoryOrganization, {
+    await this.categoryRepository.update(id, category);
+    const updatedCategory = await this.categoryRepository.findOne({
       where: { id },
     });
 
@@ -164,20 +156,16 @@ export class CategoryService {
   /**
    * @deprecated Use deleteCategory instead
    */
-  async deleteCategoryById(id: number, user: GetUserDto): Promise<void> {
-    return this.deleteCategory(id, user);
+  async deleteCategoryById(id: number): Promise<void> {
+    return this.deleteCategory(id);
   }
 
   /**
    * A method that deletes a category from the database
    * @param id An id of a category. A category with this id should exist in the database
    */
-  async deleteCategory(id: number, user: GetUserDto): Promise<void> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const deleteResponse = await entityManager.softDelete(
-      CategoryOrganization,
-      id,
-    );
+  async deleteCategory(id: number): Promise<void> {
+    const deleteResponse = await this.categoryRepository.softDelete(id);
     if (!deleteResponse.affected) {
       throw new CategoryNotFoundException(id);
     }

@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { IsString, IsOptional, IsBooleanString } from 'class-validator';
-import { PageOptionsDto } from '../../../../utils/dto/pageOptions.dto';
+import { PageOptionsDto } from '@utils/dto/page-options.dto';
 
 export class GetPublicFileDto extends PartialType(PageOptionsDto) {
   @IsString()

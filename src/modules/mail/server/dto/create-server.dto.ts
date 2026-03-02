@@ -1,5 +1,5 @@
 import { IsString, IsOptional, IsNumber, IsEnum } from 'class-validator';
-import { SslType } from '../../../../utils/enumUtils';
+import { SslType } from '@utils/enum-utils';
 
 export class CreateServerDto {
   @IsOptional()

@@ -19,7 +19,7 @@ import { HomesService } from './home.service';
 import { CreateHomesDto } from './dto/create-home.dto';
 import { UpdateHomesDto } from './dto/update-home.dto';
 import { GetHomesDto } from './dto/get-home.dto';
-import FindOneParams from '../../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 import { ResponseSuccess } from '../../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../../utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../../../authentication/guard/jwt-authentication.guard';

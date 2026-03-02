@@ -1,6 +1,5 @@
+import LocalFile from '@modules/local-files/local-file.entity';
 import Trees from '../../../human-resource/tree/tree.entity';
-
-import { FileDto } from '../../../../utils/globalUtils';
 import {
   Column,
   Entity,
@@ -36,7 +35,7 @@ export default class Descriptions extends BaseEntity {
   text: string; // дэлгэрэнгүй тайлбар
 
   @Column({ type: 'jsonb', name: 'fileIds', nullable: true })
-  public fileIds: FileDto[]; // FILE UPLOAD
+  public fileIds: LocalFile[]; // FILE UPLOAD
 
   @Column({ type: 'timestamptz', nullable: true })
   date: Date; // мөрдөж эхлэх огноо

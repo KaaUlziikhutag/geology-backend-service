@@ -9,10 +9,7 @@ import {
   JoinColumn,
   ManyToOne,
 } from 'typeorm';
-import {
-  AppointmentStatusType,
-  JobAction,
-} from '../../../../../utils/globalUtils';
+import { AppointmentStatusType, JobAction } from '@utils/enum-utils';
 import Trees from '../../../../human-resource/tree/tree.entity';
 import Worker from '../worker.entity';
 
@@ -41,9 +38,9 @@ export default class WorkerApp extends BaseEntity {
 
   @Column({ name: 'confirm_id', nullable: true })
   confirmId: number;
-  @ManyToOne(() => Worker, (worker: Worker) => worker.workerAppConfirm)
-  @JoinColumn({ name: 'confirm_id' })
-  public appConfirmWorker?: Worker;
+  // @ManyToOne(() => Worker, (worker: Worker) => worker.workerAppConfirm)
+  // @JoinColumn({ name: 'confirm_id' })
+  // public appConfirmWorker?: Worker;
 
   @Column({
     type: 'enum',

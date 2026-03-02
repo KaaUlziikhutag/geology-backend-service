@@ -10,15 +10,15 @@ import {
 } from 'typeorm';
 import Mail from './mail.entity';
 import MailNotFoundException from './exceptions/mail-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../cloud/user/dto/get-user.dto';
 import MailUser from './users/users.entity';
 import CreateUserDto from './users/dto/create-user.dto';
-import { MailType } from '../../../utils/enumUtils';
+import { MailType } from '@utils/enum-utils';
 import SignatureViewUser from '../signature/view-users/view-users.entity';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class MailService {
@@ -37,10 +37,10 @@ export class MailService {
    * A method that fetches the Contract from the database
    * @returns A promise with the list of Contract
    */
-  async getAllMails(query: GetMailDto, user: GetUserDto) {
+  async getAllMails(query: GetMailDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Mail>['where'] = {};
-    const userFilter: FindOptionsWhere<MailUser> = { userId: user.workerId };
+    const userFilter: FindOptionsWhere<MailUser> = { userId: user.id };
     if (query.isRead !== undefined) {
       userFilter.isRead = query.isRead;
     }
@@ -91,7 +91,7 @@ export class MailService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getMailById(mailId: number, user: GetUserDto): Promise<Mail> {
+  async getMailById(mailId: number, user: IUser): Promise<Mail> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const mail = await entityManager.findOne(Mail, {
       where: { id: mailId },
@@ -107,13 +107,13 @@ export class MailService {
    * @param Mail createMail
    *
    */
-  async createMail(mail: CreateMailDto, user: GetUserDto) {
+  async createMail(mail: CreateMailDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    mail.authorId = user.workerId;
+    mail.authorId = user.id;
     const newMail = entityManager.create(Mail, mail);
     await entityManager.save(newMail);
     const sign = await entityManager.findOne(SignatureViewUser, {
-      where: { userId: user.workerId, isActive: true },
+      where: { userId: user.id, isActive: true },
     });
     if (mail.authorId) {
       const mailUser = entityManager.create(MailUser, {
@@ -143,7 +143,7 @@ export class MailService {
    */
   async updateMail(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     mail: UpdateMailDto,
   ): Promise<Mail> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -159,7 +159,7 @@ export class MailService {
 
   async updateIsReadMail(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     mail: CreateUserDto,
   ): Promise<Mail> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -193,7 +193,7 @@ export class MailService {
   /**
    * @deprecated Use deleteContract instead
    */
-  async deleteMailById(id: number, user: GetUserDto): Promise<void> {
+  async deleteMailById(id: number, user: IUser): Promise<void> {
     return this.deleteMail(id, user);
   }
 
@@ -201,7 +201,7 @@ export class MailService {
    * A method that deletes a contract from the database
    * @param id An id of a contract. A contract with this id should exist in the database
    */
-  async deleteMail(id: number, user: GetUserDto): Promise<void> {
+  async deleteMail(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(Mail, id);
     if (!deleteResponse.affected) {

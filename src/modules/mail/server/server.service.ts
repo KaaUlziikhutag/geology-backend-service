@@ -5,11 +5,11 @@ import { GetServerDto } from './dto/get-server.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Server from './server.entity';
 import ServerNotFoundException from './exceptions/server-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class ServerService {
@@ -28,7 +28,7 @@ export class ServerService {
    * A method that fetches the Contract from the database
    * @returns A promise with the list of Contract
    */
-  async getAllServers(query: GetServerDto, user: GetUserDto) {
+  async getAllServers(query: GetServerDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Server>['where'] = {};
     if (query.authorId) {
@@ -63,7 +63,7 @@ export class ServerService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getServerById(serverId: number, user: GetUserDto): Promise<Server> {
+  async getServerById(serverId: number, user: IUser): Promise<Server> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const server = await entityManager.findOne(Server, {
       where: { id: serverId },
@@ -79,7 +79,7 @@ export class ServerService {
    * @param SystemMail createSystemMail
    *
    */
-  async createServer(server: CreateServerDto, user: GetUserDto) {
+  async createServer(server: CreateServerDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     server.authorId = user.id;
     const newServer = entityManager.create(Server, server);
@@ -92,7 +92,7 @@ export class ServerService {
    */
   async updateServer(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     server: UpdateServerDto,
   ): Promise<Server> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -109,7 +109,7 @@ export class ServerService {
   /**
    * @deprecated Use deleteContract instead
    */
-  async deleteServerById(id: number, user: GetUserDto): Promise<void> {
+  async deleteServerById(id: number, user: IUser): Promise<void> {
     return this.deleteServer(id, user);
   }
 
@@ -117,7 +117,7 @@ export class ServerService {
    * A method that deletes a contract from the database
    * @param id An id of a contract. A contract with this id should exist in the database
    */
-  async deleteServer(id: number, user: GetUserDto): Promise<void> {
+  async deleteServer(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(Server, id);
     if (!deleteResponse.affected) {

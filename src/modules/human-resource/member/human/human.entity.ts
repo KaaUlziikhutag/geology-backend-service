@@ -8,7 +8,7 @@ import {
   DeleteDateColumn,
   OneToOne,
 } from 'typeorm';
-import { GenderType, MaritalStatus } from '../../../../utils/globalUtils';
+import { GenderType, MaritalStatus } from '@utils/enum-utils';
 import Worker from '../worker/worker.entity';
 import { ContactDto } from './dto/contact.dto';
 @Entity('human_i')

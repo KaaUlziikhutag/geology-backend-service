@@ -28,6 +28,7 @@ import { DiscountService } from '../reference/discount/discount.service';
 import { ContractService } from '../contract/contract.service';
 import { AdditionService } from '../reference/addition/addition.service';
 import { formatFullDate } from '../../utils/helper-utils';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class PaymentService {
@@ -108,29 +109,29 @@ export class PaymentService {
       await this.orderService.updateOrders(orders);
     }
     if (payment.contractId && payment.discountId) {
-      const contract = await this.contractService.getContractById(
-        payment.contractId,
-      );
+      // const contract = await this.contractService.getContractById(
+      //   payment.contractId,
+      // );
       const discount = await this.discountService.getDiscountById(
         payment.discountId,
       );
       updatePayment.discountId = payment.discountId;
       updatePayment.contractId = payment.contractId;
-      updatePayment.contract = contract;
+      // updatePayment.contract = contract;
       updatePayment.discount = discount;
       for (const order of orders) {
-        if (
-          contract.products.some((item) => item.id == order.price.product.id)
-        ) {
-          if (discount.type == SpendType.percentage) {
-            order.discountAmount =
-              (Math.floor(order.totalAmount) * discount.percentage) / 100;
-          } else {
-            order.discountAmount = Math.floor(discount.amount);
-          }
-          order.paidAmount =
-            Math.floor(order.paidAmount) - order.discountAmount;
-        }
+        // if (
+        //   contract.products.some((item) => item.id == order.price.product.id)
+        // ) {
+        //   if (discount.type == SpendType.percentage) {
+        //     order.discountAmount =
+        //       (Math.floor(order.totalAmount) * discount.percentage) / 100;
+        //   } else {
+        //     order.discountAmount = Math.floor(discount.amount);
+        //   }
+        //   order.paidAmount =
+        //     Math.floor(order.paidAmount) - order.discountAmount;
+        // }
       }
       await this.orderService.updateOrders(orders);
     }
@@ -174,11 +175,11 @@ export class PaymentService {
   }
 
   async ebarimtPayment(
-    user: GetUserDto,
+    user: IUser,
     id: number,
     ebarimtPayment: EbarimtPaymentDto,
   ): Promise<Payment> {
-    const company = await this.companyService.getCompanyById(user.companyId);
+    // const company = await this.companyService.getCompanyById(user.companyId);
     const payment = await this.getPaymentById(id);
     if (payment.details.length == 0) {
       throw new PaymentBadRequestException('Төлбөр төлөлт хийгдээгүй');
@@ -200,7 +201,7 @@ export class PaymentService {
             totalVAT: 0,
             totalCityTax: 0,
             taxType: taxType,
-            merchantTin: company.ebarimtTin,
+            merchantTin: '' + `company.ebarimtTin`,
             bankAccountNo: '',
             items: [],
           };
@@ -227,8 +228,8 @@ export class PaymentService {
       totalAmount: payment.paidAmount,
       totalVAT: payment.paidAmount / 11,
       totalCityTax: 0,
-      districtCode: company.district.code,
-      merchantTin: company.ebarimtTin,
+      districtCode: '', // company.district.code,
+      merchantTin: '', // company.ebarimtTin,
       branchNo: '001',
       customerTin:
         payment.type == EbarimtTaxType.B2B_RECEIPT

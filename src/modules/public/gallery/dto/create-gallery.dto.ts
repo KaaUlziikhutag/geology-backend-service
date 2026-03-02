@@ -1,4 +1,4 @@
-import { FileDto } from '../../../../utils/globalUtils';
+import { RelationIdDto } from '@utils/dto/relation-id.dto';
 import { Type } from 'class-transformer';
 import {
   IsString,
@@ -12,8 +12,8 @@ import {
 export class CreatePublicGalleryDto {
   @IsOptional()
   @ValidateNested({ each: true })
-  @Type(() => FileDto)
-  fileIds: FileDto[];
+  @Type(() => RelationIdDto)
+  fileIds: RelationIdDto[];
 
   @IsOptional()
   @IsString()

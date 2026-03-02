@@ -1,4 +1,5 @@
-import { FileDto, MistakesType } from '../../../../utils/globalUtils';
+import { RelationIdDto } from '@utils/dto/relation-id.dto';
+import { MistakesType } from '@utils/enum-utils';
 import {
   Column,
   Entity,
@@ -27,7 +28,7 @@ export default class Mistakes extends BaseEntity {
   public type: MistakesType;
 
   @Column({ type: 'jsonb', name: 'fileIds', nullable: true })
-  public fileIds: FileDto[]; // FILE UPLOAD
+  public fileIds: RelationIdDto[]; // FILE UPLOAD
 
   @Column('varchar', { length: 4000, nullable: true })
   number: string;

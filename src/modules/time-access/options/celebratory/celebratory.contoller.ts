@@ -19,7 +19,7 @@ import { CelebratoryService } from './celebratory.service';
 import { CreateCelebratoryDto } from './dto/create-celebratory.dto';
 import { UpdateCelebratoryDto } from './dto/update-celebratory.dto';
 import { GetCelebratoryDto } from './dto/get-celebratory.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';

@@ -5,11 +5,11 @@ import { GetApplicantDto } from './dto/get-applicant.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Applicant from './applicant.entity';
 import ApplicantNotFoundException from './exceptions/applicant-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class ApplicantService {
@@ -28,7 +28,7 @@ export class ApplicantService {
    * A method that fetches the Applicant from the database
    * @returns A promise with the list of Applicants
    */
-  async getAllApplicants(query: GetApplicantDto, user: GetUserDto) {
+  async getAllApplicants(query: GetApplicantDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Applicant>['where'] = {};
     if (query.appId) {
@@ -63,10 +63,7 @@ export class ApplicantService {
    * @example
    * const Applicant = await ApplicantService.getApplicantById(1);
    */
-  async getApplicantById(
-    applicantId: number,
-    user: GetUserDto,
-  ): Promise<Applicant> {
+  async getApplicantById(applicantId: number, user: IUser): Promise<Applicant> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const applicant = await entityManager.findOne(Applicant, {
       where: { id: applicantId },
@@ -82,7 +79,7 @@ export class ApplicantService {
    * @param Applicant createApplicant
    *
    */
-  async createApplicant(applicant: CreateApplicantDto, user: GetUserDto) {
+  async createApplicant(applicant: CreateApplicantDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newApplicant = entityManager.create(Applicant, applicant);
     await entityManager.save(newApplicant);
@@ -94,7 +91,7 @@ export class ApplicantService {
    */
   async updateApplicant(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     applicant: UpdateApplicantDto,
   ): Promise<Applicant> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -111,7 +108,7 @@ export class ApplicantService {
   /**
    * @deprecated Use deleteApplicant instead
    */
-  async deleteApplicantById(id: number, user: GetUserDto): Promise<void> {
+  async deleteApplicantById(id: number, user: IUser): Promise<void> {
     return this.deleteApplicant(id, user);
   }
 
@@ -119,7 +116,7 @@ export class ApplicantService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteApplicant(id: number, user: GetUserDto): Promise<void> {
+  async deleteApplicant(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(Applicant, id);
     if (!deleteResponse.affected) {

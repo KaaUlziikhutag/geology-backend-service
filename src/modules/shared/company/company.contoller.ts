@@ -19,7 +19,7 @@ import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { GetCompanyDto } from './dto/get-company.dto';
-import FindOneParams from '../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../utils/dto/response.dto';
 import { IResponse } from '../../../utils/interfaces/response.interface';
@@ -40,8 +40,7 @@ export class CompanyController {
     @Query() query: GetCompanyDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.companyService.getAllCompanys(query, user);
+      const data = await this.companyService.getAllCompanys(query);
       return new ResponseSuccess('GET_COMPANY.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -56,8 +55,7 @@ export class CompanyController {
     @Param() { id }: FindOneParams,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.companyService.getCompanyById(id, user);
+      const data = await this.companyService.getCompanyById(id);
       return new ResponseSuccess('GET_COMPANY.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -68,13 +66,9 @@ export class CompanyController {
   @HttpCode(HttpStatus.CREATED)
   // @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async createCompany(
-    @Req() request: RequestWithUser,
-    @Body() company: CreateCompanyDto,
-  ): Promise<IResponse> {
+  async createCompany(@Body() company: CreateCompanyDto): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.companyService.createCompany(company, user);
+      const data = await this.companyService.createCompany(company);
       return new ResponseSuccess('CREATE_COMPANY.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -86,12 +80,10 @@ export class CompanyController {
   @UseGuards(AuthGuard('api-key'))
   async updateCompany(
     @Param() { id }: FindOneParams,
-    @Req() request: RequestWithUser,
     @Body() company: UpdateCompanyDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.companyService.updateCompany(id, user, company);
+      const data = await this.companyService.updateCompany(id, company);
       return new ResponseSuccess('UPDATE_COMPANY.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -101,13 +93,9 @@ export class CompanyController {
   @Delete(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async deleteCompany(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async deleteCompany(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.companyService.deleteCompany(id, user);
+      const data = await this.companyService.deleteCompany(id);
       return new ResponseSuccess('DELETE_COMPANY.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

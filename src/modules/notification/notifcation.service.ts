@@ -12,6 +12,7 @@ import { CreateNotificationDto } from './dto/create-notification.dto';
 import { NotificationGateway } from './notification.gateway';
 import GetUserDto from '../users/dto/get-user.dto';
 import { GetNotificationDto } from './dto/get-notification.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class NotificationService {
@@ -22,7 +23,7 @@ export class NotificationService {
   ) {}
 
   async createNotification(
-    user: GetUserDto,
+    user: IUser,
     notification: CreateNotificationDto,
   ): Promise<Notification> {
     const newNotification = this.notificationRepository.create({

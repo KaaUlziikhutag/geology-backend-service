@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { AccessService } from './access.service';
 import { CreateAccessDto } from './dto/create-access.dto';
-import FindOneParams from '../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../utils/dto/response.dto';
 import { IResponse } from '../../../utils/interfaces/response.interface';
@@ -32,13 +32,9 @@ export class AccessController {
   @Get()
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getAllAccess(
-    @Req() request: RequestWithUser,
-    @Query() query: GetAccessDto,
-  ): Promise<IResponse> {
+  async getAllAccess(@Query() query: GetAccessDto): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.accessService.getAllAccess(query, user);
+      const data = await this.accessService.getAllAccess(query);
       return new ResponseSuccess('GET_ACCESS.SUCCESS', data);
     } catch (error) {
       console.log('------------------>', error);
@@ -49,13 +45,9 @@ export class AccessController {
   @Get('all')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getAllWorkers(
-    @Req() request: RequestWithUser,
-    @Query() query: GetAccessDto,
-  ): Promise<IResponse> {
+  async getAllWorkers(@Query() query: GetAccessDto): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.accessService.getAllWorkers(query, user);
+      const data = await this.accessService.getAllWorkers(query);
       return new ResponseSuccess('GET_ACCESS.SUCCESS', data);
     } catch (error) {
       console.log('------------------>', error);
@@ -66,13 +58,9 @@ export class AccessController {
   @Get(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getAccessById(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async getAccessById(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.accessService.getAccessById(id, user);
+      const data = await this.accessService.getAccessById(id);
       return new ResponseSuccess('GET_ACCESS.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

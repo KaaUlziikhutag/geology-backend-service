@@ -5,11 +5,11 @@ import { GetExperienceDto } from './dto/get-experience.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Experiences from './experience.entity';
 import ExperienceNotFoundException from './exceptions/experience-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class ExperienceService {
@@ -28,7 +28,7 @@ export class ExperienceService {
    * A method that fetches the Experience from the database
    * @returns A promise with the list of Experiences
    */
-  async getAllExperiences(query: GetExperienceDto, user: GetUserDto) {
+  async getAllExperiences(query: GetExperienceDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Experiences>['where'] = {};
     if (query.userId) {
@@ -67,7 +67,7 @@ export class ExperienceService {
    */
   async getExperienceById(
     experienceId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<Experiences> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const experience = await entityManager.findOne(Experiences, {
@@ -84,9 +84,9 @@ export class ExperienceService {
    * @param Experience createExperience
    *
    */
-  async createExperience(experience: CreateExperienceDto, user: GetUserDto) {
+  async createExperience(experience: CreateExperienceDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    experience.authorId = user.workerId;
+    experience.authorId = user.id;
     const newExperience = entityManager.create(Experiences, experience);
     await entityManager.save(newExperience);
     return newExperience;
@@ -97,7 +97,7 @@ export class ExperienceService {
    */
   async updateExperience(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     experience: UpdateExperienceDto,
   ): Promise<Experiences> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -114,7 +114,7 @@ export class ExperienceService {
   /**
    * @deprecated Use deleteExperience instead
    */
-  async deleteExperienceById(id: number, user: GetUserDto): Promise<void> {
+  async deleteExperienceById(id: number, user: IUser): Promise<void> {
     return this.deleteExperience(id, user);
   }
 
@@ -122,7 +122,7 @@ export class ExperienceService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteExperience(id: number, user: GetUserDto): Promise<void> {
+  async deleteExperience(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Experiences, id);
     if (!deleteResponse.affected) {

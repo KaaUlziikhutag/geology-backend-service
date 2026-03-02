@@ -11,7 +11,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 import Directs from '../entities/direct.entity';
-import { ScheduleStatus } from '../../../../../utils/globalUtils';
+import { ScheduleStatus } from '@utils/enum-utils';
 @Entity('time_access_schedule_direct_schedule_i')
 export default class DirectSchedules extends BaseEntity {
   @PrimaryGeneratedColumn()

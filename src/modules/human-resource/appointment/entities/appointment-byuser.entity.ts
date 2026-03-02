@@ -28,9 +28,9 @@ export default class AppointmentByuser extends BaseEntity {
 
   @Column({ name: 'user_id', nullable: true })
   userId: number;
-  @ManyToOne(() => Worker, (workers: Worker) => workers.appointmentByusers)
-  @JoinColumn({ name: 'user_id' })
-  workers?: Worker;
+  // @ManyToOne(() => Worker, (workers: Worker) => workers.appointmentByusers)
+  // @JoinColumn({ name: 'user_id' })
+  // workers?: Worker;
 
   @Column({ nullable: true })
   mid: number;

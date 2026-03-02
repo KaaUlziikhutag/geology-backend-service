@@ -18,7 +18,7 @@ import { ModuleService } from './modules.service';
 import { CreateModuleDto } from './dto/create-modules.dto';
 import { UpdateModuleDto } from './dto/update-modules.dto';
 import { GetModuleDto } from './dto/get-modules.dto';
-import FindOneParams from '../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 import { ResponseSuccess } from '../../../utils/dto/response.dto';
 import { IResponse } from '../../../utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../authentication/guard/jwt-authentication.guard';

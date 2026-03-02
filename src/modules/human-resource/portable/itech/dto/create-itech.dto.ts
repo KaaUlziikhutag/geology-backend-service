@@ -6,8 +6,9 @@ import {
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
-import { FileDto, ItechType } from '../../../../../utils/globalUtils';
+import { ItechType } from '@utils/enum-utils';
 import { Type } from 'class-transformer';
+import { RelationIdDto } from '@utils/dto/relation-id.dto';
 
 export class CreateItechDto {
   @IsOptional()
@@ -24,8 +25,8 @@ export class CreateItechDto {
 
   @IsOptional()
   @ValidateNested({ each: true })
-  @Type(() => FileDto)
-  fileIds: FileDto[];
+  @Type(() => RelationIdDto)
+  fileIds: RelationIdDto[];
 
   @IsOptional()
   @IsObject()

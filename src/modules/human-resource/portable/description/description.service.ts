@@ -5,11 +5,11 @@ import { GetDescriptionDto } from './dto/get-description.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Descriptions from './description.entity';
 import DescriptionNotFoundException from './exceptions/description-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class DescriptionService {
@@ -28,7 +28,7 @@ export class DescriptionService {
    * A method that fetches the Description from the database
    * @returns A promise with the list of Descriptions
    */
-  async getAllDescriptions(query: GetDescriptionDto, user: GetUserDto) {
+  async getAllDescriptions(query: GetDescriptionDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Descriptions>['where'] = {};
     if (query.authorId) {
@@ -76,7 +76,7 @@ export class DescriptionService {
    */
   async getDescriptionById(
     descriptionId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<Descriptions> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const description = await entityManager.findOne(Descriptions, {
@@ -94,9 +94,9 @@ export class DescriptionService {
    * @param Description createDescription
    *
    */
-  async createDescription(description: CreateDescriptionDto, user: GetUserDto) {
+  async createDescription(description: CreateDescriptionDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    description.authorId = user.workerId;
+    description.authorId = user.id;
     const newDescription = entityManager.create(Descriptions, description);
     await entityManager.save(newDescription);
     return newDescription;
@@ -107,7 +107,7 @@ export class DescriptionService {
    */
   async updateDescription(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     description: UpdateDescriptionDto,
   ): Promise<Descriptions> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -124,7 +124,7 @@ export class DescriptionService {
   /**
    * @deprecated Use deleteDescription instead
    */
-  async deleteDescriptionById(id: number, user: GetUserDto): Promise<void> {
+  async deleteDescriptionById(id: number, user: IUser): Promise<void> {
     return this.deleteDescription(id, user);
   }
 
@@ -132,7 +132,7 @@ export class DescriptionService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteDescription(id: number, user: GetUserDto): Promise<void> {
+  async deleteDescription(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Descriptions, id);
     if (!deleteResponse.affected) {

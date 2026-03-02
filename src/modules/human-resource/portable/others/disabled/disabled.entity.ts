@@ -1,4 +1,4 @@
-import { FileDto } from '../../../../../utils/globalUtils';
+import { RelationIdDto } from '@utils/dto/relation-id.dto';
 import {
   Column,
   Entity,
@@ -32,7 +32,7 @@ export default class Disabled extends BaseEntity {
   isDisabled: number; // Хөгжлийн бэрхшээртэй эсэх
 
   @Column({ type: 'jsonb', name: 'fileIds', nullable: true })
-  public fileIds: FileDto[]; // FILE UPLOAD
+  public fileIds: RelationIdDto[]; // FILE UPLOAD
 
   @Column('varchar', { name: 'addition_info', length: 4000, nullable: true })
   disabledInfo: string; // Тайлбар

@@ -9,7 +9,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { AppointmentStatusType } from '../../../../../utils/globalUtils';
+import { AppointmentStatusType } from '@utils/enum-utils';
 import Worker from '../../../../human-resource/member/worker/worker.entity';
 @Entity('time_access_schedule_direct_history')
 export default class DirectHistory extends BaseEntity {

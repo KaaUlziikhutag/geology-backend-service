@@ -5,8 +5,8 @@ import { GetFieldDto } from './dto/get-field.dto';
 import { Equal, FindManyOptions, Repository } from 'typeorm';
 import Fields from './field.entity';
 import FieldNotFoundException from './exceptions/field-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()

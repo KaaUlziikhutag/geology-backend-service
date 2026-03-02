@@ -19,7 +19,7 @@ import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { GetCategoryDto } from './dto/get-category.dto';
-import FindOneParams from '../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 import { ResponseSuccess } from '../../../utils/dto/response.dto';
 import { IResponse } from '../../../utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../authentication/guard/jwt-authentication.guard';
@@ -34,13 +34,9 @@ export class ContractController {
   @Get()
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getAllCategory(
-    @Req() request: RequestWithUser,
-    @Query() query: GetCategoryDto,
-  ): Promise<IResponse> {
+  async getAllCategory(@Query() query: GetCategoryDto): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.categoryService.getAllCategories(query, user);
+      const data = await this.categoryService.getAllCategories(query);
       return new ResponseSuccess('GET_CATEGORIES.SUCCESS', data);
     } catch (error) {
       console.log('------------------>', error);
@@ -57,7 +53,7 @@ export class ContractController {
   ): Promise<IResponse> {
     try {
       const { user } = request;
-      const data = await this.categoryService.getCategoryById(id, user);
+      const data = await this.categoryService.getCategoryById(id);
       return new ResponseSuccess('GET_CATEGORY.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -106,13 +102,9 @@ export class ContractController {
   @Delete(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async deleteAccess(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async deleteAccess(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.categoryService.deleteCategory(id, user);
+      const data = await this.categoryService.deleteCategory(id);
       return new ResponseSuccess('DELETE_CATEGORY.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

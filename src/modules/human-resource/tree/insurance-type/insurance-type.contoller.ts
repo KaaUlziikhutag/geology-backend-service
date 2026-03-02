@@ -19,7 +19,7 @@ import { InsuranceTypeService } from './insurance-type.service';
 import { CreateInsuranceTypeDto } from './dto/create-insurance-type.dto';
 import { UpdateInsuranceTypeDto } from './dto/update-insurance-type.dto';
 import { GetInsuranceTypeDto } from './dto/get-insurance-type.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../../authentication/guard/jwt-authentication.guard';

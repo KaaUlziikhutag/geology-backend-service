@@ -11,7 +11,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 import Repeats from '../entities/repeat.entity';
-import { ScheduleStatus } from '../../../../../utils/globalUtils';
+import { ScheduleStatus } from '@utils/enum-utils';
 import Users from '../../../../cloud/user/user.entity';
 @Entity('time_access_repeat_schedule_i')
 export default class RepeatSchedules extends BaseEntity {

@@ -19,7 +19,7 @@ import { EthicService } from './ethics.service';
 import { CreateEthicDto } from './dto/create-ethics.dto';
 import { UpdateEthicDto } from './dto/update-ethics.dto';
 import { GetEthicDto } from './dto/get-ethics.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';

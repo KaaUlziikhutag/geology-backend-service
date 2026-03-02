@@ -10,7 +10,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { JobCategory } from '../../../../utils/enumUtils';
+import { JobCategory } from '@utils/enum-utils';
 import Worker from '../../../human-resource/member/worker/worker.entity';
 import Trees from '../tree.entity';
 

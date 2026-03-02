@@ -19,9 +19,9 @@ import { GraphicService } from './graphic.service';
 import { CreateGraphicDto } from './dto/create-graphic.dto';
 import { UpdateGraphicDto } from './dto/update-graphic.dto';
 import { GetGraphicDto } from './dto/get-graphic.dto';
-import FindOneParams from '../../../../../utils/findOneParams';
-import { ResponseSuccess } from '../../../../../utils/dto/response.dto';
-import { IResponse } from '../../../../../utils/interfaces/response.interface';
+import FindOneParams from '@utils/find-one-params';
+import { ResponseSuccess } from '@utils/dto/response.dto';
+import { IResponse } from '@utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../../../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
 import RequestWithUser from '../../../../authentication/interface/request-with-user.interface';
@@ -39,8 +39,7 @@ export class GraphicController {
     @Query() query: GetGraphicDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.graphicService.getAllGraphic(query, user);
+      const data = await this.graphicService.getAllGraphic(query);
       return new ResponseSuccess('GET_GRAPHIC.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -50,13 +49,9 @@ export class GraphicController {
   @Get(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getGraphicById(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async getGraphicById(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.graphicService.getGraphicId(id, user);
+      const data = await this.graphicService.getGraphicId(id);
       return new ResponseSuccess('GET_GRAPHIC.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -72,8 +67,7 @@ export class GraphicController {
     @Body() graphic: CreateGraphicDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.graphicService.createGraphic(graphic, user);
+      const data = await this.graphicService.createGraphic(graphic);
       return new ResponseSuccess('CREATE_GRAPHIC.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -85,12 +79,10 @@ export class GraphicController {
   @UseGuards(AuthGuard('api-key'))
   async updateGraphic(
     @Param() { id }: FindOneParams,
-    @Req() request: RequestWithUser,
     @Body() graphic: UpdateGraphicDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.graphicService.updateGraphic(id, user, graphic);
+      const data = await this.graphicService.updateGraphic(id, graphic);
       return new ResponseSuccess('UPDATE_GRAPHIC.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -105,8 +97,7 @@ export class GraphicController {
     @Param() { id }: FindOneParams,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.graphicService.deleteGraphic(id, user);
+      const data = await this.graphicService.deleteGraphic(id);
       return new ResponseSuccess('DELETE_GRAPHIC.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

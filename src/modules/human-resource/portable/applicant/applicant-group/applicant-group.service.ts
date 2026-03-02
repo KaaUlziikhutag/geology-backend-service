@@ -5,11 +5,11 @@ import { GetApplicantGroupDto } from './dto/get-applicant-group.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import ApplicantGroups from './applicant-group.entity';
 import ApplicantGroupNotFoundException from './exceptions/applicant-group-not-found.exception';
-import { PageDto } from '../../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class ApplicantGroupService {
@@ -28,7 +28,7 @@ export class ApplicantGroupService {
    * A method that fetches the ApplicantGroup from the database
    * @returns A promise with the list of ApplicantGroups
    */
-  async getAllApplicantGroups(query: GetApplicantGroupDto, user: GetUserDto) {
+  async getAllApplicantGroups(query: GetApplicantGroupDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<ApplicantGroups>['where'] = {};
     if (query.userId) {
@@ -65,7 +65,7 @@ export class ApplicantGroupService {
    */
   async getApplicantGroupById(
     applicantGroupId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<ApplicantGroups> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const applicantGroup = await entityManager.findOne(ApplicantGroups, {
@@ -84,7 +84,7 @@ export class ApplicantGroupService {
    */
   async createApplicantGroup(
     applicantGroup: CreateApplicantGroupDto,
-    user: GetUserDto,
+    user: IUser,
   ) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newApplicantGroup = entityManager.create(
@@ -100,7 +100,7 @@ export class ApplicantGroupService {
    */
   async updateApplicantGroup(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     applicantGroup: UpdateApplicantGroupDto,
   ): Promise<ApplicantGroups> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -117,7 +117,7 @@ export class ApplicantGroupService {
   /**
    * @deprecated Use deleteApplicantGroup instead
    */
-  async deleteApplicantGroupById(id: number, user: GetUserDto): Promise<void> {
+  async deleteApplicantGroupById(id: number, user: IUser): Promise<void> {
     return this.deleteApplicantGroup(id, user);
   }
 
@@ -125,7 +125,7 @@ export class ApplicantGroupService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteApplicantGroup(id: number, user: GetUserDto): Promise<void> {
+  async deleteApplicantGroup(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(ApplicantGroups, id);
     if (!deleteResponse.affected) {

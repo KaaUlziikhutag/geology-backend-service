@@ -5,7 +5,7 @@ import SignatureViewUser from './view-users.entity';
 import ViewUserNotFoundException from './exception/view-user-not-found.exception';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class ViewUserService {
@@ -26,7 +26,7 @@ export class ViewUserService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getViewUsersBySignatureId(signatureId: number, user: GetUserDto) {
+  async getViewUsersBySignatureId(signatureId: number, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const items = await entityManager.find(SignatureViewUser, {
       where: { signatureId },
@@ -43,7 +43,7 @@ export class ViewUserService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getViewUsersByUserId(userId: number, user: GetUserDto) {
+  async getViewUsersByUserId(userId: number, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const items = await entityManager.find(SignatureViewUser, {
       where: { userId },
@@ -64,7 +64,7 @@ export class ViewUserService {
    * @param Contract createContract
    *
    */
-  async createViewUser(viewUser: CreateViewUserDto, user: GetUserDto) {
+  async createViewUser(viewUser: CreateViewUserDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newViewUser = entityManager.create(SignatureViewUser, viewUser);
     await entityManager.save(newViewUser);

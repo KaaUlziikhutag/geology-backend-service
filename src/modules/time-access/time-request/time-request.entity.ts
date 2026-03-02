@@ -2,11 +2,10 @@ import {
   AppointmentCostType,
   AppointmentStatusType,
   CompensationType,
-  FileDto,
   RequestType,
   TimeEventType,
   WorkTime,
-} from '../../../utils/globalUtils';
+} from '@utils/enum-utils';
 import {
   Column,
   Entity,
@@ -21,6 +20,7 @@ import {
 import TimeState from './time-state/time-state.entity';
 import Worker from '../../human-resource/member/worker/worker.entity';
 import Appointments from '../../human-resource/appointment/entities/appointment.entity';
+import LocalFile from '@modules/local-files/local-file.entity';
 @Entity('time_access_time_request_i')
 export default class TimeRequest extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -163,7 +163,7 @@ export default class TimeRequest extends BaseEntity {
   confirmWorker?: Worker;
 
   @Column({ type: 'jsonb', name: 'fileIds', nullable: true })
-  public fileIds: FileDto[]; // FILE UPLOAD
+  fileIds: LocalFile[]; // FILE UPLOAD
 
   @CreateDateColumn({
     name: 'created_at',

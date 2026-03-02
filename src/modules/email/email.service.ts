@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { SendMailDto } from './dto/send-mail.dto';
 import { ReportService } from '../report/report.service';
-import GetUserDto from '../users/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export default class EmailService {
@@ -11,7 +11,7 @@ export default class EmailService {
     private readonly reportService: ReportService,
   ) {}
 
-  async sendMail(user: GetUserDto, mail: SendMailDto) {
+  async sendMail(user: IUser, mail: SendMailDto) {
     const payload = {
       to: mail.to,
       subject: '',

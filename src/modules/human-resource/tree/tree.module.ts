@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TreeService } from './tree.service';
-import { TreeController } from './tree.contoller';
+import { TreeController } from './tree.controller';
 import Trees from './tree.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';

@@ -6,37 +6,43 @@ import {
 import { CreatePublicFileDto } from './dto/create-file.dto';
 import { UpdatePublicFileDto } from './dto/update-file.dto';
 import { GetPublicFileDto } from './dto/get-file.dto';
-import { EntityManager, Equal, FindManyOptions, IsNull, Raw } from 'typeorm';
+import {
+  EntityManager,
+  Equal,
+  FindManyOptions,
+  IsNull,
+  Raw,
+  Repository,
+} from 'typeorm';
 import PublicFiles from './file.entity';
 import PublicFileNotFoundException from './exceptions/file-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
-import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../cloud/user/dto/get-user.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
+import { InjectRepository } from '@nestjs/typeorm';
 import LocalFile from '../../local-files/local-file.entity';
-import { FileType } from '../../../utils/globalUtils';
+import { FileType } from '@utils/enum-utils';
 import PublicViewUser from '../view-users/view-users.entity';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class PublicFileService {
   /**
    * @ignore
    */
-  constructor(private moduleRef: ModuleRef) {}
-
-  private async loadEntityManager(systemId: string): Promise<EntityManager> {
-    return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
-      strict: false,
-    });
-  }
+  constructor(
+    @InjectRepository(PublicFiles)
+    private readonly publicFileRepository: Repository<PublicFiles>,
+    @InjectRepository(PublicViewUser)
+    private readonly publicViewUserRepository: Repository<PublicViewUser>,
+    @InjectRepository(LocalFile)
+    private readonly localFileRepository: Repository<LocalFile>,
+  ) {}
 
   /**
    * A method that fetches the Contract from the database
    * @returns A promise with the list of Contract
    */
-  async getAllFiles(query: GetPublicFileDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getAllFiles(query: GetPublicFileDto) {
     const where: FindManyOptions<PublicFiles>['where'] = {};
     if (query.name) {
       where.name = Equal(query.name);
@@ -71,7 +77,7 @@ export class PublicFileService {
         ? Number(query.limit)
         : 10;
     const skip = (page - 1) * limit;
-    const [items, count] = await entityManager.findAndCount(PublicFiles, {
+    const [items, count] = await this.publicFileRepository.findAndCount({
       where,
       order: {
         createdAt: 'DESC',
@@ -85,14 +91,12 @@ export class PublicFileService {
     return new PageDto(items, pageMetaDto);
   }
 
-  async getAllFilesDeletePhotos(query: GetPublicFileDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-
+  async getAllFilesDeletePhotos(query: GetPublicFileDto) {
     if (!query.folderId) {
       throw new BadRequestException('Folder ID is required');
     }
 
-    const folder = await entityManager.findOne(PublicFiles, {
+    const folder = await this.publicFileRepository.findOne({
       where: { id: query.folderId },
       relations: ['children'],
     });
@@ -115,7 +119,7 @@ export class PublicFileService {
       throw new BadRequestException(`Invalid fileIds: ${query.fileIds}`);
     }
 
-    await entityManager.delete(LocalFile, fileIdsArray);
+    await this.publicFileRepository.delete(fileIdsArray);
 
     // if (!deleteResult.affected) {
     //   throw new NotFoundException(`Files with IDs ${fileIdsArray} not found`);
@@ -127,7 +131,7 @@ export class PublicFileService {
             (fileIdObject) => !fileIdsArray.includes(fileIdObject.id),
           );
           child.fileIds = updatedFileIds;
-          await entityManager.update(PublicFiles, child.id, {
+          await this.publicFileRepository.update(child.id, {
             fileIds: updatedFileIds,
           });
         }
@@ -138,12 +142,12 @@ export class PublicFileService {
           (fileIdObject) => !fileIdsArray.includes(fileIdObject.id),
         );
         folder.fileIds = updatedFolderFileIds;
-        await entityManager.update(PublicFiles, folder.id, {
+        await this.publicFileRepository.update(folder.id, {
           fileIds: updatedFolderFileIds,
         });
       }
     }
-    const result = await entityManager.save(folder);
+    const result = await this.publicFileRepository.save(folder);
     return result;
   }
 
@@ -153,9 +157,8 @@ export class PublicFileService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getFileById(fileId: number, user: GetUserDto): Promise<PublicFiles> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const file = await entityManager.findOne(PublicFiles, {
+  async getFileById(fileId: number): Promise<PublicFiles> {
+    const file = await this.publicFileRepository.findOne({
       where: { id: fileId },
       relations: ['children'],
     });
@@ -170,23 +173,19 @@ export class PublicFileService {
    * @param SystemMail createSystemMail
    *
    */
-  async createFile(file: CreatePublicFileDto, user: GetUserDto) {
-    file.authorId = user.workerId;
-    file.author = {
-      lastName: `${user.lastName}`,
-      firstName: `${user.firstName}`,
-    };
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const newFile = entityManager.create(PublicFiles, file);
-    await entityManager.save(newFile);
+  async createFile(file: CreatePublicFileDto, user: IUser) {
+    file.authorId = user.id;
+
+    const newFile = this.publicFileRepository.create(file);
+    await this.publicFileRepository.save(newFile);
     if (file.viewUserIds && file.viewUserIds.length > 0) {
       const fileViewUsers = file.viewUserIds.map((id) => {
-        return entityManager.create(PublicViewUser, {
+        return this.publicViewUserRepository.create({
           fileId: newFile.id,
           userId: id,
         });
       });
-      await entityManager.save(PublicViewUser, fileViewUsers);
+      await this.publicViewUserRepository.save(fileViewUsers);
     }
     return newFile;
   }
@@ -196,22 +195,20 @@ export class PublicFileService {
    */
   async updateFile(
     id: number,
-    user: GetUserDto,
     file: UpdatePublicFileDto,
   ): Promise<PublicFiles> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
     if (file.viewUserIds && file.viewUserIds.length > 0) {
-      await entityManager.delete(PublicViewUser, { fileId: id });
+      await this.publicViewUserRepository.delete({ fileId: id });
       const fileViewUsers = file.viewUserIds.map((workerId) => {
-        return entityManager.create(PublicViewUser, {
+        return this.publicViewUserRepository.create({
           fileId: id,
           userId: workerId,
         });
       });
-      await entityManager.save(PublicViewUser, fileViewUsers);
+      await this.publicViewUserRepository.save(fileViewUsers);
     }
-    await entityManager.update(PublicFiles, id, file);
-    const updatedFile = await entityManager.findOne(PublicFiles, {
+    await this.publicFileRepository.update(id, file);
+    const updatedFile = await this.publicFileRepository.findOne({
       where: { id: id },
     });
     if (updatedFile) {
@@ -223,17 +220,16 @@ export class PublicFileService {
   /**
    * @deprecated Use deleteContract instead
    */
-  async deleteFileById(id: number, user: GetUserDto): Promise<void> {
-    return this.deleteFile(id, user);
+  async deleteFileById(id: number): Promise<void> {
+    return this.deleteFile(id);
   }
 
   /**
    * A method that deletes a contract from the database
    * @param id An id of a contract. A contract with this id should exist in the database
    */
-  async deleteFile(id: number, user: GetUserDto): Promise<void> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const findDeletePhoto = await entityManager.findOne(PublicFiles, {
+  async deleteFile(id: number): Promise<void> {
+    const findDeletePhoto = await this.publicFileRepository.findOne({
       where: { id: id },
       relations: ['children'],
     });
@@ -244,20 +240,20 @@ export class PublicFileService {
 
     if (findDeletePhoto.fileIds && findDeletePhoto.fileIds.length > 0) {
       for (const fileDto of findDeletePhoto.fileIds) {
-        await entityManager.delete(LocalFile, fileDto.id);
+        await this.localFileRepository.delete(fileDto.id);
       }
     }
     if (findDeletePhoto.children && findDeletePhoto.children.length > 0) {
       for (const child of findDeletePhoto.children) {
         if (child.fileIds && child.fileIds.length > 0) {
           for (const fileDto of child.fileIds) {
-            await entityManager.delete(LocalFile, fileDto.id);
+            await this.localFileRepository.delete(fileDto.id);
           }
         }
-        await entityManager.softDelete(PublicFiles, child.id);
+        await this.publicFileRepository.softDelete(child.id);
       }
     }
-    const deleteResponse = await entityManager.softDelete(PublicFiles, id);
+    const deleteResponse = await this.publicFileRepository.softDelete(id);
     if (!deleteResponse.affected) {
       throw new PublicFileNotFoundException(id);
     }

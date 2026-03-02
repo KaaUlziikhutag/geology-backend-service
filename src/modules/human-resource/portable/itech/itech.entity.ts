@@ -1,4 +1,5 @@
-import { FileDto, ItechType } from '../../../../utils/globalUtils';
+import { RelationIdDto } from '@utils/dto/relation-id.dto';
+import { ItechType } from '@utils/enum-utils';
 import {
   Column,
   Entity,
@@ -23,7 +24,7 @@ export default class Itechs extends BaseEntity {
   public officeData: Record<string, any>;
 
   @Column({ type: 'jsonb', name: 'fileIds', nullable: true })
-  public fileIds: FileDto[]; // FILE UPLOAD
+  public fileIds: RelationIdDto[]; // FILE UPLOAD
 
   @Column({
     type: 'enum',

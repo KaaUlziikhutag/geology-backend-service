@@ -20,7 +20,7 @@ export default class Product extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'type', enum: ProductType, default: ProductType.Examination })
+  @Column({ name: 'type', enum: ProductType, default: ProductType.single })
   type: ProductType;
 
   @Column({ name: 'section_id' })

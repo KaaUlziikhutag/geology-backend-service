@@ -19,7 +19,7 @@ import { AccessService } from './access.service';
 import { CreateAccessDto } from './dto/create-access.dto';
 import { UpdateAccessDto } from './dto/update-access.dto';
 import { GetAccessDto } from './dto/get-access.dto';
-import FindOneParams from '../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../utils/dto/response.dto';
 import { IResponse } from '../../../utils/interfaces/response.interface';
@@ -29,19 +29,15 @@ import RequestWithUser from '../../authentication/interface/request-with-user.in
 
 @Controller('human-resource-access')
 @UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(JwtAuthenticationGuard)
 export class AccessController {
   constructor(private readonly accessService: AccessService) {}
 
   @Get()
-  @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getAllAccesss(
-    @Req() request: RequestWithUser,
-    @Query() query: GetAccessDto,
-  ): Promise<IResponse> {
+  async getAllAccesss(@Query() query: GetAccessDto): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.accessService.getAllAccesss(query, user);
+      const data = await this.accessService.getAllAccesss(query);
       return new ResponseSuccess('GET_ACCESS.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -49,15 +45,10 @@ export class AccessController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getAccessById(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async getAccessById(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.accessService.getAccessById(id, user);
+      const data = await this.accessService.getAccessById(id);
       return new ResponseSuccess('GET_ACCESS.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -65,15 +56,10 @@ export class AccessController {
   }
 
   @Get('worker/:id')
-  @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getAccessByWorkId(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async getAccessByWorkId(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.accessService.getAccessByWorkId(id, user);
+      const data = await this.accessService.getAccessByWorkId(id);
       return new ResponseSuccess('GET_ACCESS_WORKER.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -82,15 +68,10 @@ export class AccessController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async createAccess(
-    @Req() request: RequestWithUser,
-    @Body() access: CreateAccessDto,
-  ): Promise<IResponse> {
+  async createAccess(@Body() access: CreateAccessDto): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.accessService.createAccess(access, user);
+      const data = await this.accessService.createAccess(access);
       return new ResponseSuccess('CREATE_ACCESS.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -98,16 +79,13 @@ export class AccessController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
   async updateAccess(
     @Param() { id }: FindOneParams,
-    @Req() request: RequestWithUser,
     @Body() access: UpdateAccessDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.accessService.updateAccess(id, user, access);
+      const data = await this.accessService.updateAccess(id, access);
       return new ResponseSuccess('UPDATE_ACCESS.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -119,16 +97,10 @@ export class AccessController {
   @UseGuards(AuthGuard('api-key'))
   async updateAccessProgram(
     @Param() { id }: FindOneParams,
-    @Req() request: RequestWithUser,
     @Body() access: UpdateAccessDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.accessService.updateAccessProgram(
-        id,
-        user,
-        access,
-      );
+      const data = await this.accessService.updateAccessProgram(id, access);
       return new ResponseSuccess('UPDATE_ACCESS.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -139,17 +111,10 @@ export class AccessController {
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
   async updateAccessModule(
-    @Param() { id }: FindOneParams,
-    @Req() request: RequestWithUser,
     @Body() access: UpdateAccessDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.accessService.updateAccessModule(
-        id,
-        user,
-        access,
-      );
+      const data = await this.accessService.updateAccessModule(access);
       return new ResponseSuccess('UPDATE_ACCESS.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

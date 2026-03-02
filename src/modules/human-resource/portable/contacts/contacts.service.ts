@@ -5,11 +5,11 @@ import { GetContactDto } from './dto/get-contacts.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Contacts from './contacts.entity';
 import ContactNotFoundException from './exceptions/contacts-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class ContactService {
@@ -28,7 +28,7 @@ export class ContactService {
    * A method that fetches the Contact from the database
    * @returns A promise with the list of Contacts
    */
-  async getAllContacts(query: GetContactDto, user: GetUserDto) {
+  async getAllContacts(query: GetContactDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Contacts>['where'] = {};
     if (query.userId) {
@@ -64,7 +64,7 @@ export class ContactService {
    * @example
    * const Contact = await ContactService.getContactById(1);
    */
-  async getContactById(contactId: number, user: GetUserDto): Promise<Contacts> {
+  async getContactById(contactId: number, user: IUser): Promise<Contacts> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const contact = await entityManager.findOne(Contacts, {
       where: { id: contactId },
@@ -80,9 +80,9 @@ export class ContactService {
    * @param Contact createContact
    *
    */
-  async createContact(contact: CreateContactDto, user: GetUserDto) {
+  async createContact(contact: CreateContactDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    contact.authorId = user.workerId;
+    contact.authorId = user.id;
     const newContact = entityManager.create(Contacts, contact);
     await entityManager.save(newContact);
     return newContact;
@@ -93,7 +93,7 @@ export class ContactService {
    */
   async updateContact(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     contact: UpdateContactDto,
   ): Promise<Contacts> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -110,7 +110,7 @@ export class ContactService {
   /**
    * @deprecated Use deleteContact instead
    */
-  async deleteContactById(id: number, user: GetUserDto): Promise<void> {
+  async deleteContactById(id: number, user: IUser): Promise<void> {
     return this.deleteContact(id, user);
   }
 
@@ -118,7 +118,7 @@ export class ContactService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteContact(id: number, user: GetUserDto): Promise<void> {
+  async deleteContact(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(Contacts, id);
     if (!deleteResponse.affected) {

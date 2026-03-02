@@ -5,11 +5,11 @@ import { GetItechItemDto } from './dto/get-itech-items.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import ItechItems from './itech-items.entity';
 import ItechItemNotFoundException from './exceptions/itech-items-not-found.exception';
-import { PageDto } from '../../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class ItechItemService {
@@ -28,7 +28,7 @@ export class ItechItemService {
    * A method that fetches the ItechItem from the database
    * @returns A promise with the list of ItechItems
    */
-  async getAllItechItems(query: GetItechItemDto, user: GetUserDto) {
+  async getAllItechItems(query: GetItechItemDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<ItechItems>['where'] = {};
     if (query.userId) {
@@ -73,7 +73,7 @@ export class ItechItemService {
    */
   async getItechItemById(
     itechItemId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<ItechItems> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const itechItem = await entityManager.findOne(ItechItems, {
@@ -90,7 +90,7 @@ export class ItechItemService {
    * @param ItechItem createItechItem
    *
    */
-  async createItechItem(itechItem: CreateItechItemDto, user: GetUserDto) {
+  async createItechItem(itechItem: CreateItechItemDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newItechItem = entityManager.create(ItechItems, itechItem);
     await entityManager.save(newItechItem);
@@ -102,7 +102,7 @@ export class ItechItemService {
    */
   async updateItechItem(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     itechItem: UpdateItechItemDto,
   ): Promise<ItechItems> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -119,7 +119,7 @@ export class ItechItemService {
   /**
    * @deprecated Use deleteItechItem instead
    */
-  async deleteItechItemById(id: number, user: GetUserDto): Promise<void> {
+  async deleteItechItemById(id: number, user: IUser): Promise<void> {
     return this.deleteItechItem(id, user);
   }
 
@@ -127,7 +127,7 @@ export class ItechItemService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteItechItem(id: number, user: GetUserDto): Promise<void> {
+  async deleteItechItem(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(ItechItems, id);
     if (!deleteResponse.affected) {

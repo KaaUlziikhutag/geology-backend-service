@@ -12,6 +12,7 @@ import UpdateCustomerDto from './dto/update-customer.dto';
 import { EbarimtEasyService } from '../payment/ebarimt/ebarimt-easy/ebarimt-easy.service';
 import { EbarimtInquireService } from '../payment/ebarimt/ebarimt-inquire/ebarimt-inquire.service';
 import GetUserDto from '../users/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class CustomerService {
@@ -23,7 +24,7 @@ export class CustomerService {
   ) {}
 
   async createCustomer(
-    user: GetUserDto,
+    user: IUser,
     customer: CreateCustomerDto,
   ): Promise<Customer> {
     const { ebarimtNo, ebarimtTin } = await this.ebarimtCustomer(customer);
@@ -96,7 +97,7 @@ export class CustomerService {
   }
 
   async updateCustomer(
-    user: GetUserDto,
+    user: IUser,
     id: number,
     customer: UpdateCustomerDto,
   ): Promise<Customer> {

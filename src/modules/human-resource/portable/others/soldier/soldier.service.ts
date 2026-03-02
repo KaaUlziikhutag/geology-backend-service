@@ -5,11 +5,11 @@ import { GetSoldiersDto } from './dto/get-soldier.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Soldiers from './soldier.entity';
 import SoldiersNotFoundException from './exceptions/soldier-not-found.exception';
-import { PageDto } from '../../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class SoldiersService {
@@ -28,7 +28,7 @@ export class SoldiersService {
    * A method that fetches the Soldiers from the database
    * @returns A promise with the list of Soldierss
    */
-  async getAllSoldierss(query: GetSoldiersDto, user: GetUserDto) {
+  async getAllSoldierss(query: GetSoldiersDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Soldiers>['where'] = {};
     if (query.comId) {
@@ -61,10 +61,7 @@ export class SoldiersService {
    * @example
    * const Soldiers = await SoldiersService.getSoldiersById(1);
    */
-  async getSoldiersById(
-    soldiersId: number,
-    user: GetUserDto,
-  ): Promise<Soldiers> {
+  async getSoldiersById(soldiersId: number, user: IUser): Promise<Soldiers> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const soldiers = await entityManager.findOne(Soldiers, {
       where: { id: soldiersId },
@@ -80,9 +77,9 @@ export class SoldiersService {
    * @param Soldiers createSoldiers
    *
    */
-  async createSoldiers(soldiers: CreateSoldiersDto, user: GetUserDto) {
+  async createSoldiers(soldiers: CreateSoldiersDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    soldiers.authorId = user.workerId;
+    soldiers.authorId = user.id;
     const newSoldiers = entityManager.create(Soldiers, soldiers);
     await entityManager.save(newSoldiers);
     return newSoldiers;
@@ -93,7 +90,7 @@ export class SoldiersService {
    */
   async updateSoldiers(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     soldiers: UpdateSoldiersDto,
   ): Promise<Soldiers> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -110,7 +107,7 @@ export class SoldiersService {
   /**
    * @deprecated Use deleteSoldiers instead
    */
-  async deleteSoldiersById(id: number, user: GetUserDto): Promise<void> {
+  async deleteSoldiersById(id: number, user: IUser): Promise<void> {
     return this.deleteSoldiers(id, user);
   }
 
@@ -118,7 +115,7 @@ export class SoldiersService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteSoldiers(id: number, user: GetUserDto): Promise<void> {
+  async deleteSoldiers(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Soldiers, id);
     if (!deleteResponse.affected) {

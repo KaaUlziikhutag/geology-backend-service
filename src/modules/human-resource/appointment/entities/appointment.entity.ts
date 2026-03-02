@@ -4,7 +4,7 @@ import {
   AppointmentType,
   MoneyType,
   WorkType,
-} from '../../../../utils/globalUtils';
+} from '@utils/enum-utils';
 import {
   Column,
   Entity,

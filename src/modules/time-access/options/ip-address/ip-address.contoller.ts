@@ -19,7 +19,7 @@ import { IpAddressService } from './ip-address.service';
 import { CreateIpAddressDto } from './dto/create-ip-address.dto';
 import { UpdateIpSettingDto } from './dto/update-ip-address.dto';
 import { GetIpAddressDto } from './dto/get-ip-address.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';

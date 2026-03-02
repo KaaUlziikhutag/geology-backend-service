@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { RequestType, TimePeriod } from '../../../../../utils/globalUtils';
+import { RequestType, TimePeriod } from '@utils/enum-utils';
 import {
   IsOptional,
   IsNumber,

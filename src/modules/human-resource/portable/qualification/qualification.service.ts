@@ -5,11 +5,11 @@ import { GetQualificationDto } from './dto/get-qualification.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Qualifications from './qualification.entity';
 import QualificationNotFoundException from './exceptions/qualification-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class QualificationService {
@@ -28,7 +28,7 @@ export class QualificationService {
    * A method that fetches the Qualification from the database
    * @returns A promise with the list of Qualifications
    */
-  async getAllQualifications(query: GetQualificationDto, user: GetUserDto) {
+  async getAllQualifications(query: GetQualificationDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Qualifications>['where'] = {};
     if (query.authorId) {
@@ -67,7 +67,7 @@ export class QualificationService {
    */
   async getQualificationById(
     qualificationId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<Qualifications> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const qualification = await entityManager.findOne(Qualifications, {
@@ -87,10 +87,10 @@ export class QualificationService {
    */
   async createQualification(
     qualification: CreateQualificationDto,
-    user: GetUserDto,
+    user: IUser,
   ) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    qualification.authorId = user.workerId;
+    qualification.authorId = user.id;
     const newQualification = entityManager.create(
       Qualifications,
       qualification,
@@ -104,7 +104,7 @@ export class QualificationService {
    */
   async updateQualification(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     qualification: UpdateQualificationDto,
   ): Promise<Qualifications> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -121,7 +121,7 @@ export class QualificationService {
   /**
    * @deprecated Use deleteQualification instead
    */
-  async deleteQualificationById(id: number, user: GetUserDto): Promise<void> {
+  async deleteQualificationById(id: number, user: IUser): Promise<void> {
     return this.deleteQualification(id, user);
   }
 
@@ -129,7 +129,7 @@ export class QualificationService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteQualification(id: number, user: GetUserDto): Promise<void> {
+  async deleteQualification(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Qualifications, id);
     if (!deleteResponse.affected) {

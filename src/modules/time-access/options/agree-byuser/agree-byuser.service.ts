@@ -3,13 +3,13 @@ import { GetAgreeByuserDto } from './dto/get-agree-byuser.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import AgreeByusers from './agree-byuser.entity';
 import AgreeByuserNotFoundException from './exceptions/agree-byuser-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
 import { UserIdsDto } from './dto/create-agree-byuser.dto';
 import { UpdateAgreeByuserDto } from './dto/update-agree-byuser.dto';
+import { IUser } from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class AgreeByuserService {
@@ -28,7 +28,7 @@ export class AgreeByuserService {
    * A method that fetches the AgreeByuser from the database
    * @returns A promise with the list of AgreeByusers
    */
-  async getAllAgreeByuser(query: GetAgreeByuserDto, user: GetUserDto) {
+  async getAllAgreeByuser(query: GetAgreeByuserDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<AgreeByusers>['where'] = {};
     if (query.userId) {
@@ -65,7 +65,7 @@ export class AgreeByuserService {
    */
   async getAgreeByuserById(
     agreeByuserId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<AgreeByusers> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const agreeByuser = await entityManager.findOne(AgreeByusers, {
@@ -83,13 +83,13 @@ export class AgreeByuserService {
    * @param AgreeByuser createAgreeByuser
    *
    */
-  async createUsers(userData: UserIdsDto, user: GetUserDto) {
+  async createUsers(userData: UserIdsDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     await entityManager.transaction(async (transactionalEntityManager) => {
       const agreeUsers = userData.userIds.map((id) =>
         transactionalEntityManager.create(AgreeByusers, {
           userId: id,
-          comId: user.companyId,
+          comId: null,
           autorId: userData.autorId,
         }),
       );
@@ -100,7 +100,7 @@ export class AgreeByuserService {
 
   async updateAgreeByUser(
     agreeById: number,
-    user: GetUserDto,
+    user: IUser,
     agreeByUser: UpdateAgreeByuserDto,
   ) {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -109,7 +109,7 @@ export class AgreeByuserService {
         agreeByUser.userIds.map(async (userId) => {
           await transactionalEntityManager.update(
             AgreeByusers,
-            { userId, comId: user.companyId },
+            { userId, comId: null },
             agreeByUser,
           );
         }),
@@ -127,7 +127,7 @@ export class AgreeByuserService {
   /**
    * @deprecated Use deleteAgreeByuser instead
    */
-  async deleteAgreeByuserById(id: number, user: GetUserDto): Promise<void> {
+  async deleteAgreeByuserById(id: number, user: IUser): Promise<void> {
     return this.deleteAgreeByuser(id, user);
   }
 
@@ -135,7 +135,7 @@ export class AgreeByuserService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteAgreeByuser(id: number, user: GetUserDto): Promise<void> {
+  async deleteAgreeByuser(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(AgreeByusers, id);
     if (!deleteResponse.affected) {

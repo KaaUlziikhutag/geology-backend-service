@@ -18,7 +18,7 @@ import { CompaniesService } from './companies.service';
 import { CreateCompaniesDto } from './dto/create-companies.dto';
 import { UpdateCompaniesDto } from './dto/update-companies.dto';
 import { GetCompaniesDto } from './dto/get-companies.dto';
-import FindOneParams from '../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 import { ResponseSuccess } from '../../../utils/dto/response.dto';
 import { IResponse } from '../../../utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../authentication/guard/jwt-authentication.guard';

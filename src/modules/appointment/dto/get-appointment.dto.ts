@@ -6,10 +6,6 @@ import { ReceiptStatus } from '../../../utils/enum-utils';
 
 export default class GetAppointmentDto extends PageOptionsDto {
   @IsOptional()
-  @IsString()
-  search?: string;
-
-  @IsOptional()
   @ValidateNested()
   @Type(() => GetRangeDateDto)
   createdAt?: GetRangeDateDto;

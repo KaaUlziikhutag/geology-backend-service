@@ -18,7 +18,7 @@ import { UpdateCountryDto } from './dto/update-country.dto';
 import { GetCountryDto } from './dto/get-country.dto';
 import { ResponseSuccess } from '../../../utils/dto/response.dto';
 import { IResponse } from '../../../utils/interfaces/response.interface';
-import FindOneParams from '../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 import JwtAuthenticationGuard from '../../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
 

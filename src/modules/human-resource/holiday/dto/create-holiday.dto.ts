@@ -14,7 +14,7 @@ import {
   AppointmentStatusType,
   HolidayState,
   WorkType,
-} from '../../../../utils/globalUtils';
+} from '@utils/enum-utils';
 export class CreateHolidayDto {
   @IsOptional()
   @IsNumber()

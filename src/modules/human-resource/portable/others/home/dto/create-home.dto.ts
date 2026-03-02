@@ -1,6 +1,5 @@
 import { IsOptional, IsNumber, IsString, IsEnum } from 'class-validator';
-
-import { Homes, MineType } from '../../../../../../utils/globalUtils';
+import { Homes, MineType } from '@utils/enum-utils';
 export class CreateHomesDto {
   @IsOptional()
   @IsNumber()

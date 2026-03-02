@@ -1,4 +1,4 @@
-import { HolidayState } from '../../../../utils/globalUtils';
+import { HolidayState } from '@utils/enum-utils';
 import {
   Column,
   Entity,
@@ -19,9 +19,9 @@ export default class HolidayByuser extends BaseEntity {
 
   @Column({ nullable: true, name: 'user_id' })
   userId: number;
-  @ManyToOne(() => Worker, (workers: Worker) => workers.holidayByusers)
-  @JoinColumn({ name: 'user_id' })
-  workers?: Worker;
+  // @ManyToOne(() => Worker, (workers: Worker) => workers.holidayByusers)
+  // @JoinColumn({ name: 'user_id' })
+  // workers?: Worker;
 
   @Column({ nullable: true, name: 'item_id' })
   itemId: number;

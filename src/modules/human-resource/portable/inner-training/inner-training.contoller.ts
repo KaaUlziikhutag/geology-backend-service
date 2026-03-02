@@ -19,7 +19,7 @@ import { InnerTrainingService } from './inner-training.service';
 import { CreateInnerTrainingDto } from './dto/create-inner-training.dto';
 import { UpdateInnerTrainingDto } from './dto/update-inner-training.dto';
 import { GetInnerTrainingDto } from './dto/get-inner-training.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../../authentication/guard/jwt-authentication.guard';

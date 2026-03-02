@@ -19,10 +19,10 @@ import { TimeRequestService } from './time-request.service';
 import { CreateTimeRequestDto } from './dto/create-time-request.dto';
 import { UpdateTimeRequestDto } from './dto/update-time-request.dto';
 import { GetTimeRequestDto } from './dto/get-time-request.dto';
-import FindOneParams from '../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
-import { ResponseSuccess } from '../../../utils/dto/response.dto';
-import { IResponse } from '../../../utils/interfaces/response.interface';
+import { ResponseSuccess } from '@utils/dto/response.dto';
+import { IResponse } from '@utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
 import RequestWithUser from '../../authentication/interface/request-with-user.interface';
@@ -41,7 +41,7 @@ export class TimeRequestController {
   ): Promise<IResponse> {
     try {
       const { user } = request;
-      const data = await this.timeRequestService.getAllTimeRequest(query, user);
+      const data = await this.timeRequestService.getAllTimeRequest(query);
       return new ResponseSuccess('GET_TIME_REQUEST.SUCCESS', data);
     } catch (error) {
       console.log('------------------>', error);
@@ -154,13 +154,9 @@ export class TimeRequestController {
   @Delete(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async deleteTimeRequest(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async deleteTimeRequest(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.timeRequestService.deleteTimeRequest(id, user);
+      const data = await this.timeRequestService.deleteTimeRequest(id);
       return new ResponseSuccess('DELETE_TIME_REQUEST.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

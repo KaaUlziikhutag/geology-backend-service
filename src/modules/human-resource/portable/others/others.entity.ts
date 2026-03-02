@@ -1,4 +1,4 @@
-import { ExamType } from '../../../../utils/globalUtils';
+import { ExamType } from '@utils/enum-utils';
 import {
   Column,
   Entity,

@@ -19,7 +19,7 @@ import { AppStageService } from './app-stage.service';
 import { CreateAppStageDto } from './dto/create-app-stage.dto';
 import { UpdateAppStageDto } from './dto/update-app-stage.dto';
 import { GetAppStageDto } from './dto/get-app-stage.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';

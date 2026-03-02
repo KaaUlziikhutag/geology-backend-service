@@ -25,6 +25,7 @@ import { UsersService } from '../users/users.service';
 import { TaskService } from '../task/task.service';
 import { CreateAnalystOrderDto } from './dto/create-analyst-order.dto';
 import { GetAnalyticTaskDto } from '../task/dto/get-analytic-task.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class OrderService {
@@ -40,7 +41,7 @@ export class OrderService {
     private readonly taskService: TaskService,
   ) {}
 
-  async createOrder(user: GetUserDto, order: CreateOrderDto): Promise<Order> {
+  async createOrder(user: IUser, order: CreateOrderDto): Promise<Order> {
     const appointment = await this.appointmentService.getAppointmentById(
       order.appointmentId,
     );
@@ -48,23 +49,23 @@ export class OrderService {
     const minerals = await this.mineralService.getMineralByIds(
       order.mineralIds,
     );
-    const contract = await this.contractService.getValidContract({
-      customerId: appointment.customerId,
-      productIds: [price.product.id],
-    });
+    // const contract = await this.contractService.getValidContract({
+    //   customerId: appointment.customerId,
+    //   productIds: [price.product.id],
+    // });
     const totalAmount = Math.floor(price.amount) * minerals.length;
-    if (contract) {
-      const orders = await this.getOrders(user, {
-        customerId: appointment.customerId,
-      });
-      const usedAmount = orders.reduce(
-        (total, item) => total + Math.floor(item.totalAmount),
-        0,
-      );
-      if (usedAmount < totalAmount) {
-        throw 'Гэрээнд заасан дүнгээс хэтэрч байна!';
-      }
-    }
+    // if (contract) {
+    //   const orders = await this.getOrders(user, {
+    //     customerId: appointment.customerId,
+    //   });
+    //   const usedAmount = orders.reduce(
+    //     (total, item) => total + Math.floor(item.totalAmount),
+    //     0,
+    //   );
+    //   if (usedAmount < totalAmount) {
+    //     throw 'Гэрээнд заасан дүнгээс хэтэрч байна!';
+    //   }
+    // }
     const newOrder = this.orderRepository.create({
       appointmentId: order.appointmentId,
       priceId: price.id,
@@ -85,11 +86,11 @@ export class OrderService {
     return newOrder;
   }
 
-  async getOrders(user: GetUserDto, query: GetOrderDto): Promise<Order[]> {
+  async getOrders(user: IUser, query: GetOrderDto): Promise<Order[]> {
     const where: FindManyOptions<Order>['where'] = {};
-    if (user.role !== Role.Engineer) {
-      where.createdBy = user.id;
-    }
+    // if (user.role !== Role.Engineer) {
+    //   where.createdBy = user.id;
+    // }
     if (query.createdAt) {
       where.createdAt = Between(query.createdAt.startAt, query.createdAt.endAt);
     }
@@ -148,10 +149,7 @@ export class OrderService {
       throw new OrderNotFoundException(id);
     }
   }
-  async receiveOrder(
-    user: GetUserDto,
-    data: CreateReceiveDto,
-  ): Promise<Order[]> {
+  async receiveOrder(user: IUser, data: CreateReceiveDto): Promise<Order[]> {
     const orders = await this.orderRepository.find({
       where: { id: In(data.ids), state: IsNull() },
       relations: ['price', 'price.product'],
@@ -171,7 +169,7 @@ export class OrderService {
     }
     return await this.orderRepository.save(orders);
   }
-  async completeOrder(user: GetUserDto, data: CompleteOrderDto): Promise<void> {
+  async completeOrder(data: CompleteOrderDto): Promise<void> {
     await this.orderRepository.update(
       { id: In(data.ids) },
       { state: data.state },
@@ -182,7 +180,7 @@ export class OrderService {
   }
 
   async createOrderAnalytic(
-    user: GetUserDto,
+    user: IUser,
     data: CreateAnalystOrderDto,
   ): Promise<Order> {
     const mineral = await this.mineralService.getMineralById(data.mineralId);

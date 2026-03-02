@@ -9,10 +9,10 @@ import {
   OneToMany,
 } from 'typeorm';
 import ServerConnectionUser from './connection-users/connection-users.entity';
-import { SslType } from '../../../utils/enumUtils';
+import { SslType } from '@utils/enum-utils';
 
 @Entity('mail_server_i')
-export default class Signature extends BaseEntity {
+export default class MailServer extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

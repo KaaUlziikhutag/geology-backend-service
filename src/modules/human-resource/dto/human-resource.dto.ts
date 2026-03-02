@@ -18,7 +18,7 @@ import {
   TemporaryOptions,
   TypeOfPosition,
   WorkType,
-} from '../../../utils/globalUtils';
+} from '@utils/enum-utils';
 import Users from '../../cloud/user/user.entity';
 import Worker from '../member/worker/worker.entity';
 import { ContactDto } from '../member/human/dto/contact.dto';

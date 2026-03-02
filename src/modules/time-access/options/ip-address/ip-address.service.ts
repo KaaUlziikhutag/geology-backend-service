@@ -7,11 +7,11 @@ import IpAddress from './entity/ip-address.entity';
 import IpAddressByusers from './entity/ip-byuser.entity';
 import IpSettingNotFoundException from './exceptions/ip-address-not-found.exception';
 import IpAddressByUsersNotFoundException from './exceptions/ip-address-byusers-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class IpAddressService {
@@ -30,7 +30,7 @@ export class IpAddressService {
    * A method that fetches the IpSetting from the database
    * @returns A promise with the list of IpSettings
    */
-  async getAllIpSetting(query: GetIpAddressDto, user: GetUserDto) {
+  async getAllIpSetting(query: GetIpAddressDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<IpAddress>['where'] = {};
     if (query.comId) {
@@ -65,10 +65,7 @@ export class IpAddressService {
    * @example
    * const IpSetting = await IpSettingService.getIpSettingById(1);
    */
-  async getIpSettingById(
-    ipSettingId: number,
-    user: GetUserDto,
-  ): Promise<IpAddress> {
+  async getIpSettingById(ipSettingId: number, user: IUser): Promise<IpAddress> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const ipSetting = await entityManager.findOne(IpAddress, {
       where: { id: ipSettingId },
@@ -85,11 +82,11 @@ export class IpAddressService {
    * @param IpSetting createIpSetting
    *
    */
-  async createIpSetting(ipSetting: CreateIpAddressDto, user: GetUserDto) {
+  async createIpSetting(ipSetting: CreateIpAddressDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newIpSetting = entityManager.create(IpAddress, ipSetting);
     newIpSetting.autorId = user.id;
-    newIpSetting.comId = user.companyId;
+    newIpSetting.comId = null;
     await entityManager.save(newIpSetting);
 
     if (ipSetting.workerIds && ipSetting.workerIds.length > 0) {
@@ -109,7 +106,7 @@ export class IpAddressService {
    */
   async updateIpSetting(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     ipSetting: UpdateIpSettingDto,
   ): Promise<IpAddress> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -137,7 +134,7 @@ export class IpAddressService {
   /**
    * @deprecated Use deleteIpSetting instead
    */
-  async deleteIpSettingById(id: number, user: GetUserDto): Promise<void> {
+  async deleteIpSettingById(id: number, user: IUser): Promise<void> {
     return this.deleteIpSetting(id, user);
   }
 
@@ -145,7 +142,7 @@ export class IpAddressService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteIpSetting(id: number, user: GetUserDto): Promise<void> {
+  async deleteIpSetting(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     await this.deleteIpByUsers(id, user);
     const deleteResponse = await entityManager.delete(IpAddress, id);
@@ -158,7 +155,7 @@ export class IpAddressService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteIpByUsers(ipAddressId: number, user: GetUserDto): Promise<void> {
+  async deleteIpByUsers(ipAddressId: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(IpAddressByusers, {
       ipAddressId: ipAddressId,

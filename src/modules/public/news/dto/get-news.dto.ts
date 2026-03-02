@@ -6,7 +6,7 @@ import {
   IsIn,
   IsNumberString,
 } from 'class-validator';
-import { PageOptionsDto } from '../../../../utils/dto/pageOptions.dto';
+import { PageOptionsDto } from '@utils/dto/page-options.dto';
 import { Type } from 'class-transformer';
 
 export class GetPublicNewsDto extends PartialType(PageOptionsDto) {

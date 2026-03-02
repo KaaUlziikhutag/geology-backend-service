@@ -5,11 +5,11 @@ import { GetSystemMailDto } from './dto/get-system-mail.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import SystemMail from './system-mail.entity';
 import SystemMailNotFoundException from './exceptions/system-mail-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class SystemMailService {
@@ -28,7 +28,7 @@ export class SystemMailService {
    * A method that fetches the Contract from the database
    * @returns A promise with the list of Contract
    */
-  async getAllSystemMails(query: GetSystemMailDto, user: GetUserDto) {
+  async getAllSystemMails(query: GetSystemMailDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<SystemMail>['where'] = {};
     if (query.userId) {
@@ -64,7 +64,7 @@ export class SystemMailService {
    */
   async getSystemMailById(
     systemMailId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<SystemMail> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const systemMail = await entityManager.findOne(SystemMail, {
@@ -81,7 +81,7 @@ export class SystemMailService {
    * @param SystemMail createSystemMail
    *
    */
-  async createSystemMail(systemMail: CreateSystemMailDto, user: GetUserDto) {
+  async createSystemMail(systemMail: CreateSystemMailDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newSystemMail = entityManager.create(SystemMail, systemMail);
     await entityManager.save(newSystemMail);
@@ -93,7 +93,7 @@ export class SystemMailService {
    */
   async updateSystemMail(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     systemMail: UpdateSystemMailDto,
   ): Promise<SystemMail> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -110,7 +110,7 @@ export class SystemMailService {
   /**
    * @deprecated Use deleteContract instead
    */
-  async deleteSystemMailById(id: number, user: GetUserDto): Promise<void> {
+  async deleteSystemMailById(id: number, user: IUser): Promise<void> {
     return this.deleteSystemMail(id, user);
   }
 
@@ -118,7 +118,7 @@ export class SystemMailService {
    * A method that deletes a contract from the database
    * @param id An id of a contract. A contract with this id should exist in the database
    */
-  async deleteSystemMail(id: number, user: GetUserDto): Promise<void> {
+  async deleteSystemMail(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(SystemMail, id);
     if (!deleteResponse.affected) {

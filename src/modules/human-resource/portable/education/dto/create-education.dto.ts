@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { Education, FileDto } from '../../../../../utils/globalUtils';
+import { Education } from '@utils/enum-utils';
 import {
   IsString,
   IsOptional,
@@ -7,6 +7,7 @@ import {
   IsEnum,
   ValidateNested,
 } from 'class-validator';
+import { RelationIdDto } from '@utils/dto/relation-id.dto';
 
 export class CreateEducationDto {
   @IsOptional()
@@ -19,8 +20,8 @@ export class CreateEducationDto {
 
   @IsOptional()
   @ValidateNested({ each: true })
-  @Type(() => FileDto)
-  fileIds: FileDto[];
+  @Type(() => RelationIdDto)
+  fileIds: RelationIdDto[];
 
   @IsOptional()
   @IsString()

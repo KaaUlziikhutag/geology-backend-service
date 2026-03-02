@@ -1,4 +1,4 @@
-import { AppointmentStatusType } from '../../../../utils/globalUtils';
+import { AppointmentStatusType } from '@utils/enum-utils';
 import {
   Column,
   Entity,

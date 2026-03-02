@@ -1,5 +1,5 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { TimePeriod } from '../../../../../utils/globalUtils';
+import { TimePeriod } from '@utils/enum-utils';
 
 export class HierarchyDto {
   @IsOptional()

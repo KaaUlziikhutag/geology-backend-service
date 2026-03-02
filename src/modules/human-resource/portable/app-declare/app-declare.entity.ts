@@ -1,4 +1,4 @@
-import { StateType } from '../../../../utils/globalUtils';
+import { StateType } from '@utils/enum-utils';
 import {
   Column,
   Entity,

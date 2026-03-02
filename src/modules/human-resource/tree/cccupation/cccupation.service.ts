@@ -6,11 +6,11 @@ import { getEntityManagerToken } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import Occupations from './cccupation.entity';
 import occupationNotFoundException from './exceptions/cccupation-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 
 import { ModuleRef } from '@nestjs/core';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class OccupationService {
@@ -30,7 +30,7 @@ export class OccupationService {
    * A method that fetches the companies from the database
    * @returns A promise with the list of occupations
    */
-  async getAllOccupations(query: GetOccupationDto, user: GetUserDto) {
+  async getAllOccupations(query: GetOccupationDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const { skip, page } = query;
 
@@ -65,7 +65,7 @@ export class OccupationService {
     return new PageDto(items, pageMetaDto);
   }
 
-  // async getAlloccupations(query: GetoccupationDto, user: GetUserDto) {
+  // async getAlloccupations(query: GetoccupationDto, user: IUser) {
   //   const entityManager = await this.loadEntityManager(user.dataBase);
   //   const where: FindManyOptions<Occupations>['where'] = {};
   //   const { skip, page } = query;
@@ -106,7 +106,7 @@ export class OccupationService {
    */
   async getoccupationById(
     occupationId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<Occupations> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const occupation = await entityManager.findOne(Occupations, {
@@ -123,7 +123,7 @@ export class OccupationService {
    * @param occupation createoccupation
    *
    */
-  async createoccupation(occupation: CreateoccupationDto, user: GetUserDto) {
+  async createoccupation(occupation: CreateoccupationDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newoccupation = entityManager.create(Occupations, occupation);
     await entityManager.save(newoccupation);
@@ -136,7 +136,7 @@ export class OccupationService {
   async updateoccupation(
     id: number,
     occupation: UpdateoccupationDto,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<Occupations> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     await entityManager.update(Occupations, id, occupation);
@@ -152,7 +152,7 @@ export class OccupationService {
   /**
    * @deprecated Use deleteoccupation instead
    */
-  async deleteoccupationById(id: number, user: GetUserDto): Promise<void> {
+  async deleteoccupationById(id: number, user: IUser): Promise<void> {
     return this.deleteoccupation(id, user);
   }
 
@@ -160,7 +160,7 @@ export class OccupationService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteoccupation(id: number, user: GetUserDto): Promise<void> {
+  async deleteoccupation(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(Occupations, id);
     if (!deleteResponse.affected) {

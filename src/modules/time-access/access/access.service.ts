@@ -1,14 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAccessDto } from './dto/create-access.dto';
-import { Between, EntityManager, Equal, FindManyOptions } from 'typeorm';
+import {
+  Between,
+  EntityManager,
+  Equal,
+  FindManyOptions,
+  Repository,
+} from 'typeorm';
 import AccesssTime from './entities/access-time.entity';
 import AccessNotFoundException from './exceptions/access-not-found.exception';
 import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../cloud/user/dto/get-user.dto';
+import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
 import { GetAccessDto } from './dto/get-access.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
-import { PageDto } from '../../../utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
+import PageDto from '@utils/dto/page.dto';
 import RepeatSchedules from '../schedule/repeat/schedule/schedule.entity';
 import DirectSchedules from '../schedule/direct/schedule/schedule.entity';
 import AccessTempTimes from './entities/access-temp.entity';
@@ -17,6 +22,7 @@ import Worker from '../../human-resource/member/worker/worker.entity';
 import Directs from '../schedule/direct/entities/direct.entity';
 import Repeats from '../schedule/repeat/entities/repeat.entity';
 import { UserService } from '../../cloud/user/user.service';
+import GetUserDto from '@modules/users/dto/get-user.dto';
 
 @Injectable()
 export class AccessService {
@@ -24,6 +30,18 @@ export class AccessService {
    * @ignore
    */
   constructor(
+    @InjectRepository(AccessTimes)
+    private readonly accessTimeRepository: Repository<AccessTimes>,
+    @InjectRepository(AccessTempTimes)
+    private readonly accessTempTimeRepository: Repository<AccessTempTimes>,
+    @InjectRepository(RepeatSchedules)
+    private readonly repeatScheduleRepository: Repository<RepeatSchedules>,
+    @InjectRepository(DirectSchedules)
+    private readonly directScheduleRepository: Repository<DirectSchedules>,
+    @InjectRepository(Repeats)
+    private readonly repeatRepository: Repository<Repeats>,
+    @InjectRepository(Directs)
+    private readonly directRepository: Repository<Directs>,
     private moduleRef: ModuleRef,
     private readonly userService: UserService,
   ) {}
@@ -34,8 +52,7 @@ export class AccessService {
     });
   }
 
-  async getAllAccess(query: GetAccessDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getAllAccess(query: GetAccessDto) {
     const page =
       query.page && !isNaN(query.page) && query.page > 0
         ? Number(query.page)
@@ -62,17 +79,17 @@ export class AccessService {
       whereRepeat.startDate = Equal(query.date);
       whereDirect.date = Equal(query.date);
     }
-    const repeatCount = await entityManager.count(RepeatSchedules, {
+    const repeatCount = await this.repeatScheduleRepository.count({
       where: whereRepeat,
     });
-    const directCount = await entityManager.count(DirectSchedules, {
+    const directCount = await this.directScheduleRepository.count({
       where: whereDirect,
     });
     const totalCount = repeatCount + directCount;
     let repeatItems: RepeatSchedules[] = [];
     let directItems: DirectSchedules[] = [];
     if (skip + limit <= repeatCount) {
-      repeatItems = await entityManager.find(RepeatSchedules, {
+      repeatItems = await this.repeatScheduleRepository.find({
         where: whereRepeat,
         relations: ['worker.humans'],
         skip,
@@ -80,7 +97,7 @@ export class AccessService {
       });
     } else if (skip >= repeatCount) {
       const directSkip = skip - repeatCount;
-      directItems = await entityManager.find(DirectSchedules, {
+      directItems = await this.directScheduleRepository.find({
         where: whereDirect,
         order: { createdAt: 'DESC' },
         skip: directSkip,
@@ -90,14 +107,14 @@ export class AccessService {
     } else {
       const repeatTake = repeatCount - skip;
       const directTake = limit - repeatTake;
-      repeatItems = await entityManager.find(RepeatSchedules, {
+      repeatItems = await this.repeatScheduleRepository.find({
         where: whereRepeat,
         order: { createdAt: 'DESC' },
         relations: ['worker.humans'],
         skip,
         take: repeatTake,
       });
-      directItems = await entityManager.find(DirectSchedules, {
+      directItems = await this.directScheduleRepository.find({
         where: whereDirect,
         order: { createdAt: 'DESC' },
         relations: ['worker.humans'],
@@ -121,8 +138,7 @@ export class AccessService {
     return new PageDto(items, pageMetaDto);
   }
 
-  async getAllWorkers(query: GetAccessDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getAllWorkers(query: GetAccessDto) {
     const page =
       query.page && !isNaN(query.page) && query.page > 0
         ? Number(query.page)
@@ -136,8 +152,7 @@ export class AccessService {
     let repeatCount = 0;
     let directItems = [];
     let directCount = 0;
-    const repeatQuery = entityManager
-      .getRepository(Repeats)
+    const repeatQuery = this.repeatRepository
       .createQueryBuilder('repeats')
       .leftJoinAndSelect('repeats.repeatDetails', 'repeatDetails')
       .leftJoinAndSelect('repeatDetails.viewUsers', 'viewUsers')
@@ -198,8 +213,7 @@ export class AccessService {
     [repeatItems, repeatCount] = await repeatQuery.getManyAndCount();
     repeatItems = repeatItems.map((item) => ({ ...item, type: 'Ээлжийн' }));
     if (repeatItems.length < limit) {
-      const directsQuery = entityManager
-        .getRepository(Directs)
+      const directsQuery = this.directRepository
         .createQueryBuilder('directs')
         .leftJoinAndSelect('directs.viewUsers', 'viewUsers')
         .leftJoinAndSelect('directs.mainSchedules', 'mainSchedules')
@@ -291,12 +305,8 @@ export class AccessService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getAccessById(
-    accessId: number,
-    user: GetUserDto,
-  ): Promise<AccesssTime> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const access = await entityManager.findOne(AccesssTime, {
+  async getAccessById(accessId: number): Promise<AccesssTime> {
+    const access = await this.accessTimeRepository.findOne({
       where: { id: accessId },
     });
     if (access) {

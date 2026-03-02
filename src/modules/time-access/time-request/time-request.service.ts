@@ -2,41 +2,44 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateTimeRequestDto } from './dto/create-time-request.dto';
 import { UpdateTimeRequestDto } from './dto/update-time-request.dto';
 import { GetTimeRequestDto } from './dto/get-time-request.dto';
-import { Between, EntityManager, Equal, FindManyOptions, In } from 'typeorm';
+import {
+  Between,
+  EntityManager,
+  Equal,
+  FindManyOptions,
+  In,
+  Repository,
+} from 'typeorm';
 import TimeRequest from './time-request.entity';
 import TimeRequestNotFoundException from './exceptions/time-request-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../cloud/user/dto/get-user.dto';
+import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
 import Trees from '../../human-resource/tree/tree.entity';
 import {
   AppointmentStatusType,
   RequestType,
   WorkType,
-} from '../../../utils/globalUtils';
+} from '@utils/enum-utils';
 import Worker from '../../human-resource/member/worker/worker.entity';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class TimeRequestService {
   /**
    * @ignore
    */
-  constructor(private moduleRef: ModuleRef) {}
-
-  private async loadEntityManager(systemId: string): Promise<EntityManager> {
-    return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
-      strict: false,
-    });
-  }
+  constructor(
+    @InjectRepository(TimeRequest)
+    private timeRequestRepository: Repository<TimeRequest>,
+  ) {}
 
   /**
    * A method that fetches the TimeRequest from the database
    * @returns A promise with the list of TimeRequests
    */
-  async getAllTimeRequest(query: GetTimeRequestDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getAllTimeRequest(query: GetTimeRequestDto) {
     const where: FindManyOptions<TimeRequest>['where'] = {};
 
     if (query.userId) {
@@ -56,34 +59,32 @@ export class TimeRequestService {
     }
 
     if (query.treeId) {
-      const findChildrenIds = async (
-        parentId: number,
-        collectedIds: number[] = [],
-      ): Promise<number[]> => {
-        const childrens = await entityManager.find(Trees, {
-          where: { mid: parentId },
-        });
-        const childIds = childrens.map((c) => c.id);
-        if (childIds.length === 0) {
-          collectedIds.push(parentId);
-        } else {
-          for (const childId of childIds) {
-            await findChildrenIds(childId, collectedIds);
-          }
-          collectedIds.push(parentId);
-        }
-        return collectedIds;
-      };
-
-      const id = query.treeId;
-      const allChildIds = await findChildrenIds(id, []);
-
-      // You need to use a more complex `where` clause to filter nested relation field
-      Object.assign(where, {
-        userWorker: {
-          appId: In(allChildIds),
-        },
-      });
+      // const findChildrenIds = async (
+      //   parentId: number,
+      //   collectedIds: number[] = [],
+      // ): Promise<number[]> => {
+      //   const childrens = await entityManager.find(Trees, {
+      //     where: { mid: parentId },
+      //   });
+      //   const childIds = childrens.map((c) => c.id);
+      //   if (childIds.length === 0) {
+      //     collectedIds.push(parentId);
+      //   } else {
+      //     for (const childId of childIds) {
+      //       await findChildrenIds(childId, collectedIds);
+      //     }
+      //     collectedIds.push(parentId);
+      //   }
+      //   return collectedIds;
+      // };
+      // const id = query.treeId;
+      // const allChildIds = await findChildrenIds(id, []);
+      // // You need to use a more complex `where` clause to filter nested relation field
+      // Object.assign(where, {
+      //   userWorker: {
+      //     appId: In(allChildIds),
+      //   },
+      // });
     }
 
     const page =
@@ -96,7 +97,7 @@ export class TimeRequestService {
         : 10;
     const skip = (page - 1) * limit;
 
-    const [items, count] = await entityManager.findAndCount(TimeRequest, {
+    const [items, count] = await this.timeRequestRepository.findAndCount({
       where,
       order: {
         createdAt: 'DESC',
@@ -125,10 +126,9 @@ export class TimeRequestService {
    */
   async getTimeRequestById(
     timeRequestId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<TimeRequest> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const timeRequest = await entityManager.findOne(TimeRequest, {
+    const timeRequest = await this.timeRequestRepository.findOne({
       where: { id: timeRequestId },
       relations: [
         'timeState',
@@ -148,10 +148,9 @@ export class TimeRequestService {
    * @param TimeRequest createTimeRequest
    *
    */
-  async createTimeRequest(timeRequest: CreateTimeRequestDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const newTimeRequest = entityManager.create(TimeRequest, timeRequest);
-    await entityManager.save(newTimeRequest);
+  async createTimeRequest(timeRequest: CreateTimeRequestDto, user: IUser) {
+    const newTimeRequest = this.timeRequestRepository.create(timeRequest);
+    await this.timeRequestRepository.save(newTimeRequest);
     return newTimeRequest;
   }
 
@@ -160,12 +159,11 @@ export class TimeRequestService {
    */
   async updateTimeRequest(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     timeRequest: UpdateTimeRequestDto,
   ): Promise<TimeRequest> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    await entityManager.update(TimeRequest, id, timeRequest);
-    const updatedTimeRequest = await entityManager.findOne(TimeRequest, {
+    await this.timeRequestRepository.update(id, timeRequest);
+    const updatedTimeRequest = await this.timeRequestRepository.findOne({
       where: { id: id },
     });
     if (updatedTimeRequest) {
@@ -176,12 +174,11 @@ export class TimeRequestService {
 
   async updateTimeRequestConfirm(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     timeRequest: UpdateTimeRequestDto,
   ): Promise<TimeRequest> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
     timeRequest.status = AppointmentStatusType.Comfirm;
-    await entityManager.update(TimeRequest, id, timeRequest);
+    await this.timeRequestRepository.update(id, timeRequest);
     const workTypeMap = {
       [RequestType.TakeLeave]: WorkType.Freely,
       [RequestType.TakeVacation]: WorkType.HaveLongVacation,
@@ -190,14 +187,14 @@ export class TimeRequestService {
     };
     const newWorkType = workTypeMap[timeRequest.type];
     if (newWorkType && timeRequest.userId) {
-      await entityManager.update(Worker, timeRequest.userId, {
-        workerType: newWorkType,
-      });
+      // await this.workerRepository.update(timeRequest.userId, {
+      //   workerType: newWorkType,
+      // });
     } else if (!timeRequest.userId) {
       throw new BadRequestException('userId is required to update Worker');
     }
 
-    const updatedTimeRequest = await entityManager.findOne(TimeRequest, {
+    const updatedTimeRequest = await this.timeRequestRepository.findOne({
       where: { id: id },
     });
     if (updatedTimeRequest) {
@@ -208,16 +205,15 @@ export class TimeRequestService {
 
   async updateTimeRequestCancelled(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     timeRequest: UpdateTimeRequestDto,
   ): Promise<TimeRequest> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
     timeRequest.status = AppointmentStatusType.Cancelled;
-    await entityManager.update(TimeRequest, id, timeRequest);
-    await entityManager.update(Worker, timeRequest.userId, {
-      workerType: WorkType.Active,
-    });
-    const updatedTimeRequest = await entityManager.findOne(TimeRequest, {
+    await this.timeRequestRepository.update(id, timeRequest);
+    // await this.workerRepository.update(timeRequest.userId, {
+    //   workerType: WorkType.Active,
+    // });
+    const updatedTimeRequest = await this.timeRequestRepository.findOne({
       where: { id: id },
     });
     if (updatedTimeRequest) {
@@ -230,17 +226,16 @@ export class TimeRequestService {
   /**
    * @deprecated Use deleteTimeRequest instead
    */
-  async deleteTimeRequestById(id: number, user: GetUserDto): Promise<void> {
-    return this.deleteTimeRequest(id, user);
+  async deleteTimeRequestById(id: number): Promise<void> {
+    return this.deleteTimeRequest(id);
   }
 
   /**
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteTimeRequest(id: number, user: GetUserDto): Promise<void> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const deleteResponse = await entityManager.delete(TimeRequest, id);
+  async deleteTimeRequest(id: number): Promise<void> {
+    const deleteResponse = await this.timeRequestRepository.delete(id);
     if (!deleteResponse.affected) {
       throw new TimeRequestNotFoundException(id);
     }

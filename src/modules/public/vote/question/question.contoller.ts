@@ -19,7 +19,7 @@ import { VoteQuestionService } from './question.service';
 import { CreateVoteQuestionDto } from './dto/create-question.dto';
 import { UpdateVoteQuestionDto } from './dto/update-question.dto';
 import { GetVoteQuestionDto } from './dto/get-question.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';
@@ -41,10 +41,7 @@ export class VoteQuestionController {
   ): Promise<IResponse> {
     try {
       const { user } = request;
-      const data = await this.voteQuestionService.getAllVoteQuestion(
-        query,
-        user,
-      );
+      const data = await this.voteQuestionService.getAllVoteQuestion(query);
       return new ResponseSuccess('GET_VOTES.SUCCESS', data);
     } catch (error) {
       console.log('------------------>', error);
@@ -56,12 +53,10 @@ export class VoteQuestionController {
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
   async getVoteQuestionById(
-    @Req() request: RequestWithUser,
     @Param() { id }: FindOneParams,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.voteQuestionService.getVoteQuestionById(id, user);
+      const data = await this.voteQuestionService.getVoteQuestionById(id);
       return new ResponseSuccess('GET_VOTE.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -94,14 +89,11 @@ export class VoteQuestionController {
   @UseGuards(AuthGuard('api-key'))
   async updateVoteQuestion(
     @Param() { id }: FindOneParams,
-    @Req() request: RequestWithUser,
     @Body() voteQuestion: UpdateVoteQuestionDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
       const data = await this.voteQuestionService.updateVoteQuestion(
         id,
-        user,
         voteQuestion,
       );
       return new ResponseSuccess('UPDATE_VOTE.SUCCESS', data);
@@ -113,13 +105,9 @@ export class VoteQuestionController {
   @Delete(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async deleteVoteQuestion(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async deleteVoteQuestion(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.voteQuestionService.deleteVoteQuestion(id, user);
+      const data = await this.voteQuestionService.deleteVoteQuestion(id);
       return new ResponseSuccess('DELETE_VOTE.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

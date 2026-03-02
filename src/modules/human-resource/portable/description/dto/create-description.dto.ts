@@ -6,7 +6,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { FileDto } from '../../../../../utils/globalUtils';
+import { RelationIdDto } from '@utils/dto/relation-id.dto';
 
 export class CreateDescriptionDto {
   @IsOptional()
@@ -31,8 +31,8 @@ export class CreateDescriptionDto {
 
   @IsOptional()
   @ValidateNested({ each: true })
-  @Type(() => FileDto)
-  fileIds: FileDto[]; // Хавсаргах файл
+  @Type(() => RelationIdDto)
+  fileIds: RelationIdDto[]; // Хавсаргах файл
 
   @IsOptional()
   @IsDate()

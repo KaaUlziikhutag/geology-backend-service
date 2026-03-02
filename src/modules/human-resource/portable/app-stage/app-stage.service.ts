@@ -5,11 +5,11 @@ import { GetAppStageDto } from './dto/get-app-stage.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import AppStage from './app-stage.entity';
 import AppStageNotFoundException from './exceptions/app-stage-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class AppStageService {
@@ -28,7 +28,7 @@ export class AppStageService {
    * A method that fetches the AppStage from the database
    * @returns A promise with the list of AppStages
    */
-  async getAllAppStages(query: GetAppStageDto, user: GetUserDto) {
+  async getAllAppStages(query: GetAppStageDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<AppStage>['where'] = {};
     if (query.autorId) {
@@ -63,10 +63,7 @@ export class AppStageService {
    * @example
    * const AppStage = await AppStageService.getAppStageById(1);
    */
-  async getAppStageById(
-    appStageId: number,
-    user: GetUserDto,
-  ): Promise<AppStage> {
+  async getAppStageById(appStageId: number, user: IUser): Promise<AppStage> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const appStage = await entityManager.findOne(AppStage, {
       where: { id: appStageId },
@@ -82,7 +79,7 @@ export class AppStageService {
    * @param AppStage createAppStage
    *
    */
-  async createAppStage(appStage: CreateAppStageDto, user: GetUserDto) {
+  async createAppStage(appStage: CreateAppStageDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newAppStage = entityManager.create(AppStage, appStage);
     await entityManager.save(newAppStage);
@@ -94,7 +91,7 @@ export class AppStageService {
    */
   async updateAppStage(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     appStage: UpdateAppStageDto,
   ): Promise<AppStage> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -111,7 +108,7 @@ export class AppStageService {
   /**
    * @deprecated Use deleteAppStage instead
    */
-  async deleteAppStageById(id: number, user: GetUserDto): Promise<void> {
+  async deleteAppStageById(id: number, user: IUser): Promise<void> {
     return this.deleteAppStage(id, user);
   }
 
@@ -119,7 +116,7 @@ export class AppStageService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteAppStage(id: number, user: GetUserDto): Promise<void> {
+  async deleteAppStage(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(AppStage, id);
     if (!deleteResponse.affected) {

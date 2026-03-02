@@ -1,4 +1,4 @@
-import { FileDto } from '../../../../utils/globalUtils';
+import { RelationIdDto } from '@utils/dto/relation-id.dto';
 import {
   Column,
   Entity,
@@ -29,7 +29,7 @@ export default class Qualifications extends BaseEntity {
   degree: string;
 
   @Column({ type: 'jsonb', name: 'fileIds', nullable: true })
-  public fileIds: FileDto[]; // FILE UPLOAD
+  public fileIds: RelationIdDto[]; // FILE UPLOAD
 
   @Column({ name: 'country_id', nullable: true })
   countryId: number;

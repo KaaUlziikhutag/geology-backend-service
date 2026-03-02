@@ -5,11 +5,11 @@ import { GetAppTypeDto } from './dto/get-app-type.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import AppType from './app-type.entity';
 import AppTypeNotFoundException from './exceptions/app-type-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class AppTypeService {
@@ -28,7 +28,7 @@ export class AppTypeService {
    * A method that fetches the AppType from the database
    * @returns A promise with the list of AppTypes
    */
-  async getAllAppTypes(query: GetAppTypeDto, user: GetUserDto) {
+  async getAllAppTypes(query: GetAppTypeDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<AppType>['where'] = {};
     if (query.autorId) {
@@ -63,7 +63,7 @@ export class AppTypeService {
    * @example
    * const AppType = await AppTypeService.getAppTypeById(1);
    */
-  async getAppTypeById(appTypeId: number, user: GetUserDto): Promise<AppType> {
+  async getAppTypeById(appTypeId: number, user: IUser): Promise<AppType> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const appType = await entityManager.findOne(AppType, {
       where: { id: appTypeId },
@@ -79,7 +79,7 @@ export class AppTypeService {
    * @param appType createAppType
    *
    */
-  async createAppType(appType: CreateAppTypeDto, user: GetUserDto) {
+  async createAppType(appType: CreateAppTypeDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newAppType = entityManager.create(AppType, appType);
     await entityManager.save(newAppType);
@@ -91,7 +91,7 @@ export class AppTypeService {
    */
   async updateAppType(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     appType: UpdateAppTypeDto,
   ): Promise<AppType> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -108,7 +108,7 @@ export class AppTypeService {
   /**
    * @deprecated Use deleteAppType instead
    */
-  async deleteAppTypeById(id: number, user: GetUserDto): Promise<void> {
+  async deleteAppTypeById(id: number, user: IUser): Promise<void> {
     return this.deleteAppType(id, user);
   }
 
@@ -116,7 +116,7 @@ export class AppTypeService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteAppType(id: number, user: GetUserDto): Promise<void> {
+  async deleteAppType(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(AppType, id);
     if (!deleteResponse.affected) {

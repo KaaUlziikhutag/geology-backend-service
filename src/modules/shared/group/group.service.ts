@@ -2,21 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { GetGroupDto } from './dto/get-group.dto';
-import { EntityManager, Equal, FindManyOptions } from 'typeorm';
+import { EntityManager, Equal, FindManyOptions, Repository } from 'typeorm';
 import Groups from './group.entity';
 import GroupNotFoundException from './exceptions/group-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../cloud/user/dto/get-user.dto';
+import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class GroupService {
   /**
    * @ignore
    */
-  constructor(private moduleRef: ModuleRef) {}
+  constructor(
+    @InjectRepository(Groups)
+    private groupsRepository: Repository<Groups>,
+    private moduleRef: ModuleRef,
+  ) {}
 
   private async loadEntityManager(systemId: string): Promise<EntityManager> {
     return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
@@ -28,15 +31,14 @@ export class GroupService {
    * A method that fetches the Group from the database
    * @returns A promise with the list of Groups
    */
-  async getAllGroups(query: GetGroupDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getAllGroups(query: GetGroupDto) {
     const where: FindManyOptions<Groups>['where'] = {};
     if (query.pro) {
       where.pro = Equal(query.pro);
     }
     const skip = (query.page - 1) * query.limit;
 
-    const [items, count] = await entityManager.findAndCount(Groups, {
+    const [items, count] = await this.groupsRepository.findAndCount({
       where,
       order: {
         createdAt: 'DESC',
@@ -60,9 +62,8 @@ export class GroupService {
    * @example
    * const Group = await GroupService.getGroupById(1);
    */
-  async getGroupById(groupId: number, user: GetUserDto): Promise<Groups> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const group = await entityManager.findOne(Groups, {
+  async getGroupById(groupId: number): Promise<Groups> {
+    const group = await this.groupsRepository.findOne({
       where: { id: groupId },
     });
     if (group) {
@@ -76,25 +77,18 @@ export class GroupService {
    * @param Group createGroup
    *
    */
-  async createGroup(group: CreateGroupDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const newGroup = entityManager.create(Groups, group);
-    await entityManager.save(newGroup);
-    return newGroup;
+  async createGroup(group: CreateGroupDto) {
+    const newGroup = this.groupsRepository.create(group);
+    return await this.groupsRepository.save(newGroup);
   }
 
   /**
    * See the [definition of the UpdateGroupDto file]{@link UpdateGroupDto} to see a list of required properties
    */
-  async updateGroup(
-    id: number,
-    user: GetUserDto,
-    group: UpdateGroupDto,
-  ): Promise<Groups> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    await entityManager.update(Groups, id, group);
-    const updatedGroup = await entityManager.findOne(Groups, {
-      where: { id: id },
+  async updateGroup(id: number, group: UpdateGroupDto): Promise<Groups> {
+    await this.groupsRepository.update(id, group);
+    const updatedGroup = await this.groupsRepository.findOne({
+      where: { id },
     });
     if (updatedGroup) {
       return updatedGroup;
@@ -105,17 +99,16 @@ export class GroupService {
   /**
    * @deprecated Use deleteGroup instead
    */
-  async deleteGroupById(id: number, user: GetUserDto): Promise<void> {
-    return this.deleteGroup(id, user);
+  async deleteGroupById(id: number): Promise<void> {
+    return this.deleteGroup(id);
   }
 
   /**
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteGroup(id: number, user: GetUserDto): Promise<void> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const deleteResponse = await entityManager.delete(Groups, id);
+  async deleteGroup(id: number): Promise<void> {
+    const deleteResponse = await this.groupsRepository.delete(id);
     if (!deleteResponse.affected) {
       throw new GroupNotFoundException(id);
     }

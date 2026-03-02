@@ -5,11 +5,11 @@ import { GetSocialsDto } from './dto/get-socials.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Socials from './socials.entity';
 import SocialsNotFoundException from './exceptions/socials-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class SocialsService {
@@ -28,7 +28,7 @@ export class SocialsService {
    * A method that fetches the Socials from the database
    * @returns A promise with the list of Socialss
    */
-  async getAllSocialss(query: GetSocialsDto, user: GetUserDto) {
+  async getAllSocialss(query: GetSocialsDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Socials>['where'] = {};
     if (query.authorId) {
@@ -73,7 +73,7 @@ export class SocialsService {
    * @example
    * const Socials = await SocialsService.getSocialsById(1);
    */
-  async getSocialsById(mistakesId: number, user: GetUserDto): Promise<Socials> {
+  async getSocialsById(mistakesId: number, user: IUser): Promise<Socials> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const mistakes = await entityManager.findOne(Socials, {
       where: { id: mistakesId },
@@ -89,9 +89,9 @@ export class SocialsService {
    * @param socials createSocials
    *
    */
-  async createSocials(socials: CreateSocialsDto, user: GetUserDto) {
+  async createSocials(socials: CreateSocialsDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    socials.authorId = user.workerId;
+    socials.authorId = user.id;
     const newSocials = entityManager.create(Socials, socials);
     await entityManager.save(newSocials);
     return newSocials;
@@ -102,7 +102,7 @@ export class SocialsService {
    */
   async updateSocials(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     socials: UpdateSocialsDto,
   ): Promise<Socials> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -119,7 +119,7 @@ export class SocialsService {
   /**
    * @deprecated Use deleteSocials instead
    */
-  async deleteSocialsById(id: number, user: GetUserDto): Promise<void> {
+  async deleteSocialsById(id: number, user: IUser): Promise<void> {
     return this.deleteSocials(id, user);
   }
 
@@ -127,7 +127,7 @@ export class SocialsService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteSocials(id: number, user: GetUserDto): Promise<void> {
+  async deleteSocials(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Socials, id);
     if (!deleteResponse.affected) {

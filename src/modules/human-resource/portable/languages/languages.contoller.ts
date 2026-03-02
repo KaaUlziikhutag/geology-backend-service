@@ -19,7 +19,7 @@ import { LanguageService } from './languages.service';
 import { CreateLanguageDto } from './dto/create-languages.dto';
 import { UpdateLanguageDto } from './dto/update-languages.dto';
 import { GetLanguageDto } from './dto/get-languages.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';

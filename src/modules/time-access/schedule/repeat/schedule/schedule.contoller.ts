@@ -19,13 +19,12 @@ import { RepeatScheduleService } from './schedule.service';
 import { CreateRepeatScheduleDto } from './dto/create-schedule.dto';
 import { UpdateRepeatScheduleDto } from './dto/update-schedule.dto';
 import { GetRepeatScheduleDto } from './dto/get-schedule.dto';
-import FindOneParams from '../../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
-import { ResponseSuccess } from '../../../../../utils/dto/response.dto';
-import { IResponse } from '../../../../../utils/interfaces/response.interface';
+import { ResponseSuccess } from '@utils/dto/response.dto';
+import { IResponse } from '@utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../../../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
-import RequestWithUser from '../../../../authentication/interface/request-with-user.interface';
 
 @Controller('repeat-schedule')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -36,15 +35,11 @@ export class RepeatScheduleController {
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
   async getAllRepeatSchedules(
-    @Req() request: RequestWithUser,
     @Query() query: GetRepeatScheduleDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.repeatScheduleService.getAllRepeatSchedules(
-        query,
-        user,
-      );
+      const data =
+        await this.repeatScheduleService.getAllRepeatSchedules(query);
       return new ResponseSuccess('GET_REPEAT_SCHEDULE.SUCCESS', data);
     } catch (error) {
       console.log('------------------>', error);
@@ -56,15 +51,10 @@ export class RepeatScheduleController {
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
   async getRepeatScheduleById(
-    @Req() request: RequestWithUser,
     @Param() { id }: FindOneParams,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.repeatScheduleService.getRepeatScheduleById(
-        id,
-        user,
-      );
+      const data = await this.repeatScheduleService.getRepeatScheduleById(id);
       return new ResponseSuccess('GET_REPEAT_SCHEDULE.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -76,15 +66,11 @@ export class RepeatScheduleController {
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
   async createRepeatSchedule(
-    @Req() request: RequestWithUser,
     @Body() repeatSchedule: CreateRepeatScheduleDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.repeatScheduleService.createRepeatSchedule(
-        repeatSchedule,
-        user,
-      );
+      const data =
+        await this.repeatScheduleService.createRepeatSchedule(repeatSchedule);
       return new ResponseSuccess('CREATE_REPEAT_SCHEDULE.SUCCESS', data);
     } catch (error) {
       console.log('------------------>', error);
@@ -97,14 +83,11 @@ export class RepeatScheduleController {
   @UseGuards(AuthGuard('api-key'))
   async updateRepeatSchedule(
     @Param() { id }: FindOneParams,
-    @Req() request: RequestWithUser,
     @Body() repeatSchedule: UpdateRepeatScheduleDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
       const data = await this.repeatScheduleService.updateRepeatSchedule(
         id,
-        user,
         repeatSchedule,
       );
       return new ResponseSuccess('UPDATE_REPEAT_SCHEDULE.SUCCESS', data);
@@ -118,15 +101,10 @@ export class RepeatScheduleController {
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
   async deleteRepeatSchedule(
-    @Req() request: RequestWithUser,
     @Param() { id }: FindOneParams,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.repeatScheduleService.deleteRepeatSchedule(
-        id,
-        user,
-      );
+      const data = await this.repeatScheduleService.deleteRepeatSchedule(id);
       return new ResponseSuccess('DELETE_REPEAT_SCHEDULE.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

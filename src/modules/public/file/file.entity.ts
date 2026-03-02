@@ -1,4 +1,4 @@
-import { FileDto, FileType } from '../../../utils/globalUtils';
+import { FileType } from '@utils/enum-utils';
 import {
   Column,
   Entity,
@@ -12,6 +12,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import PublicViewUser from '../view-users/view-users.entity';
+import LocalFile from '@modules/local-files/local-file.entity';
 
 @Entity('public_files_i')
 export default class PublicFiles extends BaseEntity {
@@ -49,7 +50,7 @@ export default class PublicFiles extends BaseEntity {
   exp: string; //File name system date unix time
 
   @Column({ type: 'jsonb', name: 'fileIds', nullable: true })
-  public fileIds: FileDto[]; // FILE UPLOAD
+  public fileIds: LocalFile[]; // FILE UPLOAD
 
   @Column({ name: 'file_id', nullable: true })
   fileId: number;

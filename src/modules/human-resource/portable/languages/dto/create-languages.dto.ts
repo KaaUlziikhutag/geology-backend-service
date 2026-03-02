@@ -1,5 +1,5 @@
 import { IsString, IsOptional, IsNumber, IsEnum } from 'class-validator';
-import { Level, Levels } from '../../../../../utils/globalUtils';
+import { Level, Levels } from '@utils/enum-utils';
 export class CreateLanguageDto {
   // Гадаад хэлний мэдлэг
   @IsOptional()

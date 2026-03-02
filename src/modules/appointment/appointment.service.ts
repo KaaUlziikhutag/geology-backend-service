@@ -21,6 +21,7 @@ import { join } from 'path';
 import moment from 'moment';
 import GetUserDto from '../users/dto/get-user.dto';
 import { ReceiptStatus } from '../../utils/enum-utils';
+import IUser from '@modules/cloud/user/interface/user.interface';
 @Injectable()
 export class AppointmentService {
   constructor(
@@ -29,7 +30,7 @@ export class AppointmentService {
   ) {}
 
   async createAppointment(
-    user: GetUserDto,
+    user: IUser,
     appointment: CreateAppointmentDto,
   ): Promise<Appointment> {
     const countAppointment = await this.getCountAppointment({

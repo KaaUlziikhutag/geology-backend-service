@@ -1,4 +1,4 @@
-import { TimeCelebratoryType } from '../../../../utils/globalUtils';
+import { TimeCelebratoryType } from '@utils/enum-utils';
 import {
   Column,
   Entity,

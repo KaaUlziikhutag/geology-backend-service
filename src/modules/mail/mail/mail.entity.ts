@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import Address from './address/address.entity';
 import MailUser from './users/users.entity';
-import { FileDto } from '../../../utils/globalUtils';
+import { RelationIdDto } from '@utils/dto/relation-id.dto';
 
 @Entity('mail_i')
 export default class Mail extends BaseEntity {
@@ -53,7 +53,7 @@ export default class Mail extends BaseEntity {
   public address: Address[]; //Email addresses
 
   @Column({ type: 'jsonb', name: 'fileIds', nullable: true })
-  public fileIds: FileDto[]; // FILE UPLOADclear
+  public fileIds: RelationIdDto[]; // FILE UPLOADclear
 
   @OneToMany(() => MailUser, (users: MailUser) => users.mail, {
     onUpdate: 'CASCADE',

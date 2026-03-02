@@ -5,7 +5,7 @@ import Address from './address.entity';
 import AddressNotFoundException from './exception/address-not-found.exception';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class AddressService {
@@ -26,7 +26,7 @@ export class AddressService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getAddressByMailId(mailId: number, user: GetUserDto) {
+  async getAddressByMailId(mailId: number, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const items = await entityManager.find(Address, {
       where: { mailId },
@@ -42,7 +42,7 @@ export class AddressService {
    * @param Address createAddresss
    *
    */
-  async createAddress(address: CreateAddressDto, user: GetUserDto) {
+  async createAddress(address: CreateAddressDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newAddress = entityManager.create(Address, address);
     await entityManager.save(newAddress);

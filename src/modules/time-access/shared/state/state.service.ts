@@ -1,19 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { CreateStateDto } from './dto/create-state.dto';
 import { UpdateStateDto } from './dto/update-state.dto';
-import { EntityManager } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import State from './entities/state.entity';
 import StateNotFoundException from './exceptions/state-not-found.exception';
 import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class StateService {
   /**
    * @ignore
    */
-  constructor(private moduleRef: ModuleRef) {}
+  constructor(
+    @InjectRepository(State)
+    private readonly stateRepository: Repository<State>,
+    private moduleRef: ModuleRef,
+  ) {}
 
   private async loadEntityManager(systemId: string): Promise<EntityManager> {
     return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
@@ -27,9 +31,8 @@ export class StateService {
    * @example
    * const state = await StateService.getStateById(1);
    */
-  async getStateById(stateId: number, user: GetUserDto): Promise<State> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const state = await entityManager.findOne(State, {
+  async getStateById(stateId: number): Promise<State> {
+    const state = await this.stateRepository.findOne({
       where: { id: stateId },
     });
     if (state) {
@@ -43,11 +46,9 @@ export class StateService {
    * @param state CreateStateDto
    *
    */
-  async createState(state: CreateStateDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const newState = entityManager.create(State, state);
-    await entityManager.save(newState);
-    return newState;
+  async createState(state: CreateStateDto) {
+    const newState = this.stateRepository.create(state);
+    return await this.stateRepository.save(newState);
   }
 
   /**
@@ -55,12 +56,11 @@ export class StateService {
    */
   async updateState(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     state: UpdateStateDto,
   ): Promise<State> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    await entityManager.update(State, id, state);
-    const updatedState = await entityManager.findOne(State, {
+    await this.stateRepository.update(id, state);
+    const updatedState = await this.stateRepository.findOne({
       where: { id: id },
     });
     if (updatedState) {
@@ -72,17 +72,16 @@ export class StateService {
   /**
    * @deprecated Use deleteState instead
    */
-  async deleteStateById(id: number, user: GetUserDto): Promise<void> {
-    return this.deleteState(id, user);
+  async deleteStateById(id: number): Promise<void> {
+    return this.deleteState(id);
   }
 
   /**
    * A method that deletes a state from the database
    * @param id An id of a state. A state with this id should exist in the database
    */
-  async deleteState(id: number, user: GetUserDto): Promise<void> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const deleteResponse = await entityManager.delete(State, id);
+  async deleteState(id: number): Promise<void> {
+    const deleteResponse = await this.stateRepository.delete(id);
     if (!deleteResponse.affected) {
       throw new StateNotFoundException(id);
     }

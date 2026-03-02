@@ -2,13 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { CreateAccessDto } from './dto/create-access.dto';
 import { UpdateAccessDto } from './dto/update-access.dto';
 import { GetAccessDto } from './dto/get-access.dto';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import { EntityManager, Equal, FindManyOptions } from 'typeorm';
+import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, Equal, FindManyOptions, Repository } from 'typeorm';
 import AccessNotFoundException from './exceptions/access-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import GetUserDto from '../../cloud/user/dto/get-user.dto';
 import UserLimit from './entities/user-limit.entity';
 
 @Injectable()
@@ -16,7 +15,11 @@ export class SharedAccessService {
   /**
    * @ignore
    */
-  constructor(private moduleRef: ModuleRef) {}
+  constructor(
+    @InjectRepository(UserLimit)
+    private userLimitRepository: Repository<UserLimit>,
+    private moduleRef: ModuleRef,
+  ) {}
 
   private async loadEntityManager(systemId: string): Promise<EntityManager> {
     return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
@@ -28,8 +31,7 @@ export class SharedAccessService {
    * A method that fetches the Access from the database
    * @returns A promise with the list of Accesss
    */
-  async getAllAccesss(query: GetAccessDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getAllAccesss(query: GetAccessDto) {
     const where: FindManyOptions<UserLimit>['where'] = {};
 
     if (query.itemId) {
@@ -52,7 +54,7 @@ export class SharedAccessService {
 
     const skip = (page - 1) * (limit || 0);
 
-    const [items, count] = await entityManager.findAndCount(UserLimit, {
+    const [items, count] = await this.userLimitRepository.findAndCount({
       where,
       order: {
         createdAt: 'DESC',
@@ -72,9 +74,8 @@ export class SharedAccessService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getAccessById(accessId: number, user: GetUserDto): Promise<UserLimit> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const access = await entityManager.findOne(UserLimit, {
+  async getAccessById(accessId: number): Promise<UserLimit> {
+    const access = await this.userLimitRepository.findOne({
       where: { id: accessId },
     });
     if (access) {
@@ -88,25 +89,18 @@ export class SharedAccessService {
    * @param Access createAccess
    *
    */
-  async createAccess(access: CreateAccessDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const newAccess = entityManager.create(UserLimit, access);
-    await entityManager.save(newAccess);
-    return newAccess;
+  async createAccess(access: CreateAccessDto) {
+    const newAccess = this.userLimitRepository.create(access);
+    return await this.userLimitRepository.save(newAccess);
   }
 
   /**
    * See the [definition of the UpdateAccessDto file]{@link UpdateAccessDto} to see a list of required properties
    */
-  async updateAccess(
-    id: number,
-    user: GetUserDto,
-    access: UpdateAccessDto,
-  ): Promise<UserLimit> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    await entityManager.update(UserLimit, id, access);
-    const updatedAccess = await entityManager.findOne(UserLimit, {
-      where: { id: id },
+  async updateAccess(id: number, access: UpdateAccessDto): Promise<UserLimit> {
+    await this.userLimitRepository.update(id, access);
+    const updatedAccess = await this.userLimitRepository.findOne({
+      where: { id },
     });
     if (updatedAccess) {
       return updatedAccess;
@@ -118,9 +112,8 @@ export class SharedAccessService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteAccess(id: number, user: GetUserDto): Promise<void> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const deleteResponse = await entityManager.delete(UserLimit, id);
+  async deleteAccess(id: number): Promise<void> {
+    const deleteResponse = await this.userLimitRepository.delete(id);
     if (!deleteResponse.affected) {
       throw new AccessNotFoundException(id);
     }

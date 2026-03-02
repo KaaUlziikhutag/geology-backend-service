@@ -19,7 +19,7 @@ import { GroupService } from './group.service';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { GetGroupDto } from './dto/get-group.dto';
-import FindOneParams from '../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../utils/dto/response.dto';
 import { IResponse } from '../../../utils/interfaces/response.interface';
@@ -40,8 +40,7 @@ export class GroupController {
     @Query() query: GetGroupDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.groupService.getAllGroups(query, user);
+      const data = await this.groupService.getAllGroups(query);
       return new ResponseSuccess('GET_Group.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -51,13 +50,9 @@ export class GroupController {
   @Get(':id')
   // @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getGroupById(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async getGroupById(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.groupService.getGroupById(id, user);
+      const data = await this.groupService.getGroupById(id);
       return new ResponseSuccess('GET_Group.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -68,13 +63,9 @@ export class GroupController {
   @HttpCode(HttpStatus.CREATED)
   // @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async createGroup(
-    @Req() request: RequestWithUser,
-    @Body() group: CreateGroupDto,
-  ): Promise<IResponse> {
+  async createGroup(@Body() group: CreateGroupDto): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.groupService.createGroup(group, user);
+      const data = await this.groupService.createGroup(group);
       return new ResponseSuccess('CREATE_Group.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -86,12 +77,10 @@ export class GroupController {
   @UseGuards(AuthGuard('api-key'))
   async updateGroup(
     @Param() { id }: FindOneParams,
-    @Req() request: RequestWithUser,
     @Body() group: UpdateGroupDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.groupService.updateGroup(id, user, group);
+      const data = await this.groupService.updateGroup(id, group);
       return new ResponseSuccess('UPDATE_Group.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -101,13 +90,9 @@ export class GroupController {
   @Delete(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async deleteGroup(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async deleteGroup(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.groupService.deleteGroup(id, user);
+      const data = await this.groupService.deleteGroup(id);
       return new ResponseSuccess('DELETE_Group.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

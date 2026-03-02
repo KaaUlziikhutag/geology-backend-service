@@ -1,12 +1,13 @@
+import { RelationIdDto } from '@utils/dto/relation-id.dto';
 import {
   AppointmentCostType,
   AppointmentStatusType,
   CompensationType,
-  FileDto,
+  // FileDto,
   RequestType,
   TimeEventType,
   WorkTime,
-} from '../../../../utils/globalUtils';
+} from '@utils/enum-utils';
 import { Type } from 'class-transformer';
 import {
   IsString,
@@ -152,6 +153,6 @@ export class CreateTimeRequestDto {
 
   @IsOptional()
   @ValidateNested({ each: true })
-  @Type(() => FileDto)
-  fileIds: FileDto[];
+  @Type(() => RelationIdDto)
+  fileIds: RelationIdDto[];
 }

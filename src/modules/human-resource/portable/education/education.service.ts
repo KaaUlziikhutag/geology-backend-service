@@ -5,11 +5,11 @@ import { GetEducationDto } from './dto/get-education.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Educations from './education.entity';
 import EducationNotFoundException from './exceptions/education-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class EducationService {
@@ -28,7 +28,7 @@ export class EducationService {
    * A method that fetches the Education from the database
    * @returns A promise with the list of Educations
    */
-  async getAllEducations(query: GetEducationDto, user: GetUserDto) {
+  async getAllEducations(query: GetEducationDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Educations>['where'] = {};
     if (query.authorId) {
@@ -67,7 +67,7 @@ export class EducationService {
    */
   async getEducationById(
     educationId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<Educations> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const education = await entityManager.findOne(Educations, {
@@ -85,9 +85,9 @@ export class EducationService {
    *
    *
    */
-  async createEducation(education: CreateEducationDto, user: GetUserDto) {
+  async createEducation(education: CreateEducationDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    education.authorId = user.workerId;
+    education.authorId = user.id;
     const newEducation = entityManager.create(Educations, education);
     await entityManager.save(newEducation);
     return newEducation;
@@ -98,7 +98,7 @@ export class EducationService {
    */
   async updateEducation(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     education: UpdateEducationDto,
   ): Promise<Educations> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -115,7 +115,7 @@ export class EducationService {
   /**
    * @deprecated Use deleteEducation instead
    */
-  async deleteEducationById(id: number, user: GetUserDto): Promise<void> {
+  async deleteEducationById(id: number, user: IUser): Promise<void> {
     return this.deleteEducation(id, user);
   }
 
@@ -123,7 +123,7 @@ export class EducationService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteEducation(id: number, user: GetUserDto): Promise<void> {
+  async deleteEducation(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Educations, id);
     if (!deleteResponse.affected) {

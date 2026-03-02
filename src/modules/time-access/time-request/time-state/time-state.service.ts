@@ -2,34 +2,36 @@ import { Injectable } from '@nestjs/common';
 import { CreateTimeStateDto } from './dto/create-time-state.dto';
 import { UpdateTimeStateDto } from './dto/update-time-state.dto';
 import { GetTimeStateDto } from './dto/get-time-state.dto';
-import { Between, EntityManager, Equal, FindManyOptions } from 'typeorm';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import {
+  Between,
+  EntityManager,
+  Equal,
+  FindManyOptions,
+  Repository,
+} from 'typeorm';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
 import TimeState from './time-state.entity';
 import TimeStateNotFoundException from './exceptions/time-state-not-found.exception';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class TimeStateService {
   /**
    * @ignore
    */
-  constructor(private moduleRef: ModuleRef) {}
-
-  private async loadEntityManager(systemId: string): Promise<EntityManager> {
-    return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
-      strict: false,
-    });
-  }
+  constructor(
+    @InjectRepository(TimeState)
+    private readonly timeStateRepository: Repository<TimeState>,
+  ) {}
 
   /**
    * A method that fetches the Option from the database
    * @returns A promise with the list of Options
    */
-  async getAllTimeState(query: GetTimeStateDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getAllTimeState(query: GetTimeStateDto, user: IUser) {
     const where: FindManyOptions<TimeState>['where'] = {};
     if (query.comId) {
       where.comId = Equal(query.comId);
@@ -49,7 +51,7 @@ export class TimeStateService {
         ? Number(query.limit)
         : 10;
     const skip = (page - 1) * limit;
-    const [items, count] = await entityManager.findAndCount(TimeState, {
+    const [items, count] = await this.timeStateRepository.findAndCount({
       where,
       order: {
         createdAt: 'DESC',
@@ -68,12 +70,8 @@ export class TimeStateService {
    * @example
    * const Option = await OptionService.getOptionById(1);
    */
-  async getTimeStateById(
-    timeStateId: number,
-    user: GetUserDto,
-  ): Promise<TimeState> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const option = await entityManager.findOne(TimeState, {
+  async getTimeStateById(timeStateId: number, user: IUser): Promise<TimeState> {
+    const option = await this.timeStateRepository.findOne({
       where: { id: timeStateId },
     });
     if (option) {
@@ -87,10 +85,9 @@ export class TimeStateService {
    * @param Option createOption
    *
    */
-  async createTimeState(timeState: CreateTimeStateDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const newOption = entityManager.create(TimeState, timeState);
-    await entityManager.save(newOption);
+  async createTimeState(timeState: CreateTimeStateDto, user: IUser) {
+    const newOption = this.timeStateRepository.create(timeState);
+    await this.timeStateRepository.save(newOption);
     return newOption;
   }
 
@@ -99,12 +96,10 @@ export class TimeStateService {
    */
   async updateTimeState(
     timeStateId: number,
-    user: GetUserDto,
     timeState: UpdateTimeStateDto,
   ): Promise<TimeState> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    await entityManager.update(TimeState, timeStateId, timeState);
-    const updatedTimeState = await entityManager.findOne(TimeState, {
+    await this.timeStateRepository.update(timeStateId, timeState);
+    const updatedTimeState = await this.timeStateRepository.findOne({
       where: { id: timeStateId },
     });
     if (updatedTimeState) {
@@ -116,7 +111,7 @@ export class TimeStateService {
   /**
    * @deprecated Use deleteOption instead
    */
-  async deleteTimeStateById(id: number, user: GetUserDto): Promise<void> {
+  async deleteTimeStateById(id: number, user: IUser): Promise<void> {
     return this.deleteTimeState(id, user);
   }
 
@@ -124,9 +119,8 @@ export class TimeStateService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteTimeState(id: number, user: GetUserDto): Promise<void> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const deleteResponse = await entityManager.delete(TimeState, id);
+  async deleteTimeState(id: number, user: IUser): Promise<void> {
+    const deleteResponse = await this.timeStateRepository.delete(id);
     if (!deleteResponse.affected) {
       throw new TimeStateNotFoundException(id);
     }

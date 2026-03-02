@@ -5,11 +5,11 @@ import { GetEthicDto } from './dto/get-ethics.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Ethics from './ethics.entity';
 import EthicNotFoundException from './exceptions/ethics-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class EthicService {
@@ -28,7 +28,7 @@ export class EthicService {
    * A method that fetches the Ethic from the database
    * @returns A promise with the list of Ethics
    */
-  async getAllEthics(query: GetEthicDto, user: GetUserDto) {
+  async getAllEthics(query: GetEthicDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Ethics>['where'] = {};
     if (query.workerId) {
@@ -66,7 +66,7 @@ export class EthicService {
    * @example
    * const Ethic = await EthicService.getEthicById(1);
    */
-  async getEthicById(ethicId: number, user: GetUserDto): Promise<Ethics> {
+  async getEthicById(ethicId: number, user: IUser): Promise<Ethics> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const ethic = await entityManager.findOne(Ethics, {
       where: { id: ethicId },
@@ -82,9 +82,9 @@ export class EthicService {
    * @param Ethic createEthic
    *
    */
-  async createEthic(ethic: CreateEthicDto, user: GetUserDto) {
+  async createEthic(ethic: CreateEthicDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    ethic.authorId = user.workerId;
+    ethic.authorId = user.id;
     const newEthic = entityManager.create(Ethics, ethic);
     await entityManager.save(newEthic);
     return newEthic;
@@ -95,7 +95,7 @@ export class EthicService {
    */
   async updateEthic(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     ethic: UpdateEthicDto,
   ): Promise<Ethics> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -112,7 +112,7 @@ export class EthicService {
   /**
    * @deprecated Use deleteEthic instead
    */
-  async deleteEthicById(id: number, user: GetUserDto): Promise<void> {
+  async deleteEthicById(id: number, user: IUser): Promise<void> {
     return this.deleteEthic(id, user);
   }
 
@@ -120,7 +120,7 @@ export class EthicService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteEthic(id: number, user: GetUserDto): Promise<void> {
+  async deleteEthic(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Ethics, id);
     if (!deleteResponse.affected) {

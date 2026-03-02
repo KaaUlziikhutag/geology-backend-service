@@ -19,7 +19,7 @@ import { ExchangeHumanService } from './exchange-human.service';
 import { CreateExchangeHumanDto } from './dto/create-exchange-human.dto';
 import { UpdateExchangeHumanDto } from './dto/update-exchange-human.dto';
 import { GetExchangeHumanDto } from './dto/get-exchange-human.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';

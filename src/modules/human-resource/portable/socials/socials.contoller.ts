@@ -19,7 +19,7 @@ import { SocialsService } from './socials.service';
 import { CreateSocialsDto } from './dto/create-socials.dto';
 import { UpdateSocialsDto } from './dto/update-socials.dto';
 import { GetSocialsDto } from './dto/get-socials.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';

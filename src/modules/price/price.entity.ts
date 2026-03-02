@@ -13,8 +13,9 @@ import Element from '../reference/element/element.entity';
 import Laboratory from '../reference/laboratory/laboratory.entity';
 import Product from '../product/product.entity';
 import Technology from '../reference/technology/technology.entity';
-import Decision from '../decision/decision.entity';
+// import Decision from '../decision/decision.entity';
 import Order from '../order/order.entity';
+import Inner from '@modules/decision/inner/inner.entity';
 
 @Entity('prices')
 export default class Price extends BaseEntity {
@@ -23,9 +24,9 @@ export default class Price extends BaseEntity {
 
   @Column({ name: 'decision_id' })
   decisionId: number;
-  @JoinColumn({ name: 'decision_id' })
-  @ManyToOne(() => Decision)
-  decision?: Decision;
+  // @JoinColumn({ name: 'decision_id' })
+  // @ManyToOne(() => Inner)
+  // decision?: Inner;
 
   @Column({ name: 'laboratory_id' })
   laboratoryId: number;

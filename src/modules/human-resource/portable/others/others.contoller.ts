@@ -19,7 +19,7 @@ import { OthersService } from './others.service';
 import { CreateOthersDto } from './dto/create-others.dto';
 import { UpdateOthersDto } from './dto/update-others.dto';
 import { GetOthersDto } from './dto/get-others.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';

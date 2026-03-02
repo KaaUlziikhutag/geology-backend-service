@@ -94,7 +94,7 @@ export class OrderController {
     @Body() body: CompleteOrderDto,
   ): Promise<IResponse> {
     try {
-      const data = await this.orderService.completeOrder(user, body);
+      const data = await this.orderService.completeOrder(body);
       return new ResponseSuccess('COMPLETE_ORDER.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

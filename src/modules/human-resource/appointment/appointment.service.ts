@@ -7,11 +7,10 @@ import { GetAppointmentDto } from './dto/get-appointment.dto';
 import { Between, EntityManager, Equal, FindManyOptions, In } from 'typeorm';
 import Appointment from './entities/appointment.entity';
 import AppointmentNotFoundException from './exceptions/appointment-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../cloud/user/dto/get-user.dto';
 import AppointmentByuser from './entities/appointment-byuser.entity';
 import AppointmentShifts from './entities/appointment-shift.entity';
 import Worker from '../member/worker/worker.entity';
@@ -20,8 +19,9 @@ import {
   AppointmentStatusType,
   DateType,
   WorkType,
-} from '../../../utils/globalUtils';
+} from '@utils/enum-utils';
 import AppointmentCloses from './entities/appointment-close.entity';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class AppointmentService {
@@ -40,7 +40,7 @@ export class AppointmentService {
    * A method that fetches the Appointment from the database
    * @returns A promise with the list of Appointments
    */
-  async getAllAppointments(query: GetAppointmentDto, user: GetUserDto) {
+  async getAllAppointments(query: GetAppointmentDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Appointment>['where'] = {};
     const { skip, limit, page } = query;
@@ -54,7 +54,7 @@ export class AppointmentService {
       where.comId = Equal(query.comId);
     }
     if (query.accessType == AccessType.Simple) {
-      where.appointmentByusers = [{ userId: Equal(user.workerId) }];
+      where.appointmentByusers = [{ userId: Equal(user.id) }];
     }
     if (query.status) {
       where.status = Equal(query.status);
@@ -99,7 +99,7 @@ export class AppointmentService {
     };
   }
 
-  async getAllAppointmentShift(query: GetAppointmentDto, user: GetUserDto) {
+  async getAllAppointmentShift(query: GetAppointmentDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<AppointmentShifts>['where'] = {};
     const { skip, limit, page } = query;
@@ -137,7 +137,7 @@ export class AppointmentService {
    */
   async getAppointmentById(
     appointmentId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<Appointment> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const appointment = await entityManager.findOne(Appointment, {
@@ -159,13 +159,13 @@ export class AppointmentService {
    * @param Appointment createAppointment
    *
    */
-  async createAppointment(appointment: Partial<Appointment>, user: GetUserDto) {
+  async createAppointment(appointment: Partial<Appointment>, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     appointment.receiverId = appointment.holderId;
-    appointment.authorId = user.workerId;
+    appointment.authorId = user.id;
     appointment.status = AppointmentStatusType.Expected;
     appointment.workerType = WorkType.Appointment;
-    appointment.authorName = `${user.lastName} ${user.firstName}`;
+    // appointment.authorName = `${user.lastName} ${user.firstName}`;
     const newAppointment = entityManager.create(Appointment, appointment);
     await entityManager.save(newAppointment);
     if (appointment.workerIds) {
@@ -183,7 +183,7 @@ export class AppointmentService {
     }
     const newAppointmentShift = await entityManager.create(AppointmentShifts, {
       itemId: newAppointment.id,
-      comId: user.companyId,
+      comId: null,
       status: newAppointment.status,
       receiverId: newAppointment.holderId,
       authorName: newAppointment.holderUserName,
@@ -198,7 +198,7 @@ export class AppointmentService {
    */
   async updateAppointment(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     appointment: UpdateAppointmentDto,
   ): Promise<Appointment> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -215,7 +215,7 @@ export class AppointmentService {
 
   async updateAppointmentConfirm(
     ids: number[],
-    user: GetUserDto,
+    user: IUser,
     appointment: UpdateAppointmentDto,
   ): Promise<UpdatedAppointmentWithShift[]> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -237,8 +237,8 @@ export class AppointmentService {
         AppointmentShifts,
         {
           itemId: updatedAppointment.id,
-          confirmId: user.workerId,
-          authorId: user.workerId,
+          confirmId: user.id,
+          authorId: user.id,
           authorName: appointment.holderUserName,
           status: updatedAppointment.status,
           confirmDate: new Date(),
@@ -281,7 +281,7 @@ export class AppointmentService {
 
   async updateAppointmentTransfer(
     ids: number[],
-    user: GetUserDto,
+    user: IUser,
     appointment: UpdateAppointmentDto,
   ): Promise<UpdatedAppointmentWithShift[]> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -314,7 +314,7 @@ export class AppointmentService {
       const newAppointmentShiftdata = entityManager.create(AppointmentShifts, {
         itemId: id,
         shiftDate: new Date(),
-        comId: user.companyId,
+        comId: null,
         authorId: reveiverData.authorId,
         status: AppointmentStatusType.Transfer,
         authorName: reveiverData.authorName,
@@ -327,8 +327,8 @@ export class AppointmentService {
         {
           itemId: updatedAppointment.id,
           shiftDate: new Date(),
-          comId: user.companyId,
-          authorId: appointment.holderId,
+          comId: null,
+          authorId: user.id,
           status: AppointmentStatusType.Expected,
           authorName: updatedAppointment.holderUserName,
           note: updatedAppointment.note,
@@ -347,7 +347,7 @@ export class AppointmentService {
 
   async updateAppointmentCancelled(
     ids: number[],
-    user: GetUserDto,
+    user: IUser,
     appointment: UpdateAppointmentDto,
   ): Promise<UpdatedAppointmentWithShift[]> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -365,8 +365,8 @@ export class AppointmentService {
         AppointmentShifts,
         {
           itemId: updatedAppointment.id,
-          confirmId: user.workerId,
-          authorId: user.workerId,
+          confirmId: user.id,
+          authorId: user.id,
           authorName: appointment.holderUserName,
           note: appointment.note,
           status: updatedAppointment.status,
@@ -403,7 +403,7 @@ export class AppointmentService {
   /**
    * @deprecated Use deleteAppointment instead
    */
-  async deleteAppointmentById(id: number, user: GetUserDto): Promise<void> {
+  async deleteAppointmentById(id: number, user: IUser): Promise<void> {
     return this.deleteAppointment(id, user);
   }
 
@@ -411,7 +411,7 @@ export class AppointmentService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteAppointment(id: number, user: GetUserDto): Promise<void> {
+  async deleteAppointment(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Appointment, id);
     if (!deleteResponse.affected) {

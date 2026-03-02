@@ -16,10 +16,7 @@ import MainSchedules from '../main-schedule/main-schedule.entity';
 import DirectLosts from '../../../shared/lost/lost.entity';
 import Trees from '../../../../human-resource/tree/tree.entity';
 import DirectViewUser from './direct-view-user.entity';
-import {
-  AppointmentStatusType,
-  CalculationType,
-} from '../../../../../utils/globalUtils';
+import { AppointmentStatusType, CalculationType } from '@utils/enum-utils';
 import Worker from '../../../../human-resource/member/worker/worker.entity';
 import DirectSchedules from '../schedule/schedule.entity';
 

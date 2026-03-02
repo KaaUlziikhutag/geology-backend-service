@@ -1,4 +1,4 @@
-import { FileDto } from '../../../../utils/globalUtils';
+import { RelationIdDto } from '@utils/dto/relation-id.dto';
 import { Type } from 'class-transformer';
 import {
   IsString,
@@ -23,8 +23,8 @@ export class CreateSignatureDto {
 
   @IsOptional()
   @ValidateNested({ each: true })
-  @Type(() => FileDto)
-  fileIds: FileDto[];
+  @Type(() => RelationIdDto)
+  fileIds: RelationIdDto[];
 
   @IsOptional()
   @IsNumber()

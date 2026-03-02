@@ -19,9 +19,9 @@ import { DirectLostService } from './lost.service';
 import { CreateDirectLostDto } from './dto/create-lost.dto';
 import { UpdateDirectLostDto } from './dto/update-lost.dto';
 import { GetDirectLostDto } from './dto/get-lost.dto';
-import FindOneParams from '../../../../utils/findOneParams';
-import { ResponseSuccess } from '../../../../utils/dto/response.dto';
-import { IResponse } from '../../../../utils/interfaces/response.interface';
+import FindOneParams from '@utils/find-one-params';
+import { ResponseSuccess } from '@utils/dto/response.dto';
+import { IResponse } from '@utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
 import RequestWithUser from '../../../authentication/interface/request-with-user.interface';
@@ -35,15 +35,12 @@ export class DirectLostController {
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
   async getAllDirectLosts(
-    @Req() request: RequestWithUser,
     @Query() query: GetDirectLostDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.directLostService.getAllDirectLosts(query, user);
+      const data = await this.directLostService.getAllDirectLosts(query);
       return new ResponseSuccess('GET_DIRECT_lOST.SUCCESS', data);
     } catch (error) {
-      console.log('------------------>', error);
       throw new BadRequestException(error);
     }
   }
@@ -51,13 +48,9 @@ export class DirectLostController {
   @Get(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getDirectLostById(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async getDirectLostById(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.directLostService.getDirectLostById(id, user);
+      const data = await this.directLostService.getDirectLostById(id);
       return new ResponseSuccess('GET_DIRECT_lOST.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -69,15 +62,10 @@ export class DirectLostController {
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
   async createDirectLost(
-    @Req() request: RequestWithUser,
     @Body() directLost: CreateDirectLostDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.directLostService.createDirectLost(
-        directLost,
-        user,
-      );
+      const data = await this.directLostService.createDirectLost(directLost);
       return new ResponseSuccess('CREATE_DIRECT_lOST.SUCCESS', data);
     } catch (error) {
       console.log('------------------>', error);
@@ -90,14 +78,11 @@ export class DirectLostController {
   @UseGuards(AuthGuard('api-key'))
   async updateDirectLost(
     @Param() { id }: FindOneParams,
-    @Req() request: RequestWithUser,
     @Body() directLost: UpdateDirectLostDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
       const data = await this.directLostService.updateDirectLost(
         id,
-        user,
         directLost,
       );
       return new ResponseSuccess('UPDATE_DIRECT_lOST.SUCCESS', data);
@@ -109,13 +94,9 @@ export class DirectLostController {
   @Delete(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async deleteDirectLost(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async deleteDirectLost(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.directLostService.deleteDirectLost(id, user);
+      const data = await this.directLostService.deleteDirectLost(id);
       return new ResponseSuccess('DELETE_DIRECT_lOST.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

@@ -10,7 +10,7 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import Mail from '../mail.entity';
-import { MailType } from '../../../../utils/enumUtils';
+import { MailType } from '@utils/enum-utils';
 import Worker from '../../../human-resource/member/worker/worker.entity';
 import Signature from '../../../mail/signature/signature.entity';
 

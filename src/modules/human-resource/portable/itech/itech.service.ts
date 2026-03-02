@@ -5,11 +5,11 @@ import { GetItechDto } from './dto/get-itech.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Itechs from './itech.entity';
 import ItechNotFoundException from './exceptions/itech-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class ItechService {
@@ -28,7 +28,7 @@ export class ItechService {
    * A method that fetches the Itech from the database
    * @returns A promise with the list of Itechs
    */
-  async getAllItechs(query: GetItechDto, user: GetUserDto) {
+  async getAllItechs(query: GetItechDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Itechs>['where'] = {};
 
@@ -72,7 +72,7 @@ export class ItechService {
    * @example
    * const Itech = await ItechService.getItechById(1);
    */
-  async getItechById(itechId: number, user: GetUserDto): Promise<Itechs> {
+  async getItechById(itechId: number, user: IUser): Promise<Itechs> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const itech = await entityManager.findOne(Itechs, {
       where: { id: itechId },
@@ -88,9 +88,9 @@ export class ItechService {
    * @param Itech createItech
    *
    */
-  async createItech(itech: CreateItechDto, user: GetUserDto) {
+  async createItech(itech: CreateItechDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    itech.authorId = user.workerId;
+    itech.authorId = user.id;
     const newItech = entityManager.create(Itechs, itech);
     await entityManager.save(newItech);
     return newItech;
@@ -101,7 +101,7 @@ export class ItechService {
    */
   async updateItech(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     itech: UpdateItechDto,
   ): Promise<Itechs> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -117,7 +117,7 @@ export class ItechService {
 
   // async updateItech(
   //   id: number,
-  //   user: GetUserDto,
+  //   user: IUser,
   //   itech: UpdateItechDto,
   // ): Promise<Itechs> {
   //   const entityManager = await this.loadEntityManager(user.dataBase);
@@ -138,7 +138,7 @@ export class ItechService {
   /**
    * @deprecated Use deleteItech instead
    */
-  async deleteItechById(id: number, user: GetUserDto): Promise<void> {
+  async deleteItechById(id: number, user: IUser): Promise<void> {
     return this.deleteItech(id, user);
   }
 
@@ -146,7 +146,7 @@ export class ItechService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteItech(id: number, user: GetUserDto): Promise<void> {
+  async deleteItech(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Itechs, id);
     if (!deleteResponse.affected) {

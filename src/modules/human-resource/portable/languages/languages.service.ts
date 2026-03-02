@@ -5,11 +5,11 @@ import { GetLanguageDto } from './dto/get-languages.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Languages from './languages.entity';
 import LanguageNotFoundException from './exceptions/languages-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class LanguageService {
@@ -28,7 +28,7 @@ export class LanguageService {
    * A method that fetches the Language from the database
    * @returns A promise with the list of Languages
    */
-  async getAllLanguages(query: GetLanguageDto, user: GetUserDto) {
+  async getAllLanguages(query: GetLanguageDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Languages>['where'] = {};
     if (query.userId) {
@@ -65,10 +65,7 @@ export class LanguageService {
    * @example
    * const Language = await LanguageService.getLanguageById(1);
    */
-  async getLanguageById(
-    languageId: number,
-    user: GetUserDto,
-  ): Promise<Languages> {
+  async getLanguageById(languageId: number, user: IUser): Promise<Languages> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const language = await entityManager.findOne(Languages, {
       where: { id: languageId },
@@ -84,9 +81,9 @@ export class LanguageService {
    * @param Language createLanguage
    *
    */
-  async createLanguage(language: CreateLanguageDto, user: GetUserDto) {
+  async createLanguage(language: CreateLanguageDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    language.authorId = user.workerId;
+    language.authorId = user.id;
     const newLanguage = entityManager.create(Languages, language);
     await entityManager.save(newLanguage);
     return newLanguage;
@@ -97,7 +94,7 @@ export class LanguageService {
    */
   async updateLanguage(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     language: UpdateLanguageDto,
   ): Promise<Languages> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -114,7 +111,7 @@ export class LanguageService {
   /**
    * @deprecated Use deleteLanguage instead
    */
-  async deleteLanguageById(id: number, user: GetUserDto): Promise<void> {
+  async deleteLanguageById(id: number, user: IUser): Promise<void> {
     return this.deleteLanguage(id, user);
   }
 
@@ -122,7 +119,7 @@ export class LanguageService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteLanguage(id: number, user: GetUserDto): Promise<void> {
+  async deleteLanguage(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Languages, id);
     if (!deleteResponse.affected) {

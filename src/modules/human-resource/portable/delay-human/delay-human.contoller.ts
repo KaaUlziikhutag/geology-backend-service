@@ -19,7 +19,7 @@ import { DelayHumanService } from './delay-human.service';
 import { CreateDelayHumanDto } from './dto/create-delay-human.dto';
 import { UpdateDelayHumanDto } from './dto/update-delay-human.dto';
 import { GetDelayHumanDto } from './dto/get-delay-human.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';

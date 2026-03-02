@@ -1,3 +1,4 @@
+import { MailType } from '@utils/enum-utils';
 import {
   IsNumber,
   IsDefined,
@@ -6,7 +7,6 @@ import {
   IsEnum,
   IsDateString,
 } from 'class-validator';
-import { MailType } from '../../../../../utils/enumUtils';
 
 export class CreateUserDto {
   @IsDefined()

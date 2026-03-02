@@ -19,8 +19,7 @@ import { PublicForumService } from './forum.service';
 import { CreatePublicForumDto } from './dto/create-forum.dto';
 import { UpdatePublicForumDto } from './dto/update-forum.dto';
 import { GetPublicForumDto } from './dto/get-forum.dto';
-import FindOneParams from '../../../utils/findOneParams';
-
+import FindOneParams from '@utils/find-one-params';
 import { ResponseSuccess } from '../../../utils/dto/response.dto';
 import { IResponse } from '../../../utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../authentication/guard/jwt-authentication.guard';
@@ -35,13 +34,9 @@ export class PublicForumController {
   @Get()
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getAllSignature(
-    @Req() request: RequestWithUser,
-    @Query() query: GetPublicForumDto,
-  ): Promise<IResponse> {
+  async getAllSignature(@Query() query: GetPublicForumDto): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicForumService.getAllForum(query, user);
+      const data = await this.publicForumService.getAllForum(query);
       return new ResponseSuccess('GET_FORUMS.SUCCESS', data);
     } catch (error) {
       console.log('------------------>', error);
@@ -52,13 +47,9 @@ export class PublicForumController {
   @Get(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getGalleryById(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async getGalleryById(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicForumService.getForumById(id, user);
+      const data = await this.publicForumService.getForumById(id);
       return new ResponseSuccess('GET_FORUM.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -88,12 +79,10 @@ export class PublicForumController {
   @UseGuards(AuthGuard('api-key'))
   async updateGallery(
     @Param() { id }: FindOneParams,
-    @Req() request: RequestWithUser,
     @Body() forum: UpdatePublicForumDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicForumService.updateForum(id, user, forum);
+      const data = await this.publicForumService.updateForum(id, forum);
       return new ResponseSuccess('UPDATE_FORUM.SUCCESS', data);
     } catch (error) {
       console.log('------------------>', error);
@@ -104,13 +93,9 @@ export class PublicForumController {
   @Delete(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async deleteGallery(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async deleteGallery(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.publicForumService.deleteForum(id, user);
+      const data = await this.publicForumService.deleteForum(id);
       return new ResponseSuccess('DELETE_FORUM.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

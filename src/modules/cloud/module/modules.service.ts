@@ -5,8 +5,8 @@ import { GetModuleDto } from './dto/get-modules.dto';
 import { Equal, FindManyOptions, Repository } from 'typeorm';
 import Modules from './modules.entity';
 import ModuleNotFoundException from './exceptions/modules-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()

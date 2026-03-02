@@ -5,11 +5,11 @@ import { GetDelayHumanDto } from './dto/get-delay-human.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import DelayHumans from './delay-human.entity';
 import DelayHumanNotFoundException from './exceptions/delay-human-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class DelayHumanService {
@@ -28,7 +28,7 @@ export class DelayHumanService {
    * A method that fetches the DelayHuman from the database
    * @returns A promise with the list of DelayHumans
    */
-  async getAllDelayHumans(query: GetDelayHumanDto, user: GetUserDto) {
+  async getAllDelayHumans(query: GetDelayHumanDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<DelayHumans>['where'] = {};
     if (query.comId) {
@@ -65,7 +65,7 @@ export class DelayHumanService {
    */
   async getDelayHumanById(
     delayHumanId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<DelayHumans> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const delayHuman = await entityManager.findOne(DelayHumans, {
@@ -82,7 +82,7 @@ export class DelayHumanService {
    * @param DelayHuman createDelayHuman
    *
    */
-  async createDelayHuman(delayHuman: CreateDelayHumanDto, user: GetUserDto) {
+  async createDelayHuman(delayHuman: CreateDelayHumanDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newDelayHuman = entityManager.create(DelayHumans, delayHuman);
     await entityManager.save(newDelayHuman);
@@ -94,7 +94,7 @@ export class DelayHumanService {
    */
   async updateDelayHuman(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     delayHuman: UpdateDelayHumanDto,
   ): Promise<DelayHumans> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -111,7 +111,7 @@ export class DelayHumanService {
   /**
    * @deprecated Use deleteDelayHuman instead
    */
-  async deleteDelayHumanById(id: number, user: GetUserDto): Promise<void> {
+  async deleteDelayHumanById(id: number, user: IUser): Promise<void> {
     return this.deleteDelayHuman(id, user);
   }
 
@@ -119,7 +119,7 @@ export class DelayHumanService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteDelayHuman(id: number, user: GetUserDto): Promise<void> {
+  async deleteDelayHuman(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(DelayHumans, id);
     if (!deleteResponse.affected) {

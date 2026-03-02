@@ -6,10 +6,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-  ContactPersonStatus,
-  JobTypeStatus,
-} from '../../../../../utils/enumUtils';
+import { ContactPersonStatus, JobTypeStatus } from '@utils/enum-utils';
 export class CreateFamilyDto {
   @IsOptional()
   @IsNumber()

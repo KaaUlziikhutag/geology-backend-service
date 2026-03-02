@@ -5,7 +5,7 @@ import Files from './file.entity';
 import FileNotFoundException from './exception/file-not-found.exception';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class FileService {
@@ -26,7 +26,7 @@ export class FileService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getFileByMailId(mailId: number, user: GetUserDto) {
+  async getFileByMailId(mailId: number, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const items = await entityManager.find(Files, {
       where: { mailId },
@@ -42,7 +42,7 @@ export class FileService {
    * @param File createFile
    *
    */
-  async createFile(file: CreateFileDto, user: GetUserDto) {
+  async createFile(file: CreateFileDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newFile = entityManager.create(Files, file);
     await entityManager.save(newFile);

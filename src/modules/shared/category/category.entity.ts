@@ -9,7 +9,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import Contract from '../../contract/contract.entity';
-import Above from '../../decision/above/above.entity';
+import Above from '@modules/decision/above/above.entity';
 
 @Entity('category_organization_i')
 export default class CategoryOrganization extends BaseEntity {
@@ -67,11 +67,11 @@ export default class CategoryOrganization extends BaseEntity {
   @DeleteDateColumn()
   public deletedAt: Date;
 
-  @OneToMany(
-    () => Contract,
-    (contract: Contract) => contract.categoryOrganization,
-  )
-  contracts?: Contract[];
+  // @OneToMany(
+  //   () => Contract,
+  //   (contract: Contract) => contract.categoryOrganization,
+  // )
+  // contracts?: Contract[];
 
   @OneToMany(() => Above, (above: Above) => above.categoryOrganization)
   aboves?: Above[];

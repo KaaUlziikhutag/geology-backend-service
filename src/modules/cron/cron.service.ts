@@ -4,7 +4,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
 import Holiday from '../human-resource/holiday/entities/holiday.entity';
-import { ScheduleStatus, WorkType } from '../../utils/globalUtils';
+import { ScheduleStatus, WorkType } from '@utils/enum-utils';
 import Worker from '../human-resource/member/worker/worker.entity';
 import Appointments from '../human-resource/appointment/entities/appointment.entity';
 import RepeatDetails from '../time-access/schedule/repeat/detail/entities/repeat-detail.entity';
@@ -17,7 +17,7 @@ import Repeats from '../time-access/schedule/repeat/entities/repeat.entity';
 import AccessTimes from '../time-access/access/entities/access-time.entity';
 import DirectSchedules from '../time-access/schedule/direct/schedule/schedule.entity';
 import RepeatSchedules from '../time-access/schedule/repeat/schedule/schedule.entity';
-import { calculateAttendanceStatus, formatTime } from '../../utils/dateUtils';
+import { calculateAttendanceStatus } from '@utils/helper-utils';
 
 @Injectable()
 export class CronJobService {
@@ -226,7 +226,7 @@ export class CronJobService {
         if (allRepeatDetails.length === 0) {
           continue;
         }
-        await this.processRepeatDetails(allRepeatDetails, company);
+        await this.processRepeatDetails(allRepeatDetails);
       } catch (error) {
         console.error(
           `Failed to process company ${company.id}: ${
@@ -236,15 +236,9 @@ export class CronJobService {
       }
     }
   }
-  private async processRepeatDetails(
-    repeatDetails: RepeatDetails[],
-    company: Companies,
-  ) {
+  private async processRepeatDetails(repeatDetails: RepeatDetails[]) {
     for (const repeatDetail of repeatDetails) {
-      await this.repeatScheduleService.createRepeatScheduleCron(
-        repeatDetail,
-        company.dataBase,
-      );
+      await this.repeatScheduleService.createRepeatScheduleCron(repeatDetail);
     }
   }
 
@@ -405,10 +399,9 @@ export class CronJobService {
               at.date >= new Date(startDate) && at.date <= adjustedEndDate,
           );
           if (filteredTimes.length === 0) continue;
-          const time1 = formatTime(filteredTimes[0].date);
-          const time2 = formatTime(
-            filteredTimes[filteredTimes.length - 1].date,
-          );
+          const time1 = filteredTimes[0].date.toTimeString();
+          const time2 =
+            filteredTimes[filteredTimes.length - 1].date.toTimeString();
           const attendance = calculateAttendanceStatus(
             time1,
             time2,

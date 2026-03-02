@@ -6,10 +6,10 @@ import { getEntityManagerToken } from '@nestjs/typeorm';
 import { EntityManager, FindManyOptions, ILike } from 'typeorm';
 import InsuranceTypes from './insurance-type.entity';
 import InsuranceTypeNotFoundException from './exceptions/insurance-type-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class InsuranceTypeService {
@@ -28,7 +28,7 @@ export class InsuranceTypeService {
    * A method that fetches the companies from the database
    * @returns A promise with the list of InsuranceTypes
    */
-  async getAllInsuranceTypes(query: GetInsuranceTypeDto, user: GetUserDto) {
+  async getAllInsuranceTypes(query: GetInsuranceTypeDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<InsuranceTypes>['where'] = {};
     const { skip, page } = query;
@@ -62,7 +62,7 @@ export class InsuranceTypeService {
    */
   async getInsuranceTypeById(
     insuranceTypeId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<InsuranceTypes> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const InsuranceType = await entityManager.findOne(InsuranceTypes, {
@@ -81,7 +81,7 @@ export class InsuranceTypeService {
    */
   async createInsuranceType(
     insuranceType: CreateInsuranceTypeDto,
-    user: GetUserDto,
+    user: IUser,
   ) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newInsuranceType = entityManager.create(
@@ -98,7 +98,7 @@ export class InsuranceTypeService {
   async updateInsuranceType(
     id: number,
     insuranceType: UpdateInsuranceTypeDto,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<InsuranceTypes> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     await entityManager.update(InsuranceTypes, id, insuranceType);
@@ -114,7 +114,7 @@ export class InsuranceTypeService {
   /**
    * @deprecated Use deleteInsuranceType instead
    */
-  async deleteInsuranceTypeById(id: number, user: GetUserDto): Promise<void> {
+  async deleteInsuranceTypeById(id: number, user: IUser): Promise<void> {
     return this.deleteInsuranceType(id, user);
   }
 
@@ -122,7 +122,7 @@ export class InsuranceTypeService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteInsuranceType(id: number, user: GetUserDto): Promise<void> {
+  async deleteInsuranceType(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(InsuranceTypes, id);
     if (!deleteResponse.affected) {

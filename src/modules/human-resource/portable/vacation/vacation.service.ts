@@ -5,11 +5,11 @@ import { GetVacationDto } from './dto/get-vacation.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Vacation from './vacation.entity';
 import VacationNotFoundException from './exceptions/vacation-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 @Injectable()
 export class VacationService {
   /**
@@ -27,7 +27,7 @@ export class VacationService {
    * A method that fetches the Vacation from the database
    * @returns A promise with the list of Vacations
    */
-  async getAllVacations(query: GetVacationDto, user: GetUserDto) {
+  async getAllVacations(query: GetVacationDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Vacation>['where'] = {};
     if (query.autorId) {
@@ -69,10 +69,7 @@ export class VacationService {
    * @example
    * const Vacation = await VacationService.getVacationById(1);
    */
-  async getVacationById(
-    vacationId: number,
-    user: GetUserDto,
-  ): Promise<Vacation> {
+  async getVacationById(vacationId: number, user: IUser): Promise<Vacation> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const vacation = await entityManager.findOne(Vacation, {
       where: { id: vacationId },
@@ -88,7 +85,7 @@ export class VacationService {
    * @param socials createVacation
    *
    */
-  async createVacation(vacation: CreateVacationDto, user: GetUserDto) {
+  async createVacation(vacation: CreateVacationDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const startDate = new Date(vacation.startDate);
     const endDate = new Date(vacation.endDate);
@@ -98,7 +95,7 @@ export class VacationService {
     const durationInMilliseconds = endDate.getTime() - startDate.getTime();
     const decimalNumber = durationInMilliseconds / (24 * 60 * 60 * 1000);
     vacation.duration = Math.floor(decimalNumber);
-    vacation.autorId = user.workerId;
+    vacation.autorId = user.id;
     const newVacation = entityManager.create(Vacation, vacation);
     await entityManager.save(newVacation);
     return newVacation;
@@ -109,7 +106,7 @@ export class VacationService {
    */
   async updateVacation(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     vacation: UpdateVacationDto,
   ): Promise<Vacation> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -126,7 +123,7 @@ export class VacationService {
   /**
    * @deprecated Use deleteVacation instead
    */
-  async deleteVacationById(id: number, user: GetUserDto): Promise<void> {
+  async deleteVacationById(id: number, user: IUser): Promise<void> {
     return this.deleteVacation(id, user);
   }
 
@@ -134,7 +131,7 @@ export class VacationService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteVacation(id: number, user: GetUserDto): Promise<void> {
+  async deleteVacation(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Vacation, id);
     if (!deleteResponse.affected) {

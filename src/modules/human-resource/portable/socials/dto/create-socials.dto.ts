@@ -7,7 +7,8 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { FileDto, MoneyType } from '../../../../../utils/globalUtils';
+import { MoneyType } from '@utils/enum-utils';
+import { RelationIdDto } from '@utils/dto/relation-id.dto';
 export class CreateSocialsDto {
   // Нийгмийн халамж
   @IsOptional()
@@ -32,8 +33,8 @@ export class CreateSocialsDto {
 
   @IsOptional()
   @ValidateNested({ each: true })
-  @Type(() => FileDto)
-  fileIds: FileDto[];
+  @Type(() => RelationIdDto)
+  fileIds: RelationIdDto[];
 
   @IsOptional()
   @IsString()

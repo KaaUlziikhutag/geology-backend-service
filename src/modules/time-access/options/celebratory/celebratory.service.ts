@@ -3,13 +3,13 @@ import { CreateCelebratoryDto } from './dto/create-celebratory.dto';
 import { UpdateCelebratoryDto } from './dto/update-celebratory.dto';
 import { GetCelebratoryDto } from './dto/get-celebratory.dto';
 import { Between, EntityManager, Equal, FindManyOptions, ILike } from 'typeorm';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
 import Celebratory from './celebratory.entity';
 import CelebratoryNotFoundException from './exceptions/celebratory-not-found.exception';
+import { IUser } from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class CelebratoryService {
@@ -28,7 +28,7 @@ export class CelebratoryService {
    * A method that fetches the Option from the database
    * @returns A promise with the list of Options
    */
-  async getAllCelebratory(query: GetCelebratoryDto, user: GetUserDto) {
+  async getAllCelebratory(query: GetCelebratoryDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Celebratory>['where'] = {};
     if (query.comId) {
@@ -49,8 +49,8 @@ export class CelebratoryService {
         currentDate.getMonth() + 1,
         0,
       );
-      (where.isCelebratory = Equal(false)),
-        (where.startDate = Between(startOfMonth, endOfMonth));
+      ((where.isCelebratory = Equal(false)),
+        (where.startDate = Between(startOfMonth, endOfMonth)));
     }
 
     const allCelebratory = await entityManager.find(Celebratory, {
@@ -91,7 +91,7 @@ export class CelebratoryService {
    */
   async getCelebratoryById(
     celebratoryId: number,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<Celebratory> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const option = await entityManager.findOne(Celebratory, {
@@ -108,7 +108,7 @@ export class CelebratoryService {
    * @param Option createOption
    *
    */
-  async createCelebratory(celebratory: CreateCelebratoryDto, user: GetUserDto) {
+  async createCelebratory(celebratory: CreateCelebratoryDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     celebratory.endDate = new Date(celebratory.startDate);
     celebratory.endDate.setDate(
@@ -124,7 +124,7 @@ export class CelebratoryService {
    */
   async updateCelebratory(
     celebratoryId: number,
-    user: GetUserDto,
+    user: IUser,
     celebratory: UpdateCelebratoryDto,
   ): Promise<Celebratory> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -145,7 +145,7 @@ export class CelebratoryService {
   /**
    * @deprecated Use deleteOption instead
    */
-  async deleteCelebratoryById(id: number, user: GetUserDto): Promise<void> {
+  async deleteCelebratoryById(id: number, user: IUser): Promise<void> {
     return this.deleteCelebratory(id, user);
   }
 
@@ -153,7 +153,7 @@ export class CelebratoryService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteCelebratory(id: number, user: GetUserDto): Promise<void> {
+  async deleteCelebratory(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(Celebratory, id);
     if (!deleteResponse.affected) {

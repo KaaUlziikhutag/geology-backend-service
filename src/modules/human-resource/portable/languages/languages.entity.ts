@@ -1,4 +1,4 @@
-import { Level, Levels } from '../../../../utils/globalUtils';
+import { Level, Levels } from '@utils/enum-utils';
 import {
   Column,
   Entity,

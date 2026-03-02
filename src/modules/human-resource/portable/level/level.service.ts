@@ -5,11 +5,11 @@ import { GetLevelDto } from './dto/get-level.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Levels from './level.entity';
 import LevelNotFoundException from './exceptions/level-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class LevelService {
@@ -28,7 +28,7 @@ export class LevelService {
    * A method that fetches the Level from the database
    * @returns A promise with the list of Levels
    */
-  async getAllLevels(query: GetLevelDto, user: GetUserDto) {
+  async getAllLevels(query: GetLevelDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Levels>['where'] = {};
     if (query.comId) {
@@ -63,7 +63,7 @@ export class LevelService {
    * @example
    * const Level = await LevelService.getLevelById(1);
    */
-  async getLevelById(levelId: number, user: GetUserDto): Promise<Levels> {
+  async getLevelById(levelId: number, user: IUser): Promise<Levels> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const level = await entityManager.findOne(Levels, {
       where: { id: levelId },
@@ -79,9 +79,9 @@ export class LevelService {
    * @param level createLevel
    *
    */
-  async createLevel(level: CreateLevelDto, user: GetUserDto) {
+  async createLevel(level: CreateLevelDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    level.authorId = user.workerId;
+    level.authorId = user.id;
     const newLevel = entityManager.create(Levels, level);
     await entityManager.save(newLevel);
     return newLevel;
@@ -92,7 +92,7 @@ export class LevelService {
    */
   async updateLevel(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     level: UpdateLevelDto,
   ): Promise<Levels> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -109,7 +109,7 @@ export class LevelService {
   /**
    * @deprecated Use deleteLevel instead
    */
-  async deleteLevelById(id: number, user: GetUserDto): Promise<void> {
+  async deleteLevelById(id: number, user: IUser): Promise<void> {
     return this.deleteLevel(id, user);
   }
 
@@ -117,7 +117,7 @@ export class LevelService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteLevel(id: number, user: GetUserDto): Promise<void> {
+  async deleteLevel(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Levels, id);
     if (!deleteResponse.affected) {

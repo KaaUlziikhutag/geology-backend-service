@@ -5,11 +5,11 @@ import { GetWorkerDto } from './dto/get-worker.dto';
 import { EntityManager, Equal, FindManyOptions, ILike } from 'typeorm';
 import Worker from './worker.entity';
 import WorkerNotFoundException from './exceptions/worker-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 import { UpdateWorkerAuthorDto } from './dto/update-author.dto';
 
 @Injectable()
@@ -29,7 +29,7 @@ export class WorkerService {
    * A method that fetches the Worker from the database
    * @returns A promise with the list of Workers
    */
-  async getAllWorkers(query: GetWorkerDto, user: GetUserDto) {
+  async getAllWorkers(query: GetWorkerDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Worker>['where'] = {};
     if (query.isActive) {
@@ -71,7 +71,7 @@ export class WorkerService {
    * @example
    * const Worker = await WorkerService.getWorkerById(1);
    */
-  async getWorkerById(workerId: number, user: GetUserDto): Promise<Worker> {
+  async getWorkerById(workerId: number, user: IUser): Promise<Worker> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const worker = await entityManager.findOne(Worker, {
       where: { id: workerId },
@@ -87,7 +87,7 @@ export class WorkerService {
    * @param Worker createWorker
    *
    */
-  async createWorker(user: GetUserDto, worker: CreateWorkerDto) {
+  async createWorker(user: IUser, worker: CreateWorkerDto) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newWorker = entityManager.create(Worker, worker);
     await entityManager.save(newWorker);
@@ -99,7 +99,7 @@ export class WorkerService {
    */
   async updateWorker(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     worker: UpdateWorkerDto,
   ): Promise<Worker> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -115,7 +115,7 @@ export class WorkerService {
 
   async updateWorkerType(
     ids: number[],
-    user: GetUserDto,
+    user: IUser,
     worker: UpdateWorkerAuthorDto,
   ): Promise<Worker[]> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -136,7 +136,7 @@ export class WorkerService {
   /**
    * @deprecated Use deleteWorker instead
    */
-  async deleteWorkerById(id: number, user: GetUserDto): Promise<void> {
+  async deleteWorkerById(id: number, user: IUser): Promise<void> {
     return this.deleteWorker(id, user);
   }
 
@@ -144,7 +144,7 @@ export class WorkerService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteWorker(id: number, user: GetUserDto): Promise<void> {
+  async deleteWorker(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(Worker, id);
     if (!deleteResponse.affected) {

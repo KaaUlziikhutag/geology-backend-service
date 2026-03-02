@@ -19,10 +19,10 @@ import { RepeatDetailService } from './repeat-detail.service';
 import { CreateRepeatDetailDto } from './dto/create-repeat-detail.dto';
 import { UpdateRepeatDetailDto } from './dto/update-repeat-detail.dto';
 import { GetRepeatDetailDto } from './dto/get-repeat-detail.dto';
-import FindOneParams from '../../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
-import { ResponseSuccess } from '../../../../../utils/dto/response.dto';
-import { IResponse } from '../../../../../utils/interfaces/response.interface';
+import { ResponseSuccess } from '@utils/dto/response.dto';
+import { IResponse } from '@utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../../../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
 import RequestWithUser from '../../../../authentication/interface/request-with-user.interface';
@@ -36,15 +36,10 @@ export class RepeatDetailController {
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
   async getAllRepeatDetail(
-    @Req() request: RequestWithUser,
     @Query() query: GetRepeatDetailDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.repeatDetailService.getAllRepeatDetail(
-        query,
-        user,
-      );
+      const data = await this.repeatDetailService.getAllRepeatDetail(query);
       return new ResponseSuccess('GET_REPEAT_DETAILS.SUCCESS', data);
     } catch (error) {
       console.log('------------------>', error);
@@ -73,15 +68,11 @@ export class RepeatDetailController {
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
   async createRepeatDetail(
-    @Req() request: RequestWithUser,
     @Body() repeatDetail: CreateRepeatDetailDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.repeatDetailService.createRepeatDetail(
-        repeatDetail,
-        user,
-      );
+      const data =
+        await this.repeatDetailService.createRepeatDetail(repeatDetail);
       return new ResponseSuccess('CREATE_REPEAT_DETAILS.SUCCESS', data);
     } catch (error) {
       console.log('------------------>', error);

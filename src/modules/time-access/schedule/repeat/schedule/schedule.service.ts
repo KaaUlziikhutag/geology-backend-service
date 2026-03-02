@@ -7,14 +7,14 @@ import {
   Equal,
   FindManyOptions,
   MoreThanOrEqual,
+  Repository,
 } from 'typeorm';
 import RepeatSchedules from './schedule.entity';
 import DirectScheduleNotFoundException from './exceptions/schedule-not-found.exception';
-import { PageDto } from '../../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../../cloud/user/dto/get-user.dto';
+import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
 import RepeatDetails from '../detail/entities/repeat-detail.entity';
 import DirectSchedules from '../../direct/schedule/schedule.entity';
 
@@ -23,7 +23,13 @@ export class RepeatScheduleService {
   /**
    * @ignore
    */
-  constructor(private moduleRef: ModuleRef) {}
+  constructor(
+    @InjectRepository(RepeatSchedules)
+    private readonly repeatScheduleRepository: Repository<RepeatSchedules>,
+    @InjectRepository(DirectSchedules)
+    private readonly directScheduleRepository: Repository<DirectSchedules>,
+    private moduleRef: ModuleRef,
+  ) {}
 
   private async loadEntityManager(systemId: string): Promise<EntityManager> {
     return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
@@ -35,8 +41,7 @@ export class RepeatScheduleService {
    * A method that fetches the RepeatSchedule from the database
    * @returns A promise with the list of RepeatSchedules
    */
-  async getAllRepeatSchedules(query: GetRepeatScheduleDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getAllRepeatSchedules(query: GetRepeatScheduleDto) {
     const repeatWhere: FindManyOptions<RepeatSchedules>['where'] = {};
     if (query.repeatId) {
       repeatWhere.repeatId = Equal(query.repeatId);
@@ -50,30 +55,26 @@ export class RepeatScheduleService {
         ? Number(query.limit)
         : 10;
     const skip = (page - 1) * limit;
-    const [repeatItems, repeatCount] = await entityManager.findAndCount(
-      RepeatSchedules,
-      {
+    const [repeatItems, repeatCount] =
+      await this.repeatScheduleRepository.findAndCount({
         where: repeatWhere,
         order: { createdAt: 'DESC' },
         skip,
         take: limit,
-      },
-    );
+      });
     const repeatMeta = new PageMetaDto({ page, limit, itemCount: repeatCount });
     const repeatSchedules = new PageDto(repeatItems, repeatMeta);
     const directWhere: FindManyOptions<DirectSchedules>['where'] = {};
     if (query.directId) {
       directWhere.directId = Equal(query.directId);
     }
-    const [directItems, directCount] = await entityManager.findAndCount(
-      DirectSchedules,
-      {
+    const [directItems, directCount] =
+      await this.directScheduleRepository.findAndCount({
         where: directWhere,
         order: { createdAt: 'DESC' },
         skip,
         take: limit,
-      },
-    );
+      });
     const directMeta = new PageMetaDto({ page, limit, itemCount: directCount });
     const directSchedules = new PageDto(directItems, directMeta);
     return {
@@ -90,10 +91,8 @@ export class RepeatScheduleService {
    */
   async getRepeatScheduleById(
     directScheduleId: number,
-    user: GetUserDto,
   ): Promise<RepeatSchedules> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const directSchedule = await entityManager.findOne(RepeatSchedules, {
+    const directSchedule = await this.repeatScheduleRepository.findOne({
       where: { id: directScheduleId },
       relations: ['worker.humans', 'repeats'],
     });
@@ -108,24 +107,13 @@ export class RepeatScheduleService {
    * @param DirectSchedule createDirectSchedule
    *
    */
-  async createRepeatSchedule(
-    directSchedule: CreateRepeatScheduleDto,
-    user: GetUserDto,
-  ) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const newDirectSchedule = entityManager.create(
-      RepeatSchedules,
-      directSchedule,
-    );
-    await entityManager.save(newDirectSchedule);
-    return newDirectSchedule;
+  async createRepeatSchedule(directSchedule: CreateRepeatScheduleDto) {
+    const newDirectSchedule =
+      this.repeatScheduleRepository.create(directSchedule);
+    return await this.repeatScheduleRepository.save(newDirectSchedule);
   }
 
-  async createRepeatScheduleCron(
-    repeatDetail: RepeatDetails,
-    database: string,
-  ) {
-    const entityManager = await this.loadEntityManager(database);
+  async createRepeatScheduleCron(repeatDetail: RepeatDetails) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const graphic = repeatDetail.graphic;
@@ -134,12 +122,12 @@ export class RepeatScheduleService {
     if (!graphic || !repeats || !graphic.graphicStep?.length) {
       throw new Error('Graphic, Repeat эсвэл GraphicStep дутуу байна');
     }
-    const lastSchedule = await entityManager.findOne(RepeatSchedules, {
+    const lastSchedule = await this.repeatScheduleRepository.findOne({
       where: { graphicId: repeatDetail.graphicId },
       order: { createdAt: 'DESC' },
     });
     if (lastSchedule && graphic.updatedAt > lastSchedule.createdAt) {
-      await entityManager.delete(RepeatSchedules, {
+      await this.repeatScheduleRepository.delete({
         graphicId: repeatDetail.graphicId,
         startDate: MoreThanOrEqual(today),
       });
@@ -159,7 +147,7 @@ export class RepeatScheduleService {
     ];
     for (const viewUser of repeatDetail.viewUsers || []) {
       const userId = viewUser.userId;
-      const existingSchedules = await entityManager.find(RepeatSchedules, {
+      const existingSchedules = await this.repeatScheduleRepository.find({
         where: {
           graphicId: repeatDetail.graphicId,
           userId,
@@ -184,7 +172,7 @@ export class RepeatScheduleService {
         }
         const startTime = step.isWork ? start.toTimeString().slice(0, 5) : null;
         const endTime = step.isWork ? end.toTimeString().slice(0, 5) : null;
-        const newSchedule = entityManager.create(RepeatSchedules, {
+        const newSchedule = this.repeatScheduleRepository.create({
           graphicId: repeatDetail.graphicId,
           userId,
           startDate: start,
@@ -200,7 +188,7 @@ export class RepeatScheduleService {
         stepIndex = (stepIndex + 1) % stepsToSchedule.length; // ♻️ Циклик давталт
       }
       if (schedules.length > 0) {
-        await entityManager.save(schedules);
+        await this.repeatScheduleRepository.save(schedules);
       }
     }
   }
@@ -210,12 +198,10 @@ export class RepeatScheduleService {
    */
   async updateRepeatSchedule(
     id: number,
-    user: GetUserDto,
     repeatSchedule: UpdateRepeatScheduleDto,
   ): Promise<RepeatSchedules> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    await entityManager.update(RepeatSchedules, id, repeatSchedule);
-    const updatedDirectSchedule = await entityManager.findOne(RepeatSchedules, {
+    await this.repeatScheduleRepository.update(id, repeatSchedule);
+    const updatedDirectSchedule = await this.repeatScheduleRepository.findOne({
       where: { id: id },
     });
     if (updatedDirectSchedule) {
@@ -227,17 +213,16 @@ export class RepeatScheduleService {
   /**
    * @deprecated Use deleteDirectSchedule instead
    */
-  async deleteRepeatScheduleById(id: number, user: GetUserDto): Promise<void> {
-    return this.deleteRepeatSchedule(id, user);
+  async deleteRepeatScheduleById(id: number): Promise<void> {
+    return this.deleteRepeatSchedule(id);
   }
 
   /**
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteRepeatSchedule(id: number, user: GetUserDto): Promise<void> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const deleteResponse = await entityManager.delete(RepeatSchedules, id);
+  async deleteRepeatSchedule(id: number): Promise<void> {
+    const deleteResponse = await this.repeatScheduleRepository.delete(id);
     if (!deleteResponse.affected) {
       throw new DirectScheduleNotFoundException(id);
     }

@@ -5,8 +5,8 @@ import { GetProgramDto } from './dto/get-program.dto';
 import { Equal, FindManyOptions, Repository } from 'typeorm';
 import Programs from './program.entity';
 import ProgramNotFoundException from './exceptions/program-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()

@@ -19,7 +19,7 @@ import { AptitudeService } from './aptitudes.service';
 import { CreateAptitudeDto } from './dto/create-aptitudes.dto';
 import { UpdateAptitudeDto } from './dto/update-aptitudes.dto';
 import { GetAptitudeDto } from './dto/get-aptitudess.dto';
-import FindOneParams from '../../../../utils/findOneParams';
+import FindOneParams from '@utils/find-one-params';
 
 import { ResponseSuccess } from '../../../../utils/dto/response.dto';
 import { IResponse } from '../../../../utils/interfaces/response.interface';

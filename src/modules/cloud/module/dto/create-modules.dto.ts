@@ -1,4 +1,4 @@
-import { AccessType } from '../../../../utils/globalUtils';
+import { AccessType } from '@utils/enum-utils';
 import { IsString, IsOptional, IsNumber, IsEnum } from 'class-validator';
 export class CreateModuleDto {
   @IsOptional()

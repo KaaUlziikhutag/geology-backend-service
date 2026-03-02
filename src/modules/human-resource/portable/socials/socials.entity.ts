@@ -1,4 +1,5 @@
-import { FileDto, MoneyType } from '../../../../utils/globalUtils';
+import { RelationIdDto } from '@utils/dto/relation-id.dto';
+import { MoneyType } from '@utils/enum-utils';
 import {
   Column,
   Entity,
@@ -39,7 +40,7 @@ export default class Socials extends BaseEntity {
   money: number;
 
   @Column({ type: 'jsonb', name: 'fileIds', nullable: true })
-  public fileIds: FileDto[]; // FILE UPLOAD
+  public fileIds: RelationIdDto[]; // FILE UPLOAD
 
   @Column({ type: 'timestamptz', nullable: true })
   date: Date;

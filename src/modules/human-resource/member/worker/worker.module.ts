@@ -5,10 +5,11 @@ import Workers from './worker.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { LocalFilesModule } from '../../../local-files/local-files.module';
+import WorkerApp from './entities/worker-app.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Workers]),
+    TypeOrmModule.forFeature([Workers, WorkerApp]),
     ConfigModule,
     LocalFilesModule,
   ],

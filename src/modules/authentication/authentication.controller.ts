@@ -62,7 +62,6 @@ export class AuthenticationController {
       );
       await this.usersService.setCurrentRefreshToken(refreshToken, user.id);
       const data = {
-        user: user,
         accessToken: accessToken,
         refreshToken: refreshToken,
       };
@@ -123,15 +122,7 @@ export class AuthenticationController {
   async authenticate(@Req() request: RequestWithUser): Promise<IResponse> {
     try {
       const { user } = request;
-      const accessToken = this.authenticationService.getJwtAccessToken(user.id);
-      const refreshToken = this.authenticationService.getJwtRefreshToken(
-        user.id,
-      );
-      const data = {
-        user: user,
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-      };
+      const data = await this.authenticationService.getUserById(user.id);
       return new ResponseSuccess('AUTHENTICATION.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error.message);

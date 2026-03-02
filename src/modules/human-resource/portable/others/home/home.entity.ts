@@ -1,4 +1,4 @@
-import { Homes, MineType } from '../../../../../utils/globalUtils';
+import { Homes, MineType } from '@utils/enum-utils';
 import {
   Column,
   Entity,

@@ -10,7 +10,6 @@ import {
   In,
 } from 'typeorm';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../cloud/user/dto/get-user.dto';
 import {
   HumanResourceDto,
   UpdatedWorkerAndUser,
@@ -21,23 +20,20 @@ import * as generator from 'generate-password';
 import * as bcrypt from 'bcryptjs';
 import EmailService from '../shared/email/email.service';
 import { GetHumanResourceDto } from './dto/get-human-resource.dto';
-import { PageMetaDto } from '../../utils/dto/pageMeta.dto';
-import { PageDto } from '../../utils/dto/page.dto';
+import PageMetaDto from '../../utils/dto/page-meta.dto';
+import PageDto from '../../utils/dto/page.dto';
 import WorkerNotFoundException from './member/worker/exceptions/worker-not-found.exception';
 import { FieldService } from '../cloud/field/field.service';
 import { ProgramService } from '../cloud/programs/program.service';
 import Access from './access/access.entity';
-import {
-  AccessType,
-  AppointmentStatusType,
-  extractBirthDateFromRegNumber,
-  WorkType,
-} from '../../utils/globalUtils';
+import { AccessType, AppointmentStatusType, WorkType } from '@utils/enum-utils';
 import { ModuleService } from '../cloud/module/modules.service';
 import { ColumnService } from './column-setup/column.service';
 import Trees from './tree/tree.entity';
 import { CountryService } from '../cloud/country/country.service';
 import WorkerApp from './member/worker/entities/worker-app.entity';
+import IUser from '@modules/cloud/user/interface/user.interface';
+import { extractBirthDateFromRegNumber } from '@utils/helper-utils';
 
 @Injectable()
 export class HumanResourceService {
@@ -58,7 +54,7 @@ export class HumanResourceService {
     });
   }
 
-  async getAllHumanResource(user: GetUserDto, query: GetHumanResourceDto) {
+  async getAllHumanResource(user: IUser, query: GetHumanResourceDto) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Worker>['where'] = {};
     const { skip, limit, page } = query;
@@ -117,7 +113,7 @@ export class HumanResourceService {
       where.workerType = Equal(query.workerTypeOne);
     }
     if (query.accessType == AccessType.Simple) {
-      where.id = user.workerId;
+      where.id = user.id;
     }
     if (query.isActive) {
       where.isActive = query.isActive;
@@ -231,7 +227,7 @@ export class HumanResourceService {
     };
   }
 
-  async getAllHistoryDepartment(user: GetUserDto, query: GetHumanResourceDto) {
+  async getAllHistoryDepartment(user: IUser, query: GetHumanResourceDto) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<WorkerApp>['where'] = {};
     if (query.workerId) {
@@ -268,10 +264,7 @@ export class HumanResourceService {
     return new PageDto(items, pageMetaDto);
   }
 
-  async getHumanResourceById(
-    workerId: number,
-    user: GetUserDto,
-  ): Promise<Worker> {
+  async getHumanResourceById(workerId: number, user: IUser): Promise<Worker> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const worker = await entityManager.findOne(Worker, {
       where: { id: workerId },
@@ -298,7 +291,7 @@ export class HumanResourceService {
     throw new WorkerNotFoundException(workerId);
   }
 
-  async getAllHumanResourceCheck(user: GetUserDto, query: GetHumanResourceDto) {
+  async getAllHumanResourceCheck(user: IUser, query: GetHumanResourceDto) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const register = await entityManager.findOne(Human, {
       where: { regNumber: query.regNumber },
@@ -345,7 +338,7 @@ export class HumanResourceService {
     }
   }
 
-  async createHumanResource(user: GetUserDto, humanResource: HumanResourceDto) {
+  async createHumanResource(user: IUser, humanResource: HumanResourceDto) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     try {
       const checkUser = await this.userService.getByEmailCheck(
@@ -430,13 +423,13 @@ export class HumanResourceService {
           code: humanResource.code,
           jobAction: humanResource.jobAction,
           employeeType: humanResource.employeeType,
-          companyId: user.companyId,
+          companyId: null,
         }); // worker add
         await entityManager.save(Worker, newWorker);
         if (humanResource.appId) {
-          const departmentHistory = await entityManager.create(WorkerApp, {
+          const departmentHistory = entityManager.create(WorkerApp, {
             userId: newWorker.id,
-            companyId: user.companyId,
+            companyId: null,
             depId: humanResource.depId,
             appId: depStructure.id,
             jobAction: humanResource.jobAction,
@@ -452,7 +445,7 @@ export class HumanResourceService {
         const hashedPassword = await bcrypt.hash(password, 10);
         await this.userService.createUser({
           workerId: newWorker.id,
-          companyId: user.companyId,
+          companyId: null,
           email: humanResource.workMail,
           phoneNo: humanResource.mobile,
           dataBase: user.dataBase,
@@ -474,7 +467,7 @@ export class HumanResourceService {
               proId: program.id,
               modId: 0,
               access: AccessType.Simple,
-              comId: user.companyId,
+              comId: null,
             });
             await entityManager.save(Access, newAccess);
           }),
@@ -486,7 +479,7 @@ export class HumanResourceService {
               proId: module.proId,
               modId: module.id,
               access: AccessType.Simple,
-              comId: user.companyId,
+              companyId: null,
             });
             await entityManager.save(Access, newAccess);
           }),
@@ -513,7 +506,7 @@ export class HumanResourceService {
 
   async updateHumanResource(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     humanResource: HumanResourceDto,
   ): Promise<Worker> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -619,7 +612,7 @@ export class HumanResourceService {
         workPhone: humanResource.workPhone,
         temporaryOptions: humanResource.temporaryOptions,
         employeeType: humanResource.employeeType,
-        companyId: user.companyId,
+        companyId: null,
       });
       await entityManager.save(Worker, existingWorker);
       return existingWorker;
@@ -638,7 +631,7 @@ export class HumanResourceService {
   //Ажилтны Төлөв солих
   async updateTypeHumanResource(
     ids: number[],
-    user: GetUserDto,
+    user: IUser,
     humanResource: HumanResourceDto,
   ): Promise<Worker[]> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -674,7 +667,7 @@ export class HumanResourceService {
   // Систем төлөв солих
   async updateSystemHumanResource(
     ids: number[],
-    user: GetUserDto,
+    user: IUser,
     humanResource: HumanResourceDto,
   ): Promise<UpdatedWorkerAndUser[]> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -725,7 +718,7 @@ export class HumanResourceService {
   //Албан тушаалд томилох
   async updateStructureHumanResource(
     ids: number[],
-    user: GetUserDto,
+    user: IUser,
     humanResource: HumanResourceDto,
   ): Promise<Worker[]> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -743,7 +736,7 @@ export class HumanResourceService {
         console.log('humanResource', humanResource);
         const departmentHistory = await entityManager.create(WorkerApp, {
           userId: id,
-          companyId: user.companyId,
+          companyId: null,
           depId: humanResource.depId,
           appId: humanResource.appId,
           jobAction: humanResource.jobAction,
@@ -780,7 +773,7 @@ export class HumanResourceService {
     }
   }
 
-  async deleteWorkerById(id: number, user: GetUserDto): Promise<void> {
+  async deleteWorkerById(id: number, user: IUser): Promise<void> {
     return this.deleteHumanResource(id, user);
   }
 
@@ -788,13 +781,13 @@ export class HumanResourceService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteHumanResource(id: number, user: GetUserDto): Promise<void> {
+  async deleteHumanResource(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
 
     try {
       await entityManager.transaction(async (transactionalEntityManager) => {
         const worker = await transactionalEntityManager.findOne(Worker, {
-          where: { id, companyId: user.companyId },
+          where: { id, companyId: null },
         });
 
         if (!worker) {

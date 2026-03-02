@@ -5,11 +5,11 @@ import { GetMistakesDto } from './dto/get-mistakes.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Mistakes from './mistakes.entity';
 import MistakesNotFoundException from './exceptions/mistakes-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class MistakesService {
@@ -28,7 +28,7 @@ export class MistakesService {
    * A method that fetches the Mistakes from the database
    * @returns A promise with the list of Mistakess
    */
-  async getAllMistakes(query: GetMistakesDto, user: GetUserDto) {
+  async getAllMistakes(query: GetMistakesDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Mistakes>['where'] = {};
     if (query.userId) {
@@ -64,10 +64,7 @@ export class MistakesService {
    * @example
    * const Mistakes = await MistakesService.getMistakesById(1);
    */
-  async getMistakesById(
-    mistakesId: number,
-    user: GetUserDto,
-  ): Promise<Mistakes> {
+  async getMistakesById(mistakesId: number, user: IUser): Promise<Mistakes> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const mistakes = await entityManager.findOne(Mistakes, {
       where: { id: mistakesId },
@@ -83,9 +80,9 @@ export class MistakesService {
    * @param Mistakes createMistakes
    *
    */
-  async createMistakes(mistakes: CreateMistakesDto, user: GetUserDto) {
+  async createMistakes(mistakes: CreateMistakesDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    mistakes.authorId = user.workerId;
+    mistakes.authorId = user.id;
     const newMistakes = entityManager.create(Mistakes, mistakes);
     await entityManager.save(newMistakes);
     return newMistakes;
@@ -96,7 +93,7 @@ export class MistakesService {
    */
   async updateMistakes(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     mistakes: UpdateMistakesDto,
   ): Promise<Mistakes> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -113,7 +110,7 @@ export class MistakesService {
   /**
    * @deprecated Use deleteMistakes instead
    */
-  async deleteMistakesById(id: number, user: GetUserDto): Promise<void> {
+  async deleteMistakesById(id: number, user: IUser): Promise<void> {
     return this.deleteMistakes(id, user);
   }
 
@@ -121,7 +118,7 @@ export class MistakesService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteMistakes(id: number, user: GetUserDto): Promise<void> {
+  async deleteMistakes(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Mistakes, id);
     if (!deleteResponse.affected) {

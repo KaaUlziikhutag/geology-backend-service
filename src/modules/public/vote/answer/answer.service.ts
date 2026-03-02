@@ -2,21 +2,25 @@ import { Injectable } from '@nestjs/common';
 import { CreateVoteAnswerDto } from './dto/create-answer.dto';
 import { UpdateVoteAnswerDto } from './dto/update-answer.dto';
 import { GetVoteAnswerDto } from './dto/get-answer.dto';
-import { EntityManager, Equal, FindManyOptions } from 'typeorm';
+import { EntityManager, Equal, FindManyOptions, Repository } from 'typeorm';
 import VoteAnswer from './answer.entity';
 import VoteAnswerNotFoundException from './exceptions/answer-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class VoteAnswerService {
   /**
    * @ignore
    */
-  constructor(private moduleRef: ModuleRef) {}
+  constructor(
+    @InjectRepository(VoteAnswer)
+    private readonly voteAnswerRepository: Repository<VoteAnswer>,
+    private moduleRef: ModuleRef,
+  ) {}
 
   private async loadEntityManager(systemId: string): Promise<EntityManager> {
     return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
@@ -28,8 +32,7 @@ export class VoteAnswerService {
    * A method that fetches the Contract from the database
    * @returns A promise with the list of Contract
    */
-  async getAllVoteAnswer(query: GetVoteAnswerDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getAllVoteAnswer(query: GetVoteAnswerDto) {
     const where: FindManyOptions<VoteAnswer>['where'] = {};
     if (query.questionId) {
       where.questionId = Equal(query.questionId);
@@ -46,7 +49,7 @@ export class VoteAnswerService {
         ? Number(query.limit)
         : 10;
     const skip = (page - 1) * limit;
-    const [items, count] = await entityManager.findAndCount(VoteAnswer, {
+    const [items, count] = await this.voteAnswerRepository.findAndCount({
       where,
       order: {
         createdAt: 'DESC',
@@ -66,12 +69,8 @@ export class VoteAnswerService {
    * @example
    * const Access = await AccessService.getAccessById(1);
    */
-  async getVoteAnswerById(
-    voteId: number,
-    user: GetUserDto,
-  ): Promise<VoteAnswer> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const vote = await entityManager.findOne(VoteAnswer, {
+  async getVoteAnswerById(voteId: number): Promise<VoteAnswer> {
+    const vote = await this.voteAnswerRepository.findOne({
       where: { id: voteId },
       relations: ['voteQuestion'],
     });
@@ -86,12 +85,10 @@ export class VoteAnswerService {
    * @param SystemMail createSystemMail
    *
    */
-  async createVoteAnswer(voteAnswer: CreateVoteAnswerDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    voteAnswer.userId = user.workerId;
-    const newVote = entityManager.create(VoteAnswer, voteAnswer);
-    await entityManager.save(newVote);
-    return newVote;
+  async createVoteAnswer(voteAnswer: CreateVoteAnswerDto, user: IUser) {
+    voteAnswer.userId = user.id;
+    const newVote = this.voteAnswerRepository.create(voteAnswer);
+    return await this.voteAnswerRepository.save(newVote);
   }
 
   /**
@@ -99,13 +96,11 @@ export class VoteAnswerService {
    */
   async updateVoteAnswer(
     id: number,
-    user: GetUserDto,
     voteAnswer: UpdateVoteAnswerDto,
   ): Promise<VoteAnswer> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    await entityManager.update(VoteAnswer, id, voteAnswer);
-    const updatedVote = await entityManager.findOne(VoteAnswer, {
-      where: { id: id },
+    await this.voteAnswerRepository.update(id, voteAnswer);
+    const updatedVote = await this.voteAnswerRepository.findOne({
+      where: { id },
     });
     if (updatedVote) {
       return updatedVote;
@@ -116,17 +111,16 @@ export class VoteAnswerService {
   /**
    * @deprecated Use deleteContract instead
    */
-  async deleteVoteAnswerById(id: number, user: GetUserDto): Promise<void> {
-    return this.deleteVoteAnswer(id, user);
+  async deleteVoteAnswerById(id: number): Promise<void> {
+    return this.deleteVoteAnswer(id);
   }
 
   /**
    * A method that deletes a contract from the database
    * @param id An id of a contract. A contract with this id should exist in the database
    */
-  async deleteVoteAnswer(id: number, user: GetUserDto): Promise<void> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const deleteResponse = await entityManager.delete(VoteAnswer, id);
+  async deleteVoteAnswer(id: number): Promise<void> {
+    const deleteResponse = await this.voteAnswerRepository.delete(id);
     if (!deleteResponse.affected) {
       throw new VoteAnswerNotFoundException(id);
     }

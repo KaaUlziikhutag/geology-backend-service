@@ -5,11 +5,11 @@ import { GetAwardDto } from './dto/get-awards.dto';
 import { EntityManager, Equal, FindManyOptions } from 'typeorm';
 import Awards from './awards.entity';
 import AwardNotFoundException from './exceptions/awards-not-found.exception';
-import { PageDto } from '../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../cloud/user/dto/get-user.dto';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class AwardService {
@@ -28,7 +28,7 @@ export class AwardService {
    * A method that fetches the Award from the database
    * @returns A promise with the list of Awards
    */
-  async getAllAwards(query: GetAwardDto, user: GetUserDto) {
+  async getAllAwards(query: GetAwardDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Awards>['where'] = {};
     if (query.userId) {
@@ -64,7 +64,7 @@ export class AwardService {
    * @example
    * const Award = await AwardService.getAwardById(1);
    */
-  async getAwardById(awardId: number, user: GetUserDto): Promise<Awards> {
+  async getAwardById(awardId: number, user: IUser): Promise<Awards> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const award = await entityManager.findOne(Awards, {
       where: { id: awardId },
@@ -80,9 +80,9 @@ export class AwardService {
    * @param Award createAward
    *
    */
-  async createAward(award: CreateAwardDto, user: GetUserDto) {
+  async createAward(award: CreateAwardDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
-    award.authorId = user.workerId;
+    award.authorId = user.id;
     const newAwards = entityManager.create(Awards, award);
     await entityManager.save(newAwards);
     return newAwards;
@@ -93,7 +93,7 @@ export class AwardService {
    */
   async updateAward(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     award: UpdateAwardDto,
   ): Promise<Awards> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -110,7 +110,7 @@ export class AwardService {
   /**
    * @deprecated Use deleteAward instead
    */
-  async deleteAwardById(id: number, user: GetUserDto): Promise<void> {
+  async deleteAwardById(id: number, user: IUser): Promise<void> {
     return this.deleteAward(id, user);
   }
 
@@ -118,7 +118,7 @@ export class AwardService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteAward(id: number, user: GetUserDto): Promise<void> {
+  async deleteAward(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(Awards, id);
     if (!deleteResponse.affected) {

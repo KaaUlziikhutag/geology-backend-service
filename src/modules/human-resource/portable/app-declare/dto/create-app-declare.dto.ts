@@ -6,7 +6,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { StateType } from '../../../../../utils/globalUtils';
+import { StateType } from '@utils/enum-utils';
 export class CreateAppDeclareDto {
   @IsOptional()
   @IsNumber()

@@ -21,9 +21,6 @@ export class UsersService {
    */
   async getAllUsers(query: GetUsers) {
     const where: FindManyOptions<Users>['where'] = {};
-    if (query.role) {
-      where.role = Equal(query.role);
-    }
     return await this.userRepository.find({
       where,
       order: {

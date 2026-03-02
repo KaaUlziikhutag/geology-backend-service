@@ -8,11 +8,10 @@ import { GetHolidayDto } from './dto/get-holiday.dto';
 import { Between, EntityManager, Equal, FindManyOptions, In } from 'typeorm';
 import Holiday from './entities/holiday.entity';
 import HolidayNotFoundException from './exceptions/holiday-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../cloud/user/dto/get-user.dto';
 import HolidayByuser from './entities/holiday-byuser.entity';
 import HolidayShift from './entities/holiday-shift.entity';
 import Worker from '../member/worker/worker.entity';
@@ -21,10 +20,11 @@ import {
   AppointmentStatusType,
   DateType,
   WorkType,
-} from '../../../utils/globalUtils';
+} from '@utils/enum-utils';
 import Human from '../member/human/human.entity';
 import HolidayClose from './entities/holiday-close.entity';
 import Trees from '../tree/tree.entity';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class HolidayService {
@@ -43,7 +43,7 @@ export class HolidayService {
    * A method that fetches the Holiday from the database
    * @returns A promise with the list of Holidays
    */
-  async getAllHolidays(query: GetHolidayDto, user: GetUserDto) {
+  async getAllHolidays(query: GetHolidayDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Holiday>['where'] = {};
     if (query.authorId) {
@@ -92,7 +92,7 @@ export class HolidayService {
     }
 
     if (query.accessType == AccessType.Simple) {
-      where.holidayByusers = [{ userId: Equal(user.workerId) }];
+      where.holidayByusers = [{ userId: Equal(user.id) }];
     }
     const page =
       query.page && !isNaN(query.page) && query.page > 0
@@ -125,7 +125,7 @@ export class HolidayService {
     return new PageDto(items, pageMetaDto);
   }
 
-  async getAllShift(query: GetHolidayDto, user: GetUserDto) {
+  async getAllShift(query: GetHolidayDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<HolidayShift>['where'] = {};
     if (query.authorId) {
@@ -176,7 +176,7 @@ export class HolidayService {
    * @example
    * const Holiday = await HolidayService.getHolidayById(1);
    */
-  async getHolidayById(holidayId: number, user: GetUserDto): Promise<Holiday> {
+  async getHolidayById(holidayId: number, user: IUser): Promise<Holiday> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const holiday = await entityManager.findOne(Holiday, {
       where: { id: holidayId },
@@ -198,13 +198,13 @@ export class HolidayService {
    * @param Holiday createHoliday
    *
    */
-  async createHoliday(holiday: CreateHolidayDto, user: GetUserDto) {
+  async createHoliday(holiday: CreateHolidayDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const createdHolidays = [];
     if (holiday.workerIds && holiday.workerIds.length > 0) {
       for (const id of holiday.workerIds) {
-        holiday.authorId = user.workerId;
-        holiday.authorName = `${user.lastName} ${user.firstName}`;
+        holiday.authorId = user.id;
+        // holiday.authorName = `${user.lastName} ${user.firstName}`;
         const holidayData: Partial<Holiday> = { ...holiday };
         const userWorker = await entityManager.findOne(Worker, {
           where: { id: holiday.holderId },
@@ -235,7 +235,7 @@ export class HolidayService {
         // Create holidayShift
         const newHolidayShift = entityManager.create(HolidayShift, {
           itemId: newHoliday.id,
-          comId: user.companyId,
+          comId: null,
           senderId: id,
           holidayType: newHoliday.holidayType,
           authorId: newHoliday.holderId,
@@ -254,7 +254,7 @@ export class HolidayService {
    */
   async updateHoliday(
     id: number,
-    user: GetUserDto,
+    user: IUser,
     holiday: UpdateHolidayDto,
   ): Promise<Holiday> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -288,7 +288,7 @@ export class HolidayService {
 
   async updateHolidayConfirm(
     ids: number[],
-    user: GetUserDto,
+    user: IUser,
     holiday: UpdateHolidayDto,
   ): Promise<UpdatedHolidayWithShift[]> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -296,7 +296,7 @@ export class HolidayService {
       where: { id: holiday.authorId },
     });
     holiday.holderAppName = worker?.appName;
-    holiday.confirmId = user.workerId;
+    holiday.confirmId = user.id;
     holiday.confirmDate = new Date();
     holiday.holidayType = AppointmentStatusType.Comfirm;
     const updatedResults: UpdatedHolidayWithShift[] = [];
@@ -307,8 +307,8 @@ export class HolidayService {
       });
       const newHolidayShift = await entityManager.create(HolidayShift, {
         itemId: id,
-        confirmId: user.workerId,
-        comId: user.companyId,
+        confirmId: user.id,
+        comId: null,
         authorId: updatedHoliday.holderId,
         holidayType: updatedHoliday.holidayType,
         authorName: updatedHoliday.holderUserName,
@@ -346,7 +346,7 @@ export class HolidayService {
 
   async updateHolidayTransfer(
     ids: number[],
-    user: GetUserDto,
+    user: IUser,
     holiday: UpdateHolidayDto,
   ): Promise<UpdatedHolidayWithShift[]> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -374,7 +374,7 @@ export class HolidayService {
       const newHolidayShiftData = await entityManager.create(HolidayShift, {
         itemId: updatedHoliday.id,
         shiftDate: new Date(),
-        comId: user.companyId,
+        comId: null,
         holidayType: AppointmentStatusType.Transfer,
         authorId: updatedHoliday.authorId,
         note: reveiverData.note,
@@ -385,7 +385,7 @@ export class HolidayService {
       const newHolidayShift = await entityManager.create(HolidayShift, {
         itemId: updatedHoliday.id,
         shiftDate: new Date(),
-        comId: user.companyId,
+        comId: null,
         holidayType: AppointmentStatusType.Expected,
         authorId: updatedHoliday.holderId,
         note: updatedHoliday.note,
@@ -406,7 +406,7 @@ export class HolidayService {
 
   async updateHolidayCancelled(
     ids: number[],
-    user: GetUserDto,
+    user: IUser,
     holiday: UpdateHolidayDto,
   ): Promise<UpdatedHolidayWithShift[]> {
     const entityManager = await this.loadEntityManager(user.dataBase);
@@ -422,7 +422,7 @@ export class HolidayService {
       const newHolidayShift = await entityManager.create(HolidayShift, {
         itemId: updatedHoliday.id,
         shiftDate: new Date(),
-        comId: user.companyId,
+        comId: null,
         authorId: updatedHoliday.authorId,
         holidayType: updatedHoliday.holidayType,
         authorName: updatedHoliday.authorName,
@@ -460,7 +460,7 @@ export class HolidayService {
   /**
    * @deprecated Use deleteHoliday instead
    */
-  async deleteHolidayById(id: number, user: GetUserDto): Promise<void> {
+  async deleteHolidayById(id: number, user: IUser): Promise<void> {
     return this.deleteHoliday(id, user);
   }
 
@@ -468,7 +468,7 @@ export class HolidayService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteHoliday(id: number, user: GetUserDto): Promise<void> {
+  async deleteHoliday(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.softDelete(Holiday, id);
     if (!deleteResponse.affected) {

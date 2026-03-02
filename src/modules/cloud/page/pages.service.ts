@@ -6,10 +6,10 @@ import { getEntityManagerToken } from '@nestjs/typeorm';
 import { EntityManager, FindManyOptions, ILike } from 'typeorm';
 import Pages from './pages.entity';
 import PagesNotFoundException from './exceptions/pages-not-found.exception';
-import { PageDto } from '../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import GetUserDto from '../user/dto/get-user.dto';
+import IUser from '../user/interface/user.interface';
 
 @Injectable()
 export class PagesService {
@@ -28,7 +28,7 @@ export class PagesService {
    * A method that fetches the companies from the database
    * @returns A promise with the list of Pagess
    */
-  async getAllPagess(query: GetPagesDto, user: GetUserDto) {
+  async getAllPagess(query: GetPagesDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Pages>['where'] = {};
     if (query.name) {
@@ -59,7 +59,7 @@ export class PagesService {
    * @example
    * const Pages = await PagesService.getPagesById(1);
    */
-  async getPagesById(pagesId: number, user: GetUserDto): Promise<Pages> {
+  async getPagesById(pagesId: number, user: IUser): Promise<Pages> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const pages = await entityManager.findOne(Pages, {
       where: { id: pagesId },
@@ -75,7 +75,7 @@ export class PagesService {
    * @param Pages createPages
    *
    */
-  async createPages(pages: CreatePagesDto, user: GetUserDto) {
+  async createPages(pages: CreatePagesDto, user: IUser) {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const newPages = entityManager.create(Pages, pages);
     await entityManager.save(newPages);
@@ -88,7 +88,7 @@ export class PagesService {
   async updatePages(
     id: number,
     pages: UpdatePagesDto,
-    user: GetUserDto,
+    user: IUser,
   ): Promise<Pages> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     await entityManager.update(Pages, id, pages);
@@ -104,7 +104,7 @@ export class PagesService {
   /**
    * @deprecated Use deletePages instead
    */
-  async deletePagesById(id: number, user: GetUserDto): Promise<void> {
+  async deletePagesById(id: number, user: IUser): Promise<void> {
     return this.deletePages(id, user);
   }
 
@@ -112,7 +112,7 @@ export class PagesService {
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deletePages(id: number, user: GetUserDto): Promise<void> {
+  async deletePages(id: number, user: IUser): Promise<void> {
     const entityManager = await this.loadEntityManager(user.dataBase);
     const deleteResponse = await entityManager.delete(Pages, id);
     if (!deleteResponse.affected) {

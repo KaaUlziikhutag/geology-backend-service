@@ -1,4 +1,4 @@
-import { FileDto } from '../../../../utils/globalUtils';
+import { RelationIdDto } from '@utils/dto/relation-id.dto';
 import {
   Column,
   Entity,
@@ -41,7 +41,7 @@ export default class Trainings extends BaseEntity {
   serNumber: number;
 
   @Column({ type: 'jsonb', name: 'fileIds', nullable: true })
-  public fileIds: FileDto[]; // FILE UPLOAD
+  public fileIds: RelationIdDto[]; // FILE UPLOAD
 
   @Column({ name: 'start_date', type: 'timestamptz', nullable: true })
   startDate: Date;

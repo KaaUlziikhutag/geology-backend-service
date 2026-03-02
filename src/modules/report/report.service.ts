@@ -26,6 +26,7 @@ import SectionCustomer from '../reference/section-customer/section-customer.enti
 import { ReceiptStatus } from '../../utils/enum-utils';
 import Customer from '../customer/customer.entity';
 import ISectionCustomer from './interface/section-customer.interface';
+import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class ReportService {
@@ -53,8 +54,8 @@ export class ReportService {
     });
   }
   /** Үйлчлүүлэгчийн нэхэмжлэл */
-  async reportInvoice(user: GetUserDto, invoice: InvoiceDto): Promise<string> {
-    const company = await this.companyService.getCompanyById(user.companyId);
+  async reportInvoice(user: IUser, invoice: InvoiceDto): Promise<string> {
+    const company = await this.companyService.getCompanyById(1);
     const appointment = await this.appointmentService.getAppointmentById(
       invoice.appointmentId,
     );
@@ -93,7 +94,7 @@ export class ReportService {
     return await ejs.renderFile(this.templatePath + 'invoice.ejs', payload);
   }
   /** Ажлын гүцэтгэлийн тайлан шинжилгээний төрлөөр */
-  async reportSectionProduct(user: GetUserDto, query: GetSectionDto) {
+  async reportSectionProduct(query: GetSectionDto) {
     const { startAt: yearFromAt, endAt: yearToAt } = getYearDates(
       query.reportAt,
     );
@@ -159,7 +160,7 @@ export class ReportService {
     });
   }
   /** Ажлын нэгдсэн гүйцэтгэл харилцагчийн бүлэгээр */
-  async reportSectionCustomer(user: GetUserDto, query: GetSectionDto) {
+  async reportSectionCustomer(query: GetSectionDto) {
     const { startAt: yearFromAt, endAt: yearToAt } = getYearDates(
       query.reportAt,
     );
@@ -260,18 +261,18 @@ export class ReportService {
     const content = await this.reportAppointment(id);
     return await generatePdf(content);
   }
-  async pdfInvoice(user: GetUserDto, invoice: InvoiceDto): Promise<Uint8Array> {
+  async pdfInvoice(user: IUser, invoice: InvoiceDto): Promise<Uint8Array> {
     const content = await this.reportInvoice(user, invoice);
     return await generatePdf(content);
   }
-  async pdfJobPerformance(user: GetUserDto): Promise<Uint8Array> {
+  async pdfJobPerformance(): Promise<Uint8Array> {
     const content = await ejs.renderFile(
       this.templatePath + 'job-performance.ejs',
     );
     return await generatePdf(content);
   }
 
-  // async getMineralReport(user: GetUserDto, ): Promise<string> {
+  // async getMineralReport(user: IUser, ): Promise<string> {
 
   // }
 }

@@ -9,7 +9,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import SignatureViewUser from './view-users/view-users.entity';
-import { FileDto } from '../../../utils/globalUtils';
+import { RelationIdDto } from '@utils/dto/relation-id.dto';
 
 @Entity('mail_signature_i')
 export default class Signature extends BaseEntity {
@@ -41,7 +41,7 @@ export default class Signature extends BaseEntity {
   date: Date; //Огноо
 
   @Column({ type: 'jsonb', name: 'fileIds', nullable: true })
-  public fileIds: FileDto[]; // FILE UPLOAD
+  public fileIds: RelationIdDto[]; // FILE UPLOAD
 
   @Column({ name: 'is_standart', default: false, nullable: true })
   public isStandart: boolean; //Стандарт гарын үсэг эсэх

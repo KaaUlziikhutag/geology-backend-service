@@ -2,21 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { CreateMainScheduleDto } from './dto/create-main-schedule.dto';
 import { UpdateMainScheduleDto } from './dto/update-main-schedule.dto';
 import { GetMainScheduleDto } from './dto/get-main-schedule.dto';
-import { EntityManager, Equal, FindManyOptions } from 'typeorm';
+import { EntityManager, Equal, FindManyOptions, Repository } from 'typeorm';
 import MainSchedules from './main-schedule.entity';
 import MainScheduleNotFoundException from './exceptions/main-schedule-not-found.exception';
-import { PageDto } from '../../../../../utils/dto/page.dto';
-import { PageMetaDto } from '../../../../../utils/dto/pageMeta.dto';
+import PageDto from '@utils/dto/page.dto';
+import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import GetUserDto from '../../../../cloud/user/dto/get-user.dto';
+import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class MainScheduleService {
   /**
    * @ignore
    */
-  constructor(private moduleRef: ModuleRef) {}
+  constructor(
+    @InjectRepository(MainSchedules)
+    private readonly mainScheduleRepository: Repository<MainSchedules>,
+    private moduleRef: ModuleRef,
+  ) {}
 
   private async loadEntityManager(systemId: string): Promise<EntityManager> {
     return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
@@ -28,8 +31,7 @@ export class MainScheduleService {
    * A method that fetches the MainSchedule from the database
    * @returns A promise with the list of MainSchedules
    */
-  async getAllMainSchedules(query: GetMainScheduleDto, user: GetUserDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async getAllMainSchedules(query: GetMainScheduleDto) {
     const where: FindManyOptions<MainSchedules>['where'] = {};
     if (query.directId) {
       where.directId = Equal(query.directId);
@@ -43,7 +45,7 @@ export class MainScheduleService {
         ? Number(query.limit)
         : 10;
     const skip = (page - 1) * limit;
-    const [items, count] = await entityManager.findAndCount(MainSchedules, {
+    const [items, count] = await this.mainScheduleRepository.findAndCount({
       where,
       order: {
         day: 'DESC',
@@ -62,12 +64,8 @@ export class MainScheduleService {
    * @example
    * const MainSchedule = await MainScheduleService.getMainScheduleById(1);
    */
-  async getMainScheduleById(
-    mainScheduleId: number,
-    user: GetUserDto,
-  ): Promise<MainSchedules> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const mainSchedule = await entityManager.findOne(MainSchedules, {
+  async getMainScheduleById(mainScheduleId: number): Promise<MainSchedules> {
+    const mainSchedule = await this.mainScheduleRepository.findOne({
       where: { id: mainScheduleId },
     });
     if (mainSchedule) {
@@ -81,13 +79,9 @@ export class MainScheduleService {
    * @param MainSchedule createMainSchedule
    *
    */
-  async createMainSchedule(
-    mainSchedule: CreateMainScheduleDto,
-    user: GetUserDto,
-  ) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const newMainSchedule = entityManager.create(MainSchedules, mainSchedule);
-    await entityManager.save(newMainSchedule);
+  async createMainSchedule(mainSchedule: CreateMainScheduleDto) {
+    const newMainSchedule = this.mainScheduleRepository.create(mainSchedule);
+    await this.mainScheduleRepository.save(newMainSchedule);
     return newMainSchedule;
   }
 
@@ -96,12 +90,10 @@ export class MainScheduleService {
    */
   async updateMainSchedule(
     id: number,
-    user: GetUserDto,
     mainSchedule: UpdateMainScheduleDto,
   ): Promise<MainSchedules> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    await entityManager.update(MainSchedules, id, mainSchedule);
-    const updatedMainSchedule = await entityManager.findOne(MainSchedules, {
+    await this.mainScheduleRepository.update(id, mainSchedule);
+    const updatedMainSchedule = await this.mainScheduleRepository.findOne({
       where: { id: id },
     });
     if (updatedMainSchedule) {
@@ -113,17 +105,16 @@ export class MainScheduleService {
   /**
    * @deprecated Use deleteMainSchedule instead
    */
-  async deleteMainScheduleById(id: number, user: GetUserDto): Promise<void> {
-    return this.deleteMainSchedule(id, user);
+  async deleteMainScheduleById(id: number): Promise<void> {
+    return this.deleteMainSchedule(id);
   }
 
   /**
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteMainSchedule(id: number, user: GetUserDto): Promise<void> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const deleteResponse = await entityManager.delete(MainSchedules, id);
+  async deleteMainSchedule(id: number): Promise<void> {
+    const deleteResponse = await this.mainScheduleRepository.delete(id);
     if (!deleteResponse.affected) {
       throw new MainScheduleNotFoundException(id);
     }

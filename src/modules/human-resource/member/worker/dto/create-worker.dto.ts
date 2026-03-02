@@ -13,7 +13,7 @@ import {
   TemporaryOptions,
   TimeAccessType,
   WorkType,
-} from '../../../../../utils/globalUtils';
+} from '@utils/enum-utils';
 export class CreateWorkerDto {
   @IsOptional()
   @IsNumber()
