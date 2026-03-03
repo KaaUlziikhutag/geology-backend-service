@@ -11,11 +11,11 @@ import {
 import MineralType from '../reference/mineral-type/mineral-type.entity';
 import Element from '../reference/element/element.entity';
 import Laboratory from '../reference/laboratory/laboratory.entity';
-import Product from '../product/product.entity';
 import Technology from '../reference/technology/technology.entity';
 // import Decision from '../decision/decision.entity';
 import Order from '../order/order.entity';
 import Inner from '@modules/decision/inner/inner.entity';
+import Product from '@modules/inventory/product/product.entity';
 
 @Entity('prices')
 export default class Price extends BaseEntity {
@@ -37,7 +37,7 @@ export default class Price extends BaseEntity {
   @Column({ name: 'product_id' })
   productId: number;
   @JoinColumn({ name: 'product_id' })
-  @ManyToOne(() => Product, (product) => product.prices)
+  @ManyToOne(() => Product)
   product?: Relation<Product>;
 
   @Column({ name: 'mineral_type_id', nullable: true })

@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import Contract from './contract.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ContractService } from './contract.service';
-import { ProductModule } from '../product/product.module';
 import { ContractController } from './contract.controller';
 import { DiscountModule } from '../reference/discount/discount.module';
 import { ConfigModule } from '@nestjs/config';
@@ -16,7 +15,6 @@ import { ViewUsersModule } from './view-users/view-users.module';
   imports: [
     TypeOrmModule.forFeature([Contract]),
     ConfigModule,
-    ProductModule,
     DiscountModule,
     DelegateOurModule,
     DelegateOutModule,

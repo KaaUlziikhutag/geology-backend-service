@@ -1,10 +1,16 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBooleanString, IsIn, IsOptional, IsString } from 'class-validator';
+import {
+  IsBooleanString,
+  IsIn,
+  IsInt,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { PageOptionsDto } from '@utils/dto/page-options.dto';
 
 export default class GetProductDto extends PageOptionsDto {
   @ApiPropertyOptional()
-  @IsString()
+  @IsInt()
   @IsOptional()
   categoryId: number;
 

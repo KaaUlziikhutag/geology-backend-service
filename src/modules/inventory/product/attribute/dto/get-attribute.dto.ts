@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsUUID } from 'class-validator';
+import { IsInt, IsOptional, IsUUID } from 'class-validator';
 
 export default class GetAttributeDto {
   @ApiProperty()
-  @IsUUID()
+  @IsInt()
   @IsOptional()
   categoryId: number;
 }

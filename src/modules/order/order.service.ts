@@ -105,7 +105,7 @@ export class OrderService {
     if (query.sectionId) {
       where.price = {
         product: {
-          sectionId: Equal(query.sectionId),
+          // sectionId: Equal(query.sectionId),
         },
       };
     }

@@ -56,13 +56,7 @@ export default class ProductService {
       where,
       skip,
       take: limit,
-      relations: [
-        'categories',
-        'brand',
-        'mall',
-        'variants.attributeValues.attribute',
-        'images',
-      ],
+      relations: ['categories', 'variants.attributeValues.attribute'],
       order, // Added default sorting
     });
 
@@ -91,8 +85,8 @@ export default class ProductService {
     if (dto.type == ProductType.variable) {
       const newProduct = this.productRepository.create({
         ...dto,
-        // price: dto.variants[0].price,
-        // discountPrice: dto.variants[0].discountPrice,
+        price: dto.variants[0].price,
+        discountPrice: dto.variants[0].discountPrice,
       });
       return await this.productRepository.save(newProduct);
     } else {
@@ -102,6 +96,9 @@ export default class ProductService {
           this.variantRepository.create({
             name: dto.name,
             sku: dto.sku,
+            price: dto.price,
+            discountPrice: dto.discountPrice,
+            stock: dto.stock,
             attributeValues: dto.attributeValues,
           }),
         ],

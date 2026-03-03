@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsEnum,
+  IsNumber,
   IsOptional,
   IsString,
   ValidateIf,
@@ -40,6 +41,21 @@ export class CreateProductDto {
   @ValidateIf((o) => o.type == ProductType.single)
   @IsString()
   sku: string;
+
+  @ApiPropertyOptional()
+  @ValidateIf((o) => o.type == ProductType.single)
+  @IsNumber()
+  stock: number;
+
+  @ApiPropertyOptional()
+  @ValidateIf((o) => o.type == ProductType.single)
+  @IsNumber()
+  price: number;
+
+  @ApiPropertyOptional()
+  @ValidateIf((o) => o.type == ProductType.single)
+  @IsNumber()
+  discountPrice: number;
 
   @ApiPropertyOptional({ type: [RelationIdDto] })
   @ValidateIf((o) => o.type == ProductType.single)

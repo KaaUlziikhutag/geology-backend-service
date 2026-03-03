@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import Measurement from '../reference/measurement/measurement.entity';
-import Product from '../product/product.entity';
 import Element from '../reference/element/element.entity';
+import Product from '@modules/inventory/product/product.entity';
 /** Үзүүлэлт */
 @Entity('indicators')
 export default class Indicator extends BaseEntity {

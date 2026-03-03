@@ -3,28 +3,14 @@ import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
 import { GetContractDto } from './dto/get-contract.dto';
 import { GetValidContractDto } from './dto/get-valid-contract.dto';
-import {
-  Between,
-  EntityManager,
-  Equal,
-  FindManyOptions,
-  In,
-  Not,
-  Repository,
-} from 'typeorm';
+import { Between, Equal, FindManyOptions, In, Not, Repository } from 'typeorm';
 import Contract from './contract.entity';
 import ContractNotFoundException from './exceptions/contract-not-found.exception';
 import PageDto from '@utils/dto/page.dto';
 import PageMetaDto from '@utils/dto/page-meta.dto';
-import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
-import ContractViewUser from './view-users/view-users.entity';
-import ContractDelegateOur from './delegate-our/delegate-our.entity';
-import ContractDelegateOut from './delegate-out/delegate-out.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 import { AccessType, ContractState, DateType } from '@utils/enum-utils';
-import { ProductService } from '../product/product.service';
 import { DiscountService } from '../reference/discount/discount.service';
-import Trees from '../human-resource/tree/tree.entity';
 import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
@@ -35,16 +21,9 @@ export class ContractService {
   constructor(
     @InjectRepository(Contract)
     private readonly contractRepository: Repository<Contract>,
-    private readonly productService: ProductService,
     private readonly discountService: DiscountService,
-    private moduleRef: ModuleRef,
   ) {}
 
-  private async loadEntityManager(systemId: string): Promise<EntityManager> {
-    return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
-      strict: false,
-    });
-  }
   /**
    * A method that fetches the Contract from the database
    * @returns A promise with the list of Contract
@@ -170,14 +149,14 @@ export class ContractService {
     // contract.comId = user.companyId;
     // fetch optional products/discounts if provided
     if (contract.productIds && contract.productIds.length > 0) {
-      const products = await this.productService.getProducts({
-        ids: contract.productIds,
-      });
-      if (products.length === 0) {
-        throw new BadRequestException('Үйлчилгээнүүд буруу байна!');
-      }
+      // const products = await this.productService.getProducts({
+      //   ids: contract.productIds,
+      // });
+      // if (products.length === 0) {
+      //   throw new BadRequestException('Үйлчилгээнүүд буруу байна!');
+      // }
       // @ts-ignore
-      contract.products = products;
+      // contract.products = products;
     }
     if (contract.discountIds && contract.discountIds.length > 0) {
       const discounts = await this.discountService.getAllDiscount({
@@ -333,11 +312,11 @@ export class ContractService {
     Object.assign(existingContract, contract);
     // handle products/discounts on update
     if (contract.productIds && contract.productIds.length > 0) {
-      const products = await this.productService.getProducts({
-        ids: contract.productIds,
-      });
-      // @ts-ignore
-      existingContract.products = products;
+      // const products = await this.productService.getProducts({
+      //   ids: contract.productIds,
+      // });
+      // // @ts-ignore
+      // existingContract.products = products;
     }
     if (contract.discountIds && contract.discountIds.length > 0) {
       const discounts = await this.discountService.getAllDiscount({

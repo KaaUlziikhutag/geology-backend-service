@@ -1,4 +1,3 @@
-import Product from '../../product/product.entity';
 import {
   BaseEntity,
   Column,
@@ -17,7 +16,4 @@ export default class SectionProduct extends BaseEntity {
 
   @Column('varchar', { length: 255 })
   name: string;
-
-  @OneToMany(() => Product, (product) => product.section)
-  products?: Product[];
 }

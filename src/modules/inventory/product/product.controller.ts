@@ -22,7 +22,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import UpdateProductDto from './dto/update-product.dto';
 
 @Controller('product')
-@ApiTags('Бараа')
+@ApiTags('Бүтээгдэхүүн')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard('api-key'))
 export default class ProductController {

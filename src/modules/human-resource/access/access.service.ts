@@ -2,22 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { CreateAccessDto } from './dto/create-access.dto';
 import { UpdateAccessDto } from './dto/update-access.dto';
 import { GetAccessDto } from './dto/get-access.dto';
-import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
-import {
-  EntityManager,
-  Equal,
-  FindManyOptions,
-  Not,
-  Repository,
-} from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Equal, FindManyOptions, Not, Repository } from 'typeorm';
 import Access from './access.entity';
 import AccessNotFoundException from './exceptions/access-not-found.exception';
 import PageDto from '@utils/dto/page.dto';
 import PageMetaDto from '@utils/dto/page-meta.dto';
-import { ModuleRef } from '@nestjs/core';
 import { ProgramService } from '../../cloud/programs/program.service';
-import { ModuleService } from '../../cloud/module/modules.service';
 import IUser from '@modules/cloud/user/interface/user.interface';
+import { ModuleService } from '@modules/cloud/module/modules.service';
 
 @Injectable()
 export class AccessService {
@@ -26,9 +19,9 @@ export class AccessService {
    */
   constructor(
     @InjectRepository(Access)
-    private accessRepository: Repository<Access>,
+    private readonly accessRepository: Repository<Access>,
     private readonly programService: ProgramService,
-    private readonly modulService: ModuleService,
+    private readonly moduleService: ModuleService,
   ) {}
 
   /**
@@ -85,55 +78,51 @@ export class AccessService {
   }
 
   async getAccessByWorkId(workerId: number): Promise<any[]> {
-    try {
-      const accessList = await this.accessRepository.find({
-        where: { workerId: workerId, modId: 0 },
-      });
-      const programs = [];
-      await Promise.all(
-        accessList.map(async (access) => {
-          const program = await this.programService.getProgramById(
-            access.proId,
-          );
-          const modules = [];
+    const accessList = await this.accessRepository.find({
+      where: { workerId, modId: 0 },
+      order: { proId: 'ASC' },
+    });
 
-          const modeleList = await this.accessRepository.find({
-            where: { workerId: workerId, proId: access.proId, modId: Not(0) },
-          });
+    const programs = await Promise.all(
+      accessList.map(async (access) => {
+        const [program, moduleAccesses] = await Promise.all([
+          this.programService.getProgramById(access.proId),
+          this.accessRepository.find({
+            where: { workerId, proId: access.proId, modId: Not(0) },
+          }),
+        ]);
 
-          await Promise.all(
-            modeleList.map(async (module) => {
-              const mod = await this.modulService.getModuleById(module.modId);
-              const modItem = {
-                id: module.id,
-                title: mod.title,
-                access: module.access,
-                pos: mod.pos,
-              };
-              modules.push(modItem);
-            }),
-          );
+        const modules = await Promise.all(
+          moduleAccesses.map(async (moduleAccess) => {
+            const moduleInfo = await this.moduleService.getModuleById(
+              moduleAccess.modId,
+            );
 
-          const item = {
-            id: program.id,
-            accessId: access.id,
-            name: program.title,
-            intro: program.intro,
-            access: access.access,
-            modules: modules,
-            pos: program.pos,
-          };
+            return {
+              id: moduleAccess.id,
+              title: moduleInfo.title,
+              access: moduleAccess.access,
+              pos: moduleInfo.pos,
+            };
+          }),
+        );
 
-          programs.push(item);
-        }),
-      );
+        modules.sort((a, b) => a.pos - b.pos);
 
-      programs.sort((a, b) => a.pos - b.pos);
-      return programs;
-    } catch (error) {
-      console.error(`Error fetching access for workerId ${workerId}:`, error);
-      throw new Error(`Failed to get access by work ID: ${workerId}`);
-    }
+        return {
+          id: program.id,
+          accessId: access.id,
+          name: program.title,
+          intro: program.intro,
+          access: access.access,
+          modules,
+          pos: program.pos,
+        };
+      }),
+    );
+
+    programs.sort((a, b) => a.pos - b.pos);
+    return programs;
   }
 
   /**

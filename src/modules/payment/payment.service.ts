@@ -192,35 +192,35 @@ export class PaymentService {
     const groupByTaxType = (orders: Order[]): ReceiptDto[] => {
       const groupedResult: { [key: string]: ReceiptDto } = {};
       orders.forEach((item) => {
-        const { taxType, name, classification } = item.price.product;
+        // const { taxType, name, classification } = item.price.product;
         const { paidAmount, quantity, unitPrice, discountAmount } = item;
         // if this taxtType бүлэглэсэн үр дүнд байхгүй бол оруулна
-        if (!groupedResult[taxType]) {
-          groupedResult[taxType] = {
-            totalAmount: 0,
-            totalVAT: 0,
-            totalCityTax: 0,
-            taxType: taxType,
-            merchantTin: '' + `company.ebarimtTin`,
-            bankAccountNo: '',
-            items: [],
-          };
-        }
-        groupedResult[taxType].totalAmount += Math.floor(paidAmount);
-        groupedResult[taxType].totalVAT += Math.floor(paidAmount) / 11;
-        groupedResult[taxType].items.push({
-          name: name,
-          barCode: '',
-          barCodeType: 'UNDEFINED',
-          classificationCode: classification.code,
-          taxProductCode: '',
-          qty: quantity,
-          totalAmount: paidAmount,
-          measureUnit: 'ш',
-          unitPrice: Math.floor(unitPrice) - Math.floor(discountAmount),
-          totalVAT: paidAmount / 11,
-          totalCityTax: 0,
-        });
+        // if (!groupedResult[taxType]) {
+        //   groupedResult[taxType] = {
+        //     totalAmount: 0,
+        //     totalVAT: 0,
+        //     totalCityTax: 0,
+        //     taxType: taxType,
+        //     merchantTin: '' + `company.ebarimtTin`,
+        //     bankAccountNo: '',
+        //     items: [],
+        //   };
+        // }
+        // groupedResult[taxType].totalAmount += Math.floor(paidAmount);
+        // groupedResult[taxType].totalVAT += Math.floor(paidAmount) / 11;
+        // groupedResult[taxType].items.push({
+        //   name: name,
+        //   barCode: '',
+        //   barCodeType: 'UNDEFINED',
+        //   classificationCode: classification.code,
+        //   taxProductCode: '',
+        //   qty: quantity,
+        //   totalAmount: paidAmount,
+        //   measureUnit: 'ш',
+        //   unitPrice: Math.floor(unitPrice) - Math.floor(discountAmount),
+        //   totalVAT: paidAmount / 11,
+        //   totalCityTax: 0,
+        // });
       });
       return Object.values(groupedResult);
     };
