@@ -24,7 +24,7 @@ import { ResponseSuccess } from '@utils/dto/response.dto';
 import { IResponse } from '@utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
-import RequestWithUser from '../../../authentication/interface/request-with-user.interface';
+import type RequestWithUser from '@modules/authentication/interface/request-with-user.interface';
 
 @Controller('time-access-repeat')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -38,7 +38,6 @@ export class RepeatController {
     @Query() query: GetRepeatDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
       const data = await this.repeatService.getAllRepeat(query);
       return new ResponseSuccess('GET_REPEAT.SUCCESS', data);
     } catch (error) {
@@ -83,7 +82,6 @@ export class RepeatController {
     @Body() repeat: CreateRepeatDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
       const data = await this.repeatService.createRepeat(repeat);
       return new ResponseSuccess('CREATE_REPEAT.SUCCESS', data);
     } catch (error) {
@@ -103,7 +101,6 @@ export class RepeatController {
       const data = await this.repeatService.updateRepeat(id, repeat);
       return new ResponseSuccess('UPDATE_REPEAT.SUCCESS', data);
     } catch (error) {
-      console.log('------------------>', error);
       throw new BadRequestException(error);
     }
   }

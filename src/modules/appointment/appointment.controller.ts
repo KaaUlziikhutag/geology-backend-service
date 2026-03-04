@@ -24,7 +24,7 @@ import { ApiPaginatedResponse } from '../../utils/api-paginated-response.decorat
 import CreateAppointmentDto from './dto/create-appointment.dto';
 import UpdateAppointmentDto from './dto/update-appointment.dto';
 import { ApiTags } from '@nestjs/swagger';
-import RequestWithUser from '../authentication/interface/request-with-user.interface';
+import type RequestWithUser from '@modules/authentication/interface/request-with-user.interface';
 
 @Controller('appointment')
 @ApiTags('appointment')

@@ -25,26 +25,23 @@ import { ResponseSuccess } from '@utils/dto/response.dto';
 import { IResponse } from '@utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
-import RequestWithUser from '../../authentication/interface/request-with-user.interface';
+import type RequestWithUser from '@modules/authentication/interface/request-with-user.interface';
 
 @Controller('time-time-request')
 @UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(JwtAuthenticationGuard)
+@UseGuards(AuthGuard('api-key'))
 export class TimeRequestController {
   constructor(private readonly timeRequestService: TimeRequestService) {}
 
   @Get()
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   async getAllTimeRequest(
-    @Req() request: RequestWithUser,
     @Query() query: GetTimeRequestDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
       const data = await this.timeRequestService.getAllTimeRequest(query);
       return new ResponseSuccess('GET_TIME_REQUEST.SUCCESS', data);
     } catch (error) {
-      console.log('------------------>', error);
       throw new BadRequestException(error);
     }
   }
@@ -67,8 +64,6 @@ export class TimeRequestController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   async createTimeRequest(
     @Req() request: RequestWithUser,
     @Body() timeRequest: CreateTimeRequestDto,
@@ -81,14 +76,11 @@ export class TimeRequestController {
       );
       return new ResponseSuccess('CREATE_TIME_REQUEST.SUCCESS', data);
     } catch (error) {
-      console.log('------------------>', error);
       throw new BadRequestException(error);
     }
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   async updateTimeRequest(
     @Param() { id }: FindOneParams,
     @Req() request: RequestWithUser,
@@ -108,8 +100,6 @@ export class TimeRequestController {
   }
 
   @Patch('/confirm/:id')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   async updateTimeRequestConfirm(
     @Param() { id }: FindOneParams,
     @Req() request: RequestWithUser,
@@ -130,8 +120,6 @@ export class TimeRequestController {
   }
 
   @Patch('/cancelled/:id')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   async updateTimeRequestCancelled(
     @Param() { id }: FindOneParams,
     @Req() request: RequestWithUser,
@@ -146,7 +134,6 @@ export class TimeRequestController {
       );
       return new ResponseSuccess('UPDATE_TIME_REQUEST.SUCCESS', data);
     } catch (error) {
-      console.log(error);
       throw new BadRequestException(error);
     }
   }

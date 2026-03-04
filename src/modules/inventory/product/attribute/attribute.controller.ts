@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   ClassSerializerInterceptor,
   Controller,
@@ -32,21 +31,13 @@ export default class AttributeController {
 
   @Get()
   async getAll(@Query() dto: GetAttributeDto): Promise<IResponse> {
-    try {
-      const data = await this.attributeService.getAll(dto);
-      return new ResponseSuccess('GET_ATTRIBUTE.SUCCESS', data);
-    } catch (error) {
-      throw new Error(error.toString());
-    }
+    const data = await this.attributeService.getAll(dto);
+    return new ResponseSuccess('GET_ATTRIBUTE.SUCCESS', data);
   }
   @Get('page')
   async getPage(@Query() dto: PageAttributeDto): Promise<IResponse> {
-    try {
-      const data = await this.attributeService.getPage(dto);
-      return new ResponseSuccess('GET_ATTRIBUTE.SUCCESS', data);
-    } catch (error) {
-      throw new Error(error.toString());
-    }
+    const data = await this.attributeService.getPage(dto);
+    return new ResponseSuccess('GET_ATTRIBUTE.SUCCESS', data);
   }
 
   @Post()
@@ -60,21 +51,13 @@ export default class AttributeController {
     @Param() { id }: FindOneParams,
     @Body() dto: UpdateAttributeDto,
   ) {
-    try {
-      const data = await this.attributeService.update(id, dto);
-      return new ResponseSuccess('UPDATE_ATTRIBUTE.SUCCESS', data);
-    } catch (error) {
-      throw new Error(error.toString());
-    }
+    const data = await this.attributeService.update(id, dto);
+    return new ResponseSuccess('UPDATE_ATTRIBUTE.SUCCESS', data);
   }
 
   @Delete(':id')
   async remove(@Param() { id }: FindOneParams) {
-    try {
-      const data = await this.attributeService.remove(id);
-      return new ResponseSuccess('DELETE_ATTRIBUTE.SUCCESS', data);
-    } catch (error) {
-      throw new Error(error.toString());
-    }
+    const data = await this.attributeService.remove(id);
+    return new ResponseSuccess('DELETE_ATTRIBUTE.SUCCESS', data);
   }
 }

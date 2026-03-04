@@ -13,7 +13,6 @@ import {
   HttpCode,
   HttpStatus,
   BadRequestException,
-  Req,
 } from '@nestjs/common';
 import { RepeatScheduleService } from './schedule.service';
 import { CreateRepeatScheduleDto } from './dto/create-schedule.dto';

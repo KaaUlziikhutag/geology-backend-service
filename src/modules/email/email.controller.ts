@@ -17,7 +17,7 @@ import { IResponse } from '../../utils/interfaces/response.interface';
 import { ResponseSuccess } from '../../utils/dto/response.dto';
 import { SendMailDto } from './dto/send-mail.dto';
 import { ApiTags } from '@nestjs/swagger';
-import RequestWithUser from '../authentication/interface/request-with-user.interface';
+import type RequestWithUser from '@modules/authentication/interface/request-with-user.interface';
 
 @Controller('email')
 @ApiTags('email')

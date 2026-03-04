@@ -19,7 +19,7 @@ import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.g
 import LocalFilesService from './local-files.service';
 import LocalFilesInterceptor from './local-files.interceptor';
 import FileUploadDto from './dto/file-upload.dto';
-import { Response } from 'express';
+import type { Response } from 'express';
 import { createReadStream } from 'fs';
 import { join } from 'path';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
@@ -69,7 +69,14 @@ export default class LocalFilesController {
     description: 'A new avatar for the user',
     type: FileUploadDto,
   })
-  async addFile(@UploadedFile() file: any): Promise<IResponse> {
+  async addFile(
+    @UploadedFile()
+    file: {
+      path: string;
+      originalname: string;
+      mimetype: string;
+    },
+  ): Promise<IResponse> {
     try {
       const data = await this.localFilesService.saveLocalFileData({
         path: file.path,

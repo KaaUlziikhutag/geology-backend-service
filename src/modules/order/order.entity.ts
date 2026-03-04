@@ -7,7 +7,6 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  Relation,
 } from 'typeorm';
 import Price from '../price/price.entity';
 import { OrderState } from '../../utils/enum-utils';
@@ -24,19 +23,19 @@ export default class Order extends AbstractEntity {
   paymentId: number;
   @JoinColumn({ name: 'payment_id' })
   @ManyToOne(() => Payment, (payment) => payment.orders)
-  payment?: Relation<Payment>;
+  payment?: Payment;
 
   @Column({ name: 'appointment_id', nullable: true })
   appointmentId: number;
   @JoinColumn({ name: 'appointment_id' })
   @ManyToOne(() => Appointment, (appointment) => appointment.orders)
-  appointment?: Relation<Appointment>;
+  appointment?: Appointment;
 
   @Column({ name: 'price_id' })
   priceId: number;
   @JoinColumn({ name: 'price_id' })
   @ManyToOne(() => Price, (price) => price.orders)
-  price?: Relation<Price>;
+  price?: Price;
 
   @Column({ type: 'float', default: 1 })
   quantity: number;

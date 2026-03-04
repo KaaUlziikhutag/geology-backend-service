@@ -20,7 +20,7 @@ import { ResponseSuccess } from '../../utils/dto/response.dto';
 import FindOneParams from '../../utils/find-one-params';
 import CreatePaymentDto from './dto/create-payment.dto';
 import { PaymentService } from './payment.service';
-import RequestWithUser from '../authentication/interface/request-with-user.interface';
+import type RequestWithUser from '@modules/authentication/interface/request-with-user.interface';
 import { PaymentDetailService } from './payment-detail/payment-detail.service';
 import CreatePaymentDetailDto from './payment-detail/dto/create-payment-dtl.dto';
 import PagePaymentDto from './dto/page-payment.dto';

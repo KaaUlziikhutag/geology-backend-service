@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  Relation,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import Mineral from './mineral/mineral.entity';
 import Order from '../order/order.entity';
 import Customer from '../customer/customer.entity';
@@ -21,7 +14,7 @@ export default class Appointment extends AbstractEntity {
   customerId: number;
   @JoinColumn({ name: 'customer_id' })
   @ManyToOne(() => Customer, (customer) => customer.appointments)
-  customer?: Relation<Customer>;
+  customer?: Customer;
 
   @Column({ name: 'warehouse_id', nullable: true })
   warehouseId: number;

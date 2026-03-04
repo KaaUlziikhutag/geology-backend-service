@@ -21,7 +21,7 @@ export class ResponseSuccess implements IResponse {
     }
   }
   message: string;
-  response: any[];
+  response: unknown[];
   success: boolean;
   statusCode: number;
 }

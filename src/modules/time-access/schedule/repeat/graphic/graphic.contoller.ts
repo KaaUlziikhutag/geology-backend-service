@@ -10,10 +10,7 @@ import {
   Query,
   UseInterceptors,
   ClassSerializerInterceptor,
-  HttpCode,
-  HttpStatus,
   BadRequestException,
-  Req,
 } from '@nestjs/common';
 import { GraphicService } from './graphic.service';
 import { CreateGraphicDto } from './dto/create-graphic.dto';
@@ -24,20 +21,16 @@ import { ResponseSuccess } from '@utils/dto/response.dto';
 import { IResponse } from '@utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../../../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
-import RequestWithUser from '../../../../authentication/interface/request-with-user.interface';
 
 @Controller('time-access-repeat-graphic')
 @UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(JwtAuthenticationGuard)
+@UseGuards(AuthGuard('api-key'))
 export class GraphicController {
   constructor(private readonly graphicService: GraphicService) {}
 
   @Get()
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
-  async getAllGraphic(
-    @Req() request: RequestWithUser,
-    @Query() query: GetGraphicDto,
-  ): Promise<IResponse> {
+  async getAllGraphic(@Query() query: GetGraphicDto): Promise<IResponse> {
     try {
       const data = await this.graphicService.getAllGraphic(query);
       return new ResponseSuccess('GET_GRAPHIC.SUCCESS', data);
@@ -47,8 +40,6 @@ export class GraphicController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   async getGraphicById(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
       const data = await this.graphicService.getGraphicId(id);
@@ -59,13 +50,8 @@ export class GraphicController {
   }
 
   @Post()
-  @HttpCode(HttpStatus.CREATED)
-  @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async createGraphic(
-    @Req() request: RequestWithUser,
-    @Body() graphic: CreateGraphicDto,
-  ): Promise<IResponse> {
+  async createGraphic(@Body() graphic: CreateGraphicDto): Promise<IResponse> {
     try {
       const data = await this.graphicService.createGraphic(graphic);
       return new ResponseSuccess('CREATE_GRAPHIC.SUCCESS', data);
@@ -75,8 +61,6 @@ export class GraphicController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   async updateGraphic(
     @Param() { id }: FindOneParams,
     @Body() graphic: UpdateGraphicDto,
@@ -90,12 +74,7 @@ export class GraphicController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
-  async deleteGraphic(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async deleteGraphic(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
       const data = await this.graphicService.deleteGraphic(id);
       return new ResponseSuccess('DELETE_GRAPHIC.SUCCESS', data);

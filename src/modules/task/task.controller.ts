@@ -21,7 +21,7 @@ import { IResponse } from '../../utils/interfaces/response.interface';
 import FindOneParams from '../../utils/find-one-params';
 import { CreateTaskDto } from './dto/create-task.dto';
 import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
-import RequestWithUser from '../authentication/interface/request-with-user.interface';
+import type RequestWithUser from '@modules/authentication/interface/request-with-user.interface';
 import { GetTaskDto } from './dto/get-task.dto';
 import UpdateTaskDto from './dto/update-task.dto';
 import { GetAnalyticTaskDto } from './dto/get-analytic-task.dto';

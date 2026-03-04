@@ -6,7 +6,6 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  Relation,
 } from 'typeorm';
 import MineralType from '../reference/mineral-type/mineral-type.entity';
 import Element from '../reference/element/element.entity';
@@ -14,7 +13,7 @@ import Laboratory from '../reference/laboratory/laboratory.entity';
 import Technology from '../reference/technology/technology.entity';
 // import Decision from '../decision/decision.entity';
 import Order from '../order/order.entity';
-import Inner from '@modules/decision/inner/inner.entity';
+// import Inner from '@modules/decision/inner/inner.entity';
 import Product from '@modules/inventory/product/product.entity';
 
 @Entity('prices')
@@ -38,7 +37,7 @@ export default class Price extends BaseEntity {
   productId: number;
   @JoinColumn({ name: 'product_id' })
   @ManyToOne(() => Product)
-  product?: Relation<Product>;
+  product?: Product;
 
   @Column({ name: 'mineral_type_id', nullable: true })
   mineralTypeId: number;

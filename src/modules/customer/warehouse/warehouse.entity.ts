@@ -5,7 +5,6 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Relation,
 } from 'typeorm';
 import Customer from '../customer.entity';
 /** Захиалагчийн агуулхууд */
@@ -18,7 +17,7 @@ export default class Warehouse extends BaseEntity {
   customerId: number;
   @JoinColumn({ name: 'customer_id' })
   @ManyToOne(() => Customer, (customer) => customer.warehouses)
-  customer?: Relation<Customer>;
+  customer?: Customer;
 
   @Column('varchar', { length: 255 })
   code: string;

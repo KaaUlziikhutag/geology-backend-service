@@ -14,7 +14,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { TestingResultService } from './testing-result.service';
 import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
-import RequestWithUser from '../authentication/interface/request-with-user.interface';
+import type RequestWithUser from '@modules/authentication/interface/request-with-user.interface';
 import { CreateTestingResultDto } from './dto/create-testing-result.dto';
 import { IResponse } from '../../utils/interfaces/response.interface';
 import { ResponseSuccess } from '../../utils/dto/response.dto';
@@ -23,12 +23,12 @@ import FindOneParams from '../../utils/find-one-params';
 @Controller('testing-result')
 @ApiTags('testing-result')
 @UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(JwtAuthenticationGuard)
+@UseGuards(AuthGuard('api-key'))
 export class TestingResultController {
   constructor(private readonly resultService: TestingResultService) {}
 
   @Post()
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   async createTask(
     @Req() { user }: RequestWithUser,
     @Body() result: CreateTestingResultDto,
@@ -42,8 +42,6 @@ export class TestingResultController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   async getTestingResultById(
     @Param() { id }: FindOneParams,
   ): Promise<IResponse> {

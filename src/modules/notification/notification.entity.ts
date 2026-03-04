@@ -1,5 +1,5 @@
 import { AbstractEntity } from '../../utils/abstract.entity';
-import { Column, Entity, JoinColumn, Relation } from 'typeorm';
+import { Column, Entity, JoinColumn } from 'typeorm';
 import Users from '../users/users.entity';
 
 @Entity({ name: 'notifications' })
@@ -16,5 +16,5 @@ export class Notification extends AbstractEntity {
   @Column({ name: 'receiver_id' })
   receiverId: number;
   @JoinColumn({ name: 'receiver_id' })
-  receiver: Relation<Users>;
+  receiver: Users;
 }

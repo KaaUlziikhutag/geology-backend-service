@@ -5,14 +5,12 @@ import { GetRepeatDto } from './dto/get-repeat.dto';
 import { Between, Equal, FindManyOptions, ILike, Repository } from 'typeorm';
 import PageDto from '@utils/dto/page.dto';
 import PageMetaDto from '@utils/dto/page-meta.dto';
-import { ModuleRef } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import Repeats from './entities/repeat.entity';
 import RepeatNotFoundException from './exceptions/repeat-not-found.exception';
 import { RepeatDetailService } from './detail/repeat-detail.service';
 import { AppointmentStatusType } from '@utils/enum-utils';
 import RepeatHistory from './entities/repeat-history.entity';
-import GetUserDto from '@modules/users/dto/get-user.dto';
 import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()

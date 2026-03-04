@@ -105,7 +105,7 @@ export class RepeatDetailService {
       // }
       // repeatDetail.trees = trees;
     }
-    let workerIds: number[] = [];
+    const workerIds: number[] = [];
     if (repeatDetail.treeIds && repeatDetail.treeIds.length > 0) {
       // const workers = await entityManager.find(Worker, {
       //   where: [
@@ -118,9 +118,10 @@ export class RepeatDetailService {
     const allUserIds = new Set<number>();
     (repeatDetail.viewUserIds || []).forEach((id) => allUserIds.add(id));
     workerIds.forEach((id) => allUserIds.add(id));
-    const nowUtc = new Date(new Date().toISOString());
+    // const nowUtc = new Date(new Date().toISOString());
     const conflictingUserIds: number[] = [];
     for (const id of allUserIds) {
+      console.log('id', id);
       // const schedule = await entityManager.findOne(RepeatSchedules, {
       //   where: {
       //     userId: id,
@@ -338,8 +339,15 @@ export class RepeatDetailService {
     ];
     fieldsToUpdate.forEach((field) => {
       if (update[field] !== undefined) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        (existing as any)[field] = update[field]!;
+        (
+          existing as {
+            name: string;
+            graphicId: number;
+            repeatId: number;
+            position: number;
+            startPosition: number;
+          }
+        )[field] = update[field]!;
       }
     });
   }

@@ -1,12 +1,5 @@
 import { CustomerType } from '../../utils/enum-utils';
-import {
-  Entity,
-  Column,
-  OneToMany,
-  JoinColumn,
-  ManyToOne,
-  Relation,
-} from 'typeorm';
+import { Entity, Column, OneToMany, JoinColumn, ManyToOne } from 'typeorm';
 import Warehouse from './warehouse/warehouse.entity';
 import { Direction } from '../reference/direction/direction.entity';
 import Section from '../reference/section-customer/section-customer.entity';
@@ -22,13 +15,13 @@ export default class Customer extends AbstractEntity {
   directionId: number; // байгууллагын үйл ажиллагааны чиглэл
   @JoinColumn({ name: 'direction_id' })
   @ManyToOne(() => Direction)
-  direction?: Relation<Direction>;
+  direction?: Direction;
 
   @Column({ name: 'section_id', nullable: true })
   sectionId: number; // байгууллагын бүлэглэлт
   @JoinColumn({ name: 'section_id' })
   @ManyToOne(() => Section, (section) => section.customers)
-  section?: Relation<Section>;
+  section?: Section;
 
   @Column({ type: 'enum', enum: CustomerType })
   type: CustomerType;

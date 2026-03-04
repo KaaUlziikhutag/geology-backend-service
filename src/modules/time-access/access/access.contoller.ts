@@ -21,7 +21,7 @@ import { ResponseSuccess } from '../../../utils/dto/response.dto';
 import { IResponse } from '../../../utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
-import RequestWithUser from '../../authentication/interface/request-with-user.interface';
+import type RequestWithUser from '@modules/authentication/interface/request-with-user.interface';
 import { GetAccessDto } from './dto/get-access.dto';
 
 @Controller('time-access')

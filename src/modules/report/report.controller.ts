@@ -1,10 +1,8 @@
 import {
   BadRequestException,
-  Body,
   Controller,
   Get,
   Param,
-  Post,
   Query,
   Req,
   Res,
@@ -15,10 +13,10 @@ import { ApiTags } from '@nestjs/swagger';
 import JwtAuthenticationGuard from '../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
 import FindOneParams from '../../utils/find-one-params';
-import RequestWithUser from '../authentication/interface/request-with-user.interface';
+import type RequestWithUser from '@modules/authentication/interface/request-with-user.interface';
 import { InvoiceDto } from './dto/invoice.dto';
 import { ReportService } from './report.service';
-import { Response } from 'express';
+import type { Response } from 'express';
 import { GetSectionDto } from './dto/get-section.dto';
 
 @Controller('report')
@@ -52,10 +50,7 @@ export class ReportController {
   @Get('section-product')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async reportSectionProduct(
-    @Req() { user }: RequestWithUser,
-    @Query() query: GetSectionDto,
-  ) {
+  async reportSectionProduct(@Query() query: GetSectionDto) {
     try {
       return await this.reportService.reportSectionProduct(query);
     } catch (error) {
@@ -65,10 +60,7 @@ export class ReportController {
   @Get('section-customer')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async reportSectionCustomer(
-    @Req() { user }: RequestWithUser,
-    @Query() query: GetSectionDto,
-  ) {
+  async reportSectionCustomer(@Query() query: GetSectionDto) {
     try {
       return await this.reportService.reportSectionCustomer(query);
     } catch (error) {

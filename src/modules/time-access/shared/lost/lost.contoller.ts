@@ -13,7 +13,6 @@ import {
   HttpCode,
   HttpStatus,
   BadRequestException,
-  Req,
 } from '@nestjs/common';
 import { DirectLostService } from './lost.service';
 import { CreateDirectLostDto } from './dto/create-lost.dto';
@@ -24,7 +23,6 @@ import { ResponseSuccess } from '@utils/dto/response.dto';
 import { IResponse } from '@utils/interfaces/response.interface';
 import JwtAuthenticationGuard from '../../../authentication/guard/jwt-authentication.guard';
 import { AuthGuard } from '@nestjs/passport';
-import RequestWithUser from '../../../authentication/interface/request-with-user.interface';
 
 @Controller('settings/directLost')
 @UseInterceptors(ClassSerializerInterceptor)

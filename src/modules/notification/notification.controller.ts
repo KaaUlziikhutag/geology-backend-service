@@ -16,7 +16,7 @@ import { CreateNotificationDto } from './dto/create-notification.dto';
 import { IResponse } from '../../utils/interfaces/response.interface';
 import { ResponseSuccess } from '../../utils/dto/response.dto';
 import FindOneParams from '../../utils/find-one-params';
-import RequestWithUser from '../authentication/interface/request-with-user.interface';
+import type RequestWithUser from '@modules/authentication/interface/request-with-user.interface';
 import { GetNotificationDto } from './dto/get-notification.dto';
 
 @Controller('notification')

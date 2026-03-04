@@ -5,7 +5,6 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Relation,
 } from 'typeorm';
 import Users from '../../users/users.entity';
 import Task from '../task.entity';
@@ -19,7 +18,7 @@ export default class TaskUser extends BaseEntity {
   taskId: number; // Захиалга
   @JoinColumn({ name: 'task_id' })
   @ManyToOne(() => Task, (task) => task.users)
-  task?: Relation<Task>;
+  task?: Task;
 
   @Column({ name: 'user_id' })
   userId: number; // Хэрэглэгч

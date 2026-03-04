@@ -25,7 +25,7 @@ import { ApiPaginatedResponse } from '../../utils/api-paginated-response.decorat
 import CreateCustomerDto from './dto/create-customer.dto';
 import UpdateCustomerDto from './dto/update-customer.dto';
 import { ApiTags } from '@nestjs/swagger';
-import RequestWithUser from '../authentication/interface/request-with-user.interface';
+import type RequestWithUser from '@modules/authentication/interface/request-with-user.interface';
 
 @Controller('customer')
 @ApiTags('customer')

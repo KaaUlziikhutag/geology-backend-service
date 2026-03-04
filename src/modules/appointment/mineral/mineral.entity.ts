@@ -8,7 +8,6 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import Appointment from '../appointment.entity';
@@ -25,7 +24,7 @@ export default class Mineral extends BaseEntity {
   appointmentId: number; // Захиалга
   @JoinColumn({ name: 'appointment_id' })
   @ManyToOne(() => Appointment, (appointment) => appointment.minerals)
-  appointment?: Relation<Appointment>;
+  appointment?: Appointment;
 
   @Column('varchar', { length: 255 })
   name: string; // Нэр

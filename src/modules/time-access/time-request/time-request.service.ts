@@ -2,27 +2,17 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateTimeRequestDto } from './dto/create-time-request.dto';
 import { UpdateTimeRequestDto } from './dto/update-time-request.dto';
 import { GetTimeRequestDto } from './dto/get-time-request.dto';
-import {
-  Between,
-  EntityManager,
-  Equal,
-  FindManyOptions,
-  In,
-  Repository,
-} from 'typeorm';
+import { Between, Equal, FindManyOptions, Repository } from 'typeorm';
 import TimeRequest from './time-request.entity';
 import TimeRequestNotFoundException from './exceptions/time-request-not-found.exception';
 import PageDto from '@utils/dto/page.dto';
 import PageMetaDto from '@utils/dto/page-meta.dto';
-import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
-import Trees from '../../human-resource/tree/tree.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppointmentStatusType,
   RequestType,
   WorkType,
 } from '@utils/enum-utils';
-import Worker from '../../human-resource/member/worker/worker.entity';
 import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()

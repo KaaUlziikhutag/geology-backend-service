@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import Attribute from './attribute.entity';
-import { Equal, FindManyOptions, ILike, Repository } from 'typeorm';
+import { Equal, FindManyOptions, ILike, Not, Repository } from 'typeorm';
 import GetAttributeDto from './dto/get-attribute.dto';
 import CategoryService from '../category/category.service';
 import CreateAttributeDto from './dto/create-attribute.dto';
@@ -81,9 +81,9 @@ export default class AttributeService {
     // check for duplicate name (excluding self)
     if (dto.name) {
       const duplicate = await this.attributeRepository.findOne({
-        where: { name: ILike(dto.name) },
+        where: { name: ILike(dto.name), id: Not(id) },
       });
-      if (duplicate && duplicate.id !== id) {
+      if (duplicate) {
         throw new BadRequestException('ATTRIBUTE.NAME_ALREADY_EXISTS');
       }
       attribute.name = dto.name;
@@ -101,11 +101,19 @@ export default class AttributeService {
   }
 
   async remove(id: number) {
-    const result = await this.attributeRepository.delete(id);
+    const attribute = await this.attributeRepository.findOne({
+      where: { id },
+      relations: ['values.variants'],
+    });
+    if (attribute.values.some((value) => value.variants.length > 0)) {
+      throw new BadRequestException('ATTRIBUTE.VARIANTS_FOUND');
+    }
+    if (!attribute) {
+      throw new NotFoundException('ATTRIBUTE.NOT_FOUND');
+    }
+    const result = await this.attributeRepository.softDelete(attribute.id);
 
     if (result.affected === 0)
-      throw new NotFoundException('ATTRIBUTE.NOT_FOUND');
-
-    return { message: 'ATTRIBUTE.DELETED_SUCCESSFULLY' };
+      return { message: 'ATTRIBUTE.DELETED_SUCCESSFULLY' };
   }
 }

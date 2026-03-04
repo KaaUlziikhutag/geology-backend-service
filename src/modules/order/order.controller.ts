@@ -23,7 +23,7 @@ import CreateOrderDto from './dto/create-order.dto';
 import GetOrderDto from './dto/get-order.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { CompleteOrderDto } from './dto/complete-order.dto';
-import RequestWithUser from '../authentication/interface/request-with-user.interface';
+import type RequestWithUser from '@modules/authentication/interface/request-with-user.interface';
 import { CreateReceiveDto } from './dto/create-receive.dto';
 import { CreateAnalystOrderDto } from './dto/create-analyst-order.dto';
 

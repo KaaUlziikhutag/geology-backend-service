@@ -21,6 +21,7 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "isolatedModules": true,
     "paths": {
       "@config/*": ["src/config/*"],
       "@modules/*": ["src/modules/*"],

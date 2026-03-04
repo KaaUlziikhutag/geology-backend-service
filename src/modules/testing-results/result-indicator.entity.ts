@@ -5,7 +5,6 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Relation,
 } from 'typeorm';
 import Indicator from '../indicator/indicator.entity';
 import TestingResult from './testing-result.entity';
@@ -19,7 +18,7 @@ export default class ResultIndicator extends BaseEntity {
   resultId: number;
   @JoinColumn({ name: 'result_id' })
   @ManyToOne(() => TestingResult, (result) => result.resultIndicators)
-  result?: Relation<TestingResult>;
+  result?: TestingResult;
 
   @Column({ name: 'indicator_id' })
   indicatorId: number;

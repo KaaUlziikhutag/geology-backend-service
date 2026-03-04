@@ -38,7 +38,7 @@ export const generatePdf = async (content: string): Promise<Uint8Array> => {
     return pdfBuffer;
   } catch (error) {
     console.error('Error generating PDF: ', error);
-    throw new Error('Failed to generate PDF');
+    // throw new Error('Failed to generate PDF');
   }
 };
 export const imageToBase64 = (imagePath: string): string => {

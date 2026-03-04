@@ -6,7 +6,6 @@ import {
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Relation,
 } from 'typeorm';
 import Product from '../product.entity';
 import AttributeValue from '../attribute/attribute-value/attribute-value.entity';
@@ -24,7 +23,7 @@ export default class ProductVariant extends AbstractEntity {
   @ManyToOne(() => Product, (product) => product.variants, {
     onDelete: 'CASCADE',
   })
-  product?: Relation<Product>;
+  product?: Product;
 
   @Column({ nullable: true })
   name: string;

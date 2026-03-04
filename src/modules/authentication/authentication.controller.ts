@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import RegisterDto from './dto/register.dto';
-import RequestWithUser from './interface/request-with-user.interface';
+import type RequestWithUser from './interface/request-with-user.interface';
 import JwtAuthenticationGuard from './guard/jwt-authentication.guard';
 import { UsersService } from '../users/users.service';
 import JwtRefreshGuard from './guard/jwt-refresh.guard';

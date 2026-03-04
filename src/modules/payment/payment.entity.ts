@@ -3,13 +3,11 @@ import {
   BaseEntity,
   Column,
   CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  Relation,
 } from 'typeorm';
 import Order from '../order/order.entity';
 import PaymentDetail from './payment-detail/payment-detail.entity';
@@ -27,7 +25,7 @@ export default class Payment extends BaseEntity {
   customerId: number;
   @JoinColumn({ name: 'customer_id' })
   @ManyToOne(() => Customer, (customer) => customer.payments)
-  customer?: Relation<Customer>;
+  customer?: Customer;
 
   @Column({ name: 'contract_id', nullable: true })
   contractId: number;

@@ -6,7 +6,6 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Relation,
 } from 'typeorm';
 import Payment from '../payment.entity';
 /** Төлбөр төлөлт */
@@ -19,7 +18,7 @@ export default class PaymentDetail extends BaseEntity {
   paymentId: number;
   @JoinColumn({ name: 'payment_id' })
   @ManyToOne(() => Payment, (payment) => payment.details)
-  payment?: Relation<Payment>;
+  payment?: Payment;
 
   @Column({
     type: 'enum',

@@ -7,7 +7,6 @@ import {
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Relation,
 } from 'typeorm';
 import Order from '../order/order.entity';
 import Mineral from '../appointment/mineral/mineral.entity';
@@ -26,13 +25,13 @@ export default class Task extends AbstractEntity {
   orderId: number; // Захиалга
   @JoinColumn({ name: 'order_id' })
   @ManyToOne(() => Order, (order) => order.tasks)
-  order?: Relation<Order>;
+  order?: Order;
 
   @Column({ name: 'mineral_id' })
   mineralId: number; // Дээж
   @JoinColumn({ name: 'mineral_id' })
   @ManyToOne(() => Mineral, (mineral) => mineral.tasks)
-  mineral?: Relation<Mineral>; // analytic
+  mineral?: Mineral; // analytic
 
   @Column({ type: 'enum', enum: TaskState, default: TaskState.Pending })
   state: TaskState; // Төлөв
@@ -46,5 +45,5 @@ export default class Task extends AbstractEntity {
     joinColumn: { name: 'task_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' },
   })
-  users?: Relation<Users[]>; // Хэрэглэгчид
+  users?: Users[]; // Хэрэглэгчид
 }
