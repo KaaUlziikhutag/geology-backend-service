@@ -9,7 +9,7 @@ import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
 import CategoryNotFoundException from './exceptions/category-not-found.exception';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class CategoryService {

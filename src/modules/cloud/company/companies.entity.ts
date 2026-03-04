@@ -10,8 +10,8 @@ import {
   JoinColumn,
   ManyToOne,
 } from 'typeorm';
-import Users from '../user/user.entity';
 import Country from '../country/country.entity';
+import Users from '@modules/users/users.entity';
 
 @Entity('cloud_companies_i')
 export default class Companies extends BaseEntity {
@@ -50,9 +50,6 @@ export default class Companies extends BaseEntity {
 
   @Column('varchar', { length: 255, nullable: true })
   gmail: string;
-
-  @OneToMany(() => Users, (users: Users) => users.company)
-  users?: Users[];
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

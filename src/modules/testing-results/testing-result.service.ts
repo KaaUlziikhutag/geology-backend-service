@@ -4,7 +4,7 @@ import TestingResult from './testing-result.entity';
 import { Repository } from 'typeorm';
 import { CreateTestingResultDto } from './dto/create-testing-result.dto';
 import TestingResultNotFoundException from './exceptions/testing-result-not-found.exception';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class TestingResultService {

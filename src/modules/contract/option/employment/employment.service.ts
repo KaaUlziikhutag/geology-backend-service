@@ -16,7 +16,7 @@ import PageDto from '@utils/dto/page.dto';
 import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 import ContractViewUser from '../../../contract/view-users/view-users.entity';
 import { AccessType, ContractState, DateType } from '@utils/enum-utils';
 import Trees from '../../../human-resource/tree/tree.entity';

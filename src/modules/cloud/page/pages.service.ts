@@ -9,7 +9,7 @@ import PagesNotFoundException from './exceptions/pages-not-found.exception';
 import PageDto from '@utils/dto/page.dto';
 import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import IUser from '../user/interface/user.interface';
+import IUser from '../../users/interface/user.interface';
 
 @Injectable()
 export class PagesService {

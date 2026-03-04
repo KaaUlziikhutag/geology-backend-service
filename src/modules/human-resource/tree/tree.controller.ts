@@ -56,7 +56,7 @@ export class TreeController {
   ): Promise<IResponse> {
     try {
       const { user } = request;
-      const data = await this.treeService.getTreeById(id, user);
+      const data = await this.treeService.getTreeById(id);
       return new ResponseSuccess('GET_TREE.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

@@ -26,7 +26,7 @@ import SectionCustomer from '../reference/section-customer/section-customer.enti
 import { ReceiptStatus } from '../../utils/enum-utils';
 import Customer from '../customer/customer.entity';
 import ISectionCustomer from './interface/section-customer.interface';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class ReportService {

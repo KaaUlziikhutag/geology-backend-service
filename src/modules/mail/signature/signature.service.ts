@@ -12,7 +12,7 @@ import { getEntityManagerToken } from '@nestjs/typeorm';
 import SignatureNotFoundException from './exceptions/signature-not-found.exception';
 import SignatureViewUser from './view-users/view-users.entity';
 import { UpdateSignatureViewUserDto } from './view-users/dto/update-signature.dto';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class SignatureService {

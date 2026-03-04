@@ -9,5 +9,5 @@ export class GetInsuranceTypeDto extends PartialType(PageOptionsDto) {
 
   @IsString()
   @IsOptional()
-  type: string;
+  name: string;
 }

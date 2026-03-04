@@ -1,5 +1,12 @@
 import { AbstractEntity } from '../../utils/abstract.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import Task from '../task/task.entity';
 import Users from '../users/users.entity';
 import ResultIndicator from './result-indicator.entity';
@@ -7,6 +14,9 @@ import ResultIndicator from './result-indicator.entity';
 /** Шинжилгээний үр дүн */
 @Entity('testing_results')
 export default class TestingResult extends AbstractEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @Column({ name: 'task_id' })
   taskId: number;
   @JoinColumn({ name: 'task_id' })

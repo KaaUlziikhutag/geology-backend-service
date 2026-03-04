@@ -20,7 +20,7 @@ import Trees from '../../../../human-resource/tree/tree.entity';
 import RepeatDetailViewUser from './entities/repeat-user.entity';
 import RepeatSchedules from '../schedule/schedule.entity';
 import Worker from '../../../../human-resource/member/worker/worker.entity';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 @Injectable()
 export class RepeatDetailService {
   /**

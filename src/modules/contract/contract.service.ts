@@ -11,7 +11,7 @@ import PageMetaDto from '@utils/dto/page-meta.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AccessType, ContractState, DateType } from '@utils/enum-utils';
 import { DiscountService } from '../reference/discount/discount.service';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class ContractService {

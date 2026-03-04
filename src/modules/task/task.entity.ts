@@ -6,17 +6,19 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
-  OneToMany,
+  PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
 import Order from '../order/order.entity';
 import Mineral from '../appointment/mineral/mineral.entity';
 import { TaskState } from '../../utils/enum-utils';
 import Users from '../users/users.entity';
-import TaskUser from './task-user/task-user.entity';
 /** Ажлын даалгавар */
 @Entity('tasks')
 export default class Task extends AbstractEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @Column({ type: 'varchar', unique: true })
   barcode: string; // Баркод
 

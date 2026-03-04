@@ -21,7 +21,7 @@ import { join } from 'path';
 import moment from 'moment';
 import GetUserDto from '../users/dto/get-user.dto';
 import { ReceiptStatus } from '../../utils/enum-utils';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 @Injectable()
 export class AppointmentService {
   constructor(

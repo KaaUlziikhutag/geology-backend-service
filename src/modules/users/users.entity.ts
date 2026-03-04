@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { AbstractEntity } from '@utils/abstract.entity';
+import { Citizen } from '@modules/cloud/citizen/entities/citizen.entity';
 
 @Entity('users')
 class Users extends AbstractEntity {
@@ -36,12 +37,9 @@ class Users extends AbstractEntity {
 
   @Column({ name: 'is_active', type: 'boolean', default: false })
   isActive: boolean;
-  // ===========> begining profile info
-  @Column({ nullable: true })
-  avatar: string;
 
-  // @ManyToOne(() => Human, (human) => human.user)
-  // human: Human;
+  // @ManyToOne(() => Citizen, (citizen) => citizen.user)
+  // profile: Citizen;
 }
 
 export default Users;

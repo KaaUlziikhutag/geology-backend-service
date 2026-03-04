@@ -11,6 +11,7 @@ import { HumanModule } from '@modules/human-resource/member/human/human.module';
 import { OccupationModule } from '@modules/human-resource/tree/cccupation/cccupation.module';
 import { PublicNewsModule } from '@modules/public/news/news.module';
 import { AccessModule } from '@modules/human-resource/access/access.module';
+import { HumanResourceModule } from '@modules/human-resource/hunam-resource.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AccessModule } from '@modules/human-resource/access/access.module';
     ContractModule,
     TaskModule,
     NotificationModule,
+    HumanResourceModule,
   ],
 })
 export class HrModule {}

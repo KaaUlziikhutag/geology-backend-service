@@ -22,7 +22,7 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { Comments } from './entities/comment.entity';
 import UserLimit from '../../shared/access/entities/user-limit.entity';
 import Trees from '../../human-resource/tree/tree.entity';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class PublicNewsService {

@@ -13,7 +13,7 @@ import Trees from '../../human-resource/tree/tree.entity';
 import Worker from '../../human-resource/member/worker/worker.entity';
 import { AccessType, ContractState } from '@utils/enum-utils';
 import DecisionViewUser from '../view-users/view-users.entity';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class AboveService {

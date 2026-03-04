@@ -5,6 +5,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
 import Product from '../product.entity';
@@ -14,6 +15,9 @@ import { AbstractEntity } from '@utils/abstract.entity';
 
 @Entity('product_variants')
 export default class ProductVariant extends AbstractEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @Column({ name: 'product_id', nullable: true })
   productId: string;
   @JoinColumn({ name: 'product_id' })

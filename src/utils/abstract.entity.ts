@@ -1,10 +1,7 @@
-import Users from '../modules/users/users.entity';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
-  JoinColumn,
-  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   DeleteDateColumn,

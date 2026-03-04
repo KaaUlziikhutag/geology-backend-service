@@ -27,23 +27,19 @@ import FindOneParams from '@utils/find-one-params';
 
 @Controller('human-resource')
 @UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(JwtAuthenticationGuard)
+@UseGuards(AuthGuard('api-key'))
 export class HumanResourceController {
   constructor(private readonly humanResourceService: HumanResourceService) {}
 
   @Post()
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   @HttpCode(HttpStatus.CREATED)
   async createHumanResource(
-    @Req() request: RequestWithUser,
     @Body() humanResource: HumanResourceDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.humanResourceService.createHumanResource(
-        user,
-        humanResource,
-      );
+      const data =
+        await this.humanResourceService.createHumanResource(humanResource);
       return new ResponseSuccess('CREATE_HUMAN_RESOURCE.SUCCESS', data);
     } catch (error) {
       console.log('==============>error', error);
@@ -52,8 +48,6 @@ export class HumanResourceController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   async updateHumanResource(
     @Param() { id }: FindOneParams,
     @Req() request: RequestWithUser,
@@ -74,18 +68,14 @@ export class HumanResourceController {
   }
 
   @Get('check')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   async getAllHumanResourceCheck(
     @Req() request: RequestWithUser,
     @Query() query: GetHumanResourceDto,
   ): Promise<IResponse> {
     try {
       const { user } = request;
-      const data = await this.humanResourceService.getAllHumanResourceCheck(
-        user,
-        query,
-      );
+      const data =
+        await this.humanResourceService.getAllHumanResourceCheck(query);
       return new ResponseSuccess('GET_HUMAN_RESOURCE.SUCCESS', data);
     } catch (error) {
       console.log('----------------------------->', error);
@@ -94,8 +84,6 @@ export class HumanResourceController {
   }
 
   @Get()
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   async getAllHumanResource(
     @Req() request: RequestWithUser,
     @Query() query: GetHumanResourceDto,
@@ -114,8 +102,6 @@ export class HumanResourceController {
   }
 
   @Get('history')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   async getAllHistoryDepartment(
     @Req() request: RequestWithUser,
     @Query() query: GetHumanResourceDto,
@@ -134,8 +120,6 @@ export class HumanResourceController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   async getHumanResourceById(
     @Req() request: RequestWithUser,
     @Param() { id }: FindOneParams,
@@ -153,8 +137,6 @@ export class HumanResourceController {
   }
 
   @Patch('ids/:ids')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   async updateTypeHumanResource(
     @Param('ids') ids: string,
     @Req() request: RequestWithUser,
@@ -183,8 +165,6 @@ export class HumanResourceController {
   }
 
   @Patch('system/:ids')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   async updateSystemHumanResource(
     @Param('ids') ids: string,
     @Req() request: RequestWithUser,
@@ -213,8 +193,6 @@ export class HumanResourceController {
   }
 
   @Patch('structure/:ids')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   async updateStructureHumanResource(
     @Param('ids') ids: string,
     @Req() request: RequestWithUser,
@@ -243,8 +221,6 @@ export class HumanResourceController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
   async deleteHumanResource(
     @Req() request: RequestWithUser,
     @Param() { id }: FindOneParams,

@@ -15,7 +15,7 @@ import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
 import TimeState from './time-state.entity';
 import TimeStateNotFoundException from './exceptions/time-state-not-found.exception';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class TimeStateService {

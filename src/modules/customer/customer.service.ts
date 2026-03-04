@@ -12,7 +12,7 @@ import UpdateCustomerDto from './dto/update-customer.dto';
 import { EbarimtEasyService } from '../payment/ebarimt/ebarimt-easy/ebarimt-easy.service';
 import { EbarimtInquireService } from '../payment/ebarimt/ebarimt-inquire/ebarimt-inquire.service';
 import GetUserDto from '../users/dto/get-user.dto';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class CustomerService {

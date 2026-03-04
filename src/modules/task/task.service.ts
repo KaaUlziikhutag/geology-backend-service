@@ -16,7 +16,7 @@ import { GetAnalyticTaskDto } from './dto/get-analytic-task.dto';
 import { BarcodeService } from '../barcode/barcode.service';
 import { TaskUsersDto } from './dto/task-users.dto';
 import { UsersService } from '../users/users.service';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 @Injectable()
 export class TaskService {
   constructor(

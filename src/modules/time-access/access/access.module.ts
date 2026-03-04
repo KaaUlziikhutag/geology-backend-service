@@ -6,13 +6,13 @@ import AccessTerminal from './entities/access-terminal.enitity';
 import AccessTempTimes from './entities/access-temp.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { UserModule } from '../../cloud/user/user.module';
+import { UsersModule } from '@modules/users/users.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([AccesssTime, AccessTerminal, AccessTempTimes]),
     ConfigModule,
-    UserModule,
+    UsersModule,
   ],
   controllers: [AccessController],
   providers: [AccessService],

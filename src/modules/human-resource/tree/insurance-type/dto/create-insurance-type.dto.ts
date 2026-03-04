@@ -7,5 +7,5 @@ export class CreateInsuranceTypeDto {
 
   @IsOptional()
   @IsString()
-  type: string; // ДААТГУУЛАГ-ЧИЙН ТӨРӨЛ
+  name: string; // ДААТГУУЛАГ-ЧИЙН ТӨРӨЛ
 }

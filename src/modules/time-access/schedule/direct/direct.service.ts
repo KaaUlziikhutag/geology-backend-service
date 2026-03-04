@@ -26,7 +26,7 @@ import DirectLosts from '../../shared/lost/lost.entity';
 import DirectHistory from './entities/direct-view-history.entity';
 import Worker from '../../../human-resource/member/worker/worker.entity';
 import DirectSchedules from './schedule/schedule.entity';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class DirectService {

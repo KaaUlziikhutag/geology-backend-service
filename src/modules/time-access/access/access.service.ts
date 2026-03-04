@@ -21,8 +21,8 @@ import AccessTimes from './entities/access-time.entity';
 import Worker from '../../human-resource/member/worker/worker.entity';
 import Directs from '../schedule/direct/entities/direct.entity';
 import Repeats from '../schedule/repeat/entities/repeat.entity';
-import { UserService } from '../../cloud/user/user.service';
 import GetUserDto from '@modules/users/dto/get-user.dto';
+import { UsersService } from '@modules/users/users.service';
 
 @Injectable()
 export class AccessService {
@@ -43,7 +43,7 @@ export class AccessService {
     @InjectRepository(Directs)
     private readonly directRepository: Repository<Directs>,
     private moduleRef: ModuleRef,
-    private readonly userService: UserService,
+    private readonly userService: UsersService,
   ) {}
 
   private async loadEntityManager(systemId: string): Promise<EntityManager> {
@@ -125,10 +125,7 @@ export class AccessService {
     const userMap = new Map();
     for (const item of repeatItems) {
       if (!userMap.has(item.userId)) {
-        userMap.set(
-          item.userId,
-          await this.userService.getUserById(item.userId),
-        );
+        userMap.set(item.userId, await this.userService.getById(item.userId));
       }
       item.user = userMap.get(item.userId);
     }

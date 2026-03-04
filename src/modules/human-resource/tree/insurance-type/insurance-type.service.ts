@@ -2,45 +2,39 @@ import { Injectable } from '@nestjs/common';
 import { CreateInsuranceTypeDto } from './dto/create-insurance-type.dto';
 import { UpdateInsuranceTypeDto } from './dto/update-insurance-type.dto';
 import { GetInsuranceTypeDto } from './dto/get-insurance-type.dto';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import { EntityManager, FindManyOptions, ILike } from 'typeorm';
-import InsuranceTypes from './insurance-type.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FindManyOptions, ILike, Repository } from 'typeorm';
+import InsuranceType from './insurance-type.entity';
 import InsuranceTypeNotFoundException from './exceptions/insurance-type-not-found.exception';
 import PageDto from '@utils/dto/page.dto';
 import PageMetaDto from '@utils/dto/page-meta.dto';
-import { ModuleRef } from '@nestjs/core';
-import IUser from '@modules/cloud/user/interface/user.interface';
 
 @Injectable()
 export class InsuranceTypeService {
   /**
    * @ignore
    */
-  constructor(private moduleRef: ModuleRef) {}
-
-  private async loadEntityManager(systemId: string): Promise<EntityManager> {
-    return this.moduleRef.get(getEntityManagerToken(`ioffice_${systemId}`), {
-      strict: false,
-    });
-  }
+  constructor(
+    @InjectRepository(InsuranceType)
+    private readonly insuranceTypeRepository: Repository<InsuranceType>,
+  ) {}
 
   /**
    * A method that fetches the companies from the database
    * @returns A promise with the list of InsuranceTypes
    */
-  async getAllInsuranceTypes(query: GetInsuranceTypeDto, user: IUser) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const where: FindManyOptions<InsuranceTypes>['where'] = {};
+  async getAll(query: GetInsuranceTypeDto) {
+    const where: FindManyOptions<InsuranceType>['where'] = {};
     const { skip, page } = query;
 
     if (query.code) {
       where.code = ILike('%' + query.code + '%');
     }
-    if (query.type) {
-      where.type = ILike('%' + query.type + '%');
+    if (query.name) {
+      where.name = ILike('%' + query.name + '%');
     }
 
-    const [items, count] = await entityManager.findAndCount(InsuranceTypes, {
+    const [items, count] = await this.insuranceTypeRepository.findAndCount({
       where,
       order: {
         createdAt: 'ASC',
@@ -60,18 +54,14 @@ export class InsuranceTypeService {
    * @example
    * const InsuranceType = await InsuranceTypeService.getInsuranceTypeById(1);
    */
-  async getInsuranceTypeById(
-    insuranceTypeId: number,
-    user: IUser,
-  ): Promise<InsuranceTypes> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const InsuranceType = await entityManager.findOne(InsuranceTypes, {
-      where: { id: insuranceTypeId },
+  async getById(id: number): Promise<InsuranceType> {
+    const InsuranceType = await this.insuranceTypeRepository.findOne({
+      where: { id },
     });
     if (InsuranceType) {
       return InsuranceType;
     }
-    throw new InsuranceTypeNotFoundException(insuranceTypeId);
+    throw new InsuranceTypeNotFoundException(id);
   }
 
   /**
@@ -79,52 +69,27 @@ export class InsuranceTypeService {
    * @param InsuranceType createInsuranceType
    *
    */
-  async createInsuranceType(
-    insuranceType: CreateInsuranceTypeDto,
-    user: IUser,
-  ) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const newInsuranceType = entityManager.create(
-      InsuranceTypes,
-      insuranceType,
-    );
-    await entityManager.save(newInsuranceType);
-    return newInsuranceType;
+  async create(dto: CreateInsuranceTypeDto) {
+    const newInsuranceType = this.insuranceTypeRepository.create(dto);
+    return await this.insuranceTypeRepository.save(newInsuranceType);
   }
 
   /**
    * See the [definition of the UpdateInsuranceTypeDto file]{@link UpdateInsuranceTypeDto} to see a list of required properties
    */
-  async updateInsuranceType(
+  async updateById(
     id: number,
-    insuranceType: UpdateInsuranceTypeDto,
-    user: IUser,
-  ): Promise<InsuranceTypes> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    await entityManager.update(InsuranceTypes, id, insuranceType);
-    const updatedInsuranceType = await entityManager.findOne(InsuranceTypes, {
-      where: { id: id },
-    });
-    if (updatedInsuranceType) {
-      return updatedInsuranceType;
-    }
-    throw new InsuranceTypeNotFoundException(id);
+    dto: UpdateInsuranceTypeDto,
+  ): Promise<InsuranceType> {
+    await this.insuranceTypeRepository.update(id, dto);
+    return await this.getById(id);
   }
-
-  /**
-   * @deprecated Use deleteInsuranceType instead
-   */
-  async deleteInsuranceTypeById(id: number, user: IUser): Promise<void> {
-    return this.deleteInsuranceType(id, user);
-  }
-
   /**
    * A method that deletes a department from the database
    * @param id An id of a department. A department with this id should exist in the database
    */
-  async deleteInsuranceType(id: number, user: IUser): Promise<void> {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const deleteResponse = await entityManager.delete(InsuranceTypes, id);
+  async deleteById(id: number): Promise<void> {
+    const deleteResponse = await this.insuranceTypeRepository.delete(id);
     if (!deleteResponse.affected) {
       throw new InsuranceTypeNotFoundException(id);
     }

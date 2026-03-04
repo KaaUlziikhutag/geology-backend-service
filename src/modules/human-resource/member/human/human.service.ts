@@ -9,7 +9,7 @@ import HumanNotFoundException from './exceptions/human-not-found.exception';
 import PageDto from '@utils/dto/page.dto';
 import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 import { CountryService } from '../../../cloud/country/country.service';
 
 @Injectable()

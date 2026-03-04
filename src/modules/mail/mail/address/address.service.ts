@@ -5,7 +5,7 @@ import Address from './address.entity';
 import AddressNotFoundException from './exception/address-not-found.exception';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class AddressService {

@@ -2,7 +2,7 @@ import { AbstractEntity } from '@utils/abstract.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 /** Ангилал */
-@Entity('categories')
+@Entity('ref_categories')
 export default class Category extends AbstractEntity {
   @Column({ name: 'category_id', nullable: true })
   categoryId: number;
@@ -24,5 +24,5 @@ export default class Category extends AbstractEntity {
   position: number;
 
   @OneToMany(() => Category, (category) => category.category)
-  categories: Category[]; // Барааны ангилалууд
+  categories: Category[]; // Ангилалууд
 }

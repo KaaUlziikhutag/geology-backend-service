@@ -13,7 +13,7 @@ import { RepeatDetailService } from './detail/repeat-detail.service';
 import { AppointmentStatusType } from '@utils/enum-utils';
 import RepeatHistory from './entities/repeat-history.entity';
 import GetUserDto from '@modules/users/dto/get-user.dto';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class RepeatService {

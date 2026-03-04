@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UserService } from '../cloud/user/user.service';
 import { ModuleRef } from '@nestjs/core';
 import {
   Between,
@@ -8,8 +7,9 @@ import {
   FindManyOptions,
   ILike,
   In,
+  Repository,
 } from 'typeorm';
-import { getEntityManagerToken } from '@nestjs/typeorm';
+import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
 import {
   HumanResourceDto,
   UpdatedWorkerAndUser,
@@ -32,14 +32,21 @@ import { ColumnService } from './column-setup/column.service';
 import Trees from './tree/tree.entity';
 import { CountryService } from '../cloud/country/country.service';
 import WorkerApp from './member/worker/entities/worker-app.entity';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 import { extractBirthDateFromRegNumber } from '@utils/helper-utils';
+import { UsersService } from '@modules/users/users.service';
+import { TreeService } from './tree/tree.service';
 
 @Injectable()
 export class HumanResourceService {
   constructor(
+    @InjectRepository(Human)
+    private readonly humanRepository: Repository<Human>,
+    @InjectRepository(Worker)
+    private readonly workerRepository: Repository<Worker>,
+    private readonly treeService: TreeService,
     private moduleRef: ModuleRef,
-    private readonly userService: UserService,
+    private readonly userService: UsersService,
     private readonly emailService: EmailService,
     private readonly fieldService: FieldService,
     private readonly programService: ProgramService,
@@ -55,31 +62,30 @@ export class HumanResourceService {
   }
 
   async getAllHumanResource(user: IUser, query: GetHumanResourceDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
     const where: FindManyOptions<Worker>['where'] = {};
     const { skip, limit, page } = query;
 
     if (query.depId || query.groupId || query.appId || query.comId) {
-      const findChildrenIds = async (
-        parentId: number,
-        collectedIds: number[] = [],
-      ): Promise<number[]> => {
-        const childrens = await entityManager.find(Trees, {
-          where: { mid: parentId },
-        });
-        const childIds = childrens.map((c) => c.id);
-        if (childrens.length === 0) {
-          collectedIds.push(...[parentId]);
-        } else {
-          for (const childId of childIds) {
-            await findChildrenIds(childId, collectedIds);
-          }
-        }
-        return collectedIds;
-      };
-      const id = query.depId || query.groupId || query.appId || query.comId;
-      const allChildIds = await findChildrenIds(id, []);
-      where.appId = In(allChildIds);
+      // const findChildrenIds = async (
+      //   parentId: number,
+      //   collectedIds: number[] = [],
+      // ): Promise<number[]> => {
+      //   const childrens = await entityManager.find(Trees, {
+      //     where: { mid: parentId },
+      //   });
+      //   const childIds = childrens.map((c) => c.id);
+      //   if (childrens.length === 0) {
+      //     collectedIds.push(...[parentId]);
+      //   } else {
+      //     for (const childId of childIds) {
+      //       await findChildrenIds(childId, collectedIds);
+      //     }
+      //   }
+      //   return collectedIds;
+      // };
+      // const id = query.depId || query.groupId || query.appId || query.comId;
+      // const allChildIds = await findChildrenIds(id, []);
+      // where.appId = In(allChildIds);
     }
 
     if (query.systemName) {
@@ -132,7 +138,7 @@ export class HumanResourceService {
         { firstName: ILike(`%${query.filter}%`) },
       ];
     }
-    const findOptions: FindManyOptions<Worker> = {
+    const [items, itemCount] = await this.workerRepository.findAndCount({
       where,
       order: { createdAt: 'DESC' },
       relations: [
@@ -144,25 +150,8 @@ export class HumanResourceService {
         'appTree',
         'depTree',
       ],
-    };
-    if (limit !== null && limit !== undefined) {
-      findOptions.skip = skip;
-      findOptions.take = limit;
-    } else {
-      findOptions.skip = undefined;
-      findOptions.take = undefined;
-    }
-    const [items, count] = await entityManager.findAndCount(
-      Worker,
-      findOptions,
-    );
-
-    const itemCount = count;
-    const pageMetaDto = new PageMetaDto({
-      page,
-      limit: limit || count,
-      itemCount,
     });
+    const pageMetaDto = new PageMetaDto({ page, limit, itemCount });
 
     // const columns = [];
     // const fields = await this.fieldService.getFieldByIds(
@@ -291,18 +280,17 @@ export class HumanResourceService {
     throw new WorkerNotFoundException(workerId);
   }
 
-  async getAllHumanResourceCheck(user: IUser, query: GetHumanResourceDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
-    const register = await entityManager.findOne(Human, {
+  async getAllHumanResourceCheck(query: GetHumanResourceDto) {
+    const register = await this.humanRepository.findOne({
       where: { regNumber: query.regNumber },
     });
-    const taxpayerNumber = await entityManager.findOne(Human, {
+    const taxpayerNumber = await this.humanRepository.findOne({
       where: { taxpayerNumber: query.taxpayerNumber },
     });
-    const checkUser = await this.userService.getByEmailCheck(query.workMail);
-    const workerCode = await entityManager.findOne(Worker, {
-      where: { code: query.code },
-    });
+    // const checkUser = await this.userService.getByEmail(query.workMail);
+    // const workerCode = await entityManager.findOne(Worker, {
+    //   where: { code: query.code },
+    // });
     if (query.regNumber) {
       if (register) {
         throw new HttpException(
@@ -321,33 +309,32 @@ export class HumanResourceService {
       }
     }
     if (query.code) {
-      if (workerCode) {
-        throw new HttpException(
-          'Тухайн хэрэглэгчийн код бүртгэлтэй байна.',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
+      // if (workerCode) {
+      //   throw new HttpException(
+      //     'Тухайн хэрэглэгчийн код бүртгэлтэй байна.',
+      //     HttpStatus.BAD_REQUEST,
+      //   );
+      // }
     }
-    if (query.workMail) {
-      if (checkUser) {
-        throw new HttpException(
-          'Тухайн хэрэглэгчийн ажилын майл бүртгэлтэй байна.',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    }
+    // if (query.workMail) {
+    //   if (checkUser) {
+    //     throw new HttpException(
+    //       'Тухайн хэрэглэгчийн ажилын майл бүртгэлтэй байна.',
+    //       HttpStatus.BAD_REQUEST,
+    //     );
+    //   }
+    // }
   }
 
-  async createHumanResource(user: IUser, humanResource: HumanResourceDto) {
-    const entityManager = await this.loadEntityManager(user.dataBase);
+  async createHumanResource(humanResource: HumanResourceDto) {
     try {
-      const checkUser = await this.userService.getByEmailCheck(
-        humanResource.workMail,
-      );
-      const checkRegNumber = await entityManager.findOne(Human, {
+      // const checkUser = await this.userService.getByEmail(
+      //   humanResource.workMail,
+      // );
+      const checkRegNumber = await this.humanRepository.findOne({
         where: { regNumber: humanResource.regNumber },
       });
-      const workerCode = await entityManager.findOne(Worker, {
+      const workerCode = await this.workerRepository.findOne({
         where: { code: humanResource.code },
       });
       if (workerCode) {
@@ -362,133 +349,127 @@ export class HumanResourceService {
           HttpStatus.BAD_REQUEST,
         );
       }
-      if (!checkUser) {
-        const newHuman = await entityManager.create(Human, {
-          regNumber: humanResource.regNumber,
-          familyName: humanResource.familyName,
-          firstName: humanResource.firstName,
-          lastName: humanResource.lastName,
-          nation: humanResource.nation,
-          faceBook: humanResource.faceBook,
-          birthCityId: humanResource.birthCityId,
-          birthCountryId: humanResource.birthCountryId,
-          birthDistrictId: humanResource.birthDistrictId,
-          birthCommetteeId: humanResource.birthCommetteeId,
-          birthDetailAddress: humanResource.birthDetailAddress,
-          mcountryId: humanResource.mcountryId,
-          mCityId: humanResource.mCityId,
-          mDistrictId: humanResource.mDistrictId,
-          mCommetteeId: humanResource.mCommetteeId,
-          mCommitteeDetailAddress: humanResource.mCommitteeDetailAddress,
-          ncountryId: humanResource.ncountryId,
-          nCityId: humanResource.nCityId,
-          nDistrictId: humanResource.nDistrictId,
-          nCommetteeId: humanResource.nCommetteeId,
-          nCommitteeDetailAddress: humanResource.nCommitteeDetailAddress,
-          taxpayerNumber: humanResource.taxpayerNumber,
-          birthDate: extractBirthDateFromRegNumber(humanResource.regNumber),
-          disabled: humanResource.disabled,
-          region: humanResource.region,
-          contacts: humanResource.contacts,
-          married: humanResource.married,
-          gender: humanResource.gender,
-          driveNumber: humanResource.driveNumber,
-          personalMail: humanResource.personalMail,
-          homePhone: humanResource.homePhone,
-          mobile: humanResource.mobile,
-          mobileOther: humanResource.mobileOther,
-        }); // human add
-        await entityManager.save(Human, newHuman);
+      const newHuman = this.humanRepository.create({
+        regNumber: humanResource.regNumber,
+        familyName: humanResource.familyName,
+        firstName: humanResource.firstName,
+        lastName: humanResource.lastName,
+        nation: humanResource.nation,
+        faceBook: humanResource.faceBook,
+        birthCityId: humanResource.birthCityId,
+        birthCountryId: humanResource.birthCountryId,
+        birthDistrictId: humanResource.birthDistrictId,
+        birthCommetteeId: humanResource.birthCommetteeId,
+        birthDetailAddress: humanResource.birthDetailAddress,
+        mcountryId: humanResource.mcountryId,
+        mCityId: humanResource.mCityId,
+        mDistrictId: humanResource.mDistrictId,
+        mCommetteeId: humanResource.mCommetteeId,
+        mCommitteeDetailAddress: humanResource.mCommitteeDetailAddress,
+        ncountryId: humanResource.ncountryId,
+        nCityId: humanResource.nCityId,
+        nDistrictId: humanResource.nDistrictId,
+        nCommetteeId: humanResource.nCommetteeId,
+        nCommitteeDetailAddress: humanResource.nCommitteeDetailAddress,
+        taxpayerNumber: humanResource.taxpayerNumber,
+        birthDate: extractBirthDateFromRegNumber(humanResource.regNumber),
+        disabled: humanResource.disabled,
+        region: humanResource.region,
+        contacts: humanResource.contacts,
+        married: humanResource.married,
+        gender: humanResource.gender,
+        driveNumber: humanResource.driveNumber,
+        personalMail: humanResource.personalMail,
+        homePhone: humanResource.homePhone,
+        mobile: humanResource.mobile,
+        mobileOther: humanResource.mobileOther,
+      }); // human add
+      await this.humanRepository.save(newHuman);
 
-        const structure = await entityManager.findOne(Trees, {
-          where: { id: humanResource.appId },
-        });
-        const depStructure = await entityManager.findOne(Trees, {
-          where: { id: structure?.mid },
-        });
-        const newWorker = await entityManager.create(Worker, {
-          workMail: humanResource.workMail,
-          humanId: newHuman.id,
-          profileId: humanResource.profileId,
-          occupationId: humanResource.occupationId,
-          insuranceId: humanResource.insuranceId,
-          isActive: 1,
-          dateOfEmployment: humanResource.dateOfEmployment,
-          appId: humanResource.appId,
-          depId: depStructure?.id,
-          systemName: humanResource.systemName,
-          workPhone: humanResource.workPhone,
-          temporaryOptions: humanResource.temporaryOptions,
-          workerType: WorkType.Active,
-          code: humanResource.code,
-          jobAction: humanResource.jobAction,
-          employeeType: humanResource.employeeType,
-          companyId: null,
-        }); // worker add
-        await entityManager.save(Worker, newWorker);
-        if (humanResource.appId) {
-          const departmentHistory = entityManager.create(WorkerApp, {
-            userId: newWorker.id,
-            companyId: null,
-            depId: humanResource.depId,
-            appId: depStructure.id,
-            jobAction: humanResource.jobAction,
-            workerType: AppointmentStatusType.Expected,
-            date: new Date(),
-          });
-          await entityManager.save(WorkerApp, departmentHistory);
-        }
-        const password = generator.generate({
-          length: 6,
-          numbers: true,
-        });
-        const hashedPassword = await bcrypt.hash(password, 10);
-        await this.userService.createUser({
-          workerId: newWorker.id,
-          companyId: null,
-          email: humanResource.workMail,
-          phoneNo: humanResource.mobile,
-          dataBase: user.dataBase,
-          password: hashedPassword,
-          firstName: humanResource.firstName,
-          lastName: humanResource.lastName,
-          profileId: humanResource.profileId,
-        }); // user add
-        await this.emailService.sendUserEmailPassword(newWorker.workMail, {
-          email: newWorker.workMail,
-          password: password,
-        });
-        const programs = await this.programService.getAllProgram();
-        const moules = await this.modulService.getAllMoule();
-        await Promise.all(
-          programs.map(async (program) => {
-            const newAccess = entityManager.create(Access, {
-              workerId: newWorker.id,
-              proId: program.id,
-              modId: 0,
-              access: AccessType.Simple,
-              comId: null,
-            });
-            await entityManager.save(Access, newAccess);
-          }),
-        );
-        await Promise.all(
-          moules.map(async (module) => {
-            const newAccess = await entityManager.create(Access, {
-              workerId: newWorker.id,
-              proId: module.proId,
-              modId: module.id,
-              access: AccessType.Simple,
-              companyId: null,
-            });
-            await entityManager.save(Access, newAccess);
-          }),
-        );
-      } else
-        throw new HttpException(
-          'Тухайн хэрэглэгчийн ажлын имэйл хаяг бүртгэлтэй байна.',
-          HttpStatus.BAD_REQUEST,
-        );
+      const structure = await this.treeService.getTreeById(humanResource.appId);
+      const depStructure = await this.treeService.getTreeById(structure?.mid);
+      const newWorker = this.workerRepository.create({
+        workMail: humanResource.workMail,
+        humanId: newHuman.id,
+        profileId: humanResource.profileId,
+        occupationId: humanResource.occupationId,
+        insuranceId: humanResource.insuranceId,
+        isActive: 1,
+        dateOfEmployment: humanResource.dateOfEmployment,
+        appId: humanResource.appId,
+        depId: depStructure?.id,
+        systemName: humanResource.systemName,
+        workPhone: humanResource.workPhone,
+        temporaryOptions: humanResource.temporaryOptions,
+        workerType: WorkType.Active,
+        code: humanResource.code,
+        jobAction: humanResource.jobAction,
+        employeeType: humanResource.employeeType,
+        companyId: null,
+      }); // worker add
+      await this.workerRepository.save(newWorker);
+      if (humanResource.appId) {
+        // const departmentHistory = entityManager.create(WorkerApp, {
+        //   userId: newWorker.id,
+        //   companyId: null,
+        //   depId: humanResource.depId,
+        //   appId: depStructure.id,
+        //   jobAction: humanResource.jobAction,
+        //   workerType: AppointmentStatusType.Expected,
+        //   date: new Date(),
+        // });
+        // await entityManager.save(WorkerApp, departmentHistory);
+      }
+      const password = generator.generate({
+        length: 6,
+        numbers: true,
+      });
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await this.userService.create({
+        // workerId: newWorker.id,
+        // companyId: null,
+        email: humanResource.workMail,
+        // phoneNo: humanResource.mobile,
+        // dataBase: user.dataBase,
+        password: hashedPassword,
+        firstName: humanResource.firstName,
+        lastName: humanResource.lastName,
+        username: humanResource.mobile,
+        phone: humanResource.mobile,
+        address: '',
+        avatarId: 0,
+        isActive: true,
+      }); // user add
+      await this.emailService.sendUserEmailPassword(newWorker.workMail, {
+        email: newWorker.workMail,
+        password: password,
+      });
+      const programs = await this.programService.getAllProgram();
+      const moules = await this.modulService.getAllMoule();
+      await Promise.all(
+        programs.map(async (program) => {
+          // const newAccess = entityManager.create(Access, {
+          //   workerId: newWorker.id,
+          //   proId: program.id,
+          //   modId: 0,
+          //   access: AccessType.Simple,
+          //   comId: null,
+          // });
+          // await entityManager.save(Access, newAccess);
+        }),
+      );
+      await Promise.all(
+        moules.map(async (module) => {
+          // const newAccess = await entityManager.create(Access, {
+          //   workerId: newWorker.id,
+          //   proId: module.proId,
+          //   modId: module.id,
+          //   access: AccessType.Simple,
+          //   companyId: null,
+          // });
+          // await entityManager.save(Access, newAccess);
+        }),
+      );
     } catch (error) {
       const err = error as Error;
       throw new HttpException(
@@ -532,12 +513,11 @@ export class HumanResourceService {
           excludeSimilarCharacters: true,
         });
         const hashedPassword = await bcrypt.hash(password, 10);
-        const userData = await this.userService.getUserByWorkerId(
-          existingWorker.id,
-        );
+        const userData = await this.userService.getById(existingWorker.id);
         await this.userService.updateUser(userData.id, {
           email: humanResource.workMail,
           password: hashedPassword,
+          id: 0,
         });
         await this.emailService.sendUserEmailPassword(humanResource.workMail, {
           email: humanResource.workMail,
@@ -682,7 +662,7 @@ export class HumanResourceService {
         if (!existingWorker) {
           throw new WorkerNotFoundException(id);
         }
-        const users = await this.userService.getUserByWorkerId(id);
+        const users = await this.userService.getById(id);
         if (!users) {
           throw new HttpException('User not found', HttpStatus.NOT_FOUND);
         }
@@ -692,7 +672,8 @@ export class HumanResourceService {
         });
         const updatedWorker = await entityManager.save(Worker, existingWorker);
         const updatedUser = await this.userService.updateUser(users.id, {
-          isActive: humanResource.isActive,
+          isActive: Boolean(humanResource.isActive),
+          id: 0,
         });
 
         // Push a custom object containing both the worker and the user updates

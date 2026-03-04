@@ -9,7 +9,7 @@ import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
 import Celebratory from './celebratory.entity';
 import CelebratoryNotFoundException from './exceptions/celebratory-not-found.exception';
-import { IUser } from '@modules/cloud/user/interface/user.interface';
+import { IUser } from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class CelebratoryService {

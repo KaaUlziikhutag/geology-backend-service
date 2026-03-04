@@ -26,7 +26,7 @@ import FindOneParams from '@utils/find-one-params';
 
 @Controller('category')
 @UseInterceptors(ClassSerializerInterceptor)
-@ApiTags('Барааны ангилал')
+@ApiTags('Ангилал')
 @UseGuards(AuthGuard('api-key'))
 export default class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}

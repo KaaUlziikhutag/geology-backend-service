@@ -28,7 +28,7 @@ import { DiscountService } from '../reference/discount/discount.service';
 import { ContractService } from '../contract/contract.service';
 import { AdditionService } from '../reference/addition/addition.service';
 import { formatFullDate } from '../../utils/helper-utils';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class PaymentService {

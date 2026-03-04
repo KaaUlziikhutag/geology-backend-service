@@ -9,7 +9,7 @@ import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
 import { UserIdsDto } from './dto/create-agree-byuser.dto';
 import { UpdateAgreeByuserDto } from './dto/update-agree-byuser.dto';
-import { IUser } from '@modules/cloud/user/interface/user.interface';
+import { IUser } from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class AgreeByuserService {

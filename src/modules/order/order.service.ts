@@ -25,7 +25,7 @@ import { UsersService } from '../users/users.service';
 import { TaskService } from '../task/task.service';
 import { CreateAnalystOrderDto } from './dto/create-analyst-order.dto';
 import { GetAnalyticTaskDto } from '../task/dto/get-analytic-task.dto';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class OrderService {

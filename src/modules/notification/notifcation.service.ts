@@ -12,7 +12,7 @@ import { CreateNotificationDto } from './dto/create-notification.dto';
 import { NotificationGateway } from './notification.gateway';
 import GetUserDto from '../users/dto/get-user.dto';
 import { GetNotificationDto } from './dto/get-notification.dto';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class NotificationService {

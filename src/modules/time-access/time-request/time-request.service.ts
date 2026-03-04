@@ -23,7 +23,7 @@ import {
   WorkType,
 } from '@utils/enum-utils';
 import Worker from '../../human-resource/member/worker/worker.entity';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class TimeRequestService {

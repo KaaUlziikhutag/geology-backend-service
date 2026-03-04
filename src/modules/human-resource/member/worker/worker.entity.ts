@@ -42,9 +42,6 @@ export default class Worker extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'user_id', nullable: true })
-  userId: number;
-
   @Column({ name: 'company_id', nullable: true })
   companyId: number;
 

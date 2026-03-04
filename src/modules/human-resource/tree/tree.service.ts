@@ -16,7 +16,7 @@ import PageDto from '@utils/dto/page.dto';
 import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ModuleRef } from '@nestjs/core';
 import Worker from '../member/worker/worker.entity';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class TreeService {
@@ -115,7 +115,7 @@ export class TreeService {
     return relations;
   };
 
-  async getTreeById(treeId: number, user: IUser): Promise<any> {
+  async getTreeById(treeId: number): Promise<any> {
     const depth = 10;
     const parent = 1;
     const childRelations = this.generateRelations('children', depth);

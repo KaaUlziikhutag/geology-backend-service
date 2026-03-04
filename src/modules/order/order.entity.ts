@@ -6,6 +6,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
 import Price from '../price/price.entity';
@@ -16,6 +17,9 @@ import { AbstractEntity } from '../../utils/abstract.entity';
 /** Ажилын захиалга */
 @Entity('appointment_orders')
 export default class Order extends AbstractEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @Column({ name: 'payment_id', nullable: true })
   paymentId: number;
   @JoinColumn({ name: 'payment_id' })

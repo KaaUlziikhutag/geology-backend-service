@@ -5,7 +5,7 @@ import SignatureViewUser from './view-users.entity';
 import ViewUserNotFoundException from './exception/view-user-not-found.exception';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken } from '@nestjs/typeorm';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class ViewUserService {

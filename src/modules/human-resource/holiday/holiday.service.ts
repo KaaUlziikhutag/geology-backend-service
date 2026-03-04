@@ -24,7 +24,7 @@ import {
 import Human from '../member/human/human.entity';
 import HolidayClose from './entities/holiday-close.entity';
 import Trees from '../tree/tree.entity';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class HolidayService {

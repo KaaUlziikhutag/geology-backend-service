@@ -9,7 +9,7 @@ import AccessNotFoundException from './exceptions/access-not-found.exception';
 import PageDto from '@utils/dto/page.dto';
 import PageMetaDto from '@utils/dto/page-meta.dto';
 import { ProgramService } from '../../cloud/programs/program.service';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 import { ModuleService } from '@modules/cloud/module/modules.service';
 
 @Injectable()

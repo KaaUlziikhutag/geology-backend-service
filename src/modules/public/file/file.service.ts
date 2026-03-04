@@ -22,7 +22,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import LocalFile from '../../local-files/local-file.entity';
 import { FileType } from '@utils/enum-utils';
 import PublicViewUser from '../view-users/view-users.entity';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class PublicFileService {

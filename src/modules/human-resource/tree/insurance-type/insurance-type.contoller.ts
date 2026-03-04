@@ -27,23 +27,16 @@ import { AuthGuard } from '@nestjs/passport';
 import RequestWithUser from '../../../authentication/interface/request-with-user.interface';
 
 @Controller('cloud/insuranceType')
+@UseGuards(JwtAuthenticationGuard)
+@UseGuards(AuthGuard('api-key'))
 @UseInterceptors(ClassSerializerInterceptor)
 export class InsuranceTypeController {
   constructor(private readonly insuranceTypeService: InsuranceTypeService) {}
 
   @Get()
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
-  async getAllInsuranceTypes(
-    @Req() request: RequestWithUser,
-    @Query() query: GetInsuranceTypeDto,
-  ): Promise<IResponse> {
+  async getAll(@Query() query: GetInsuranceTypeDto): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.insuranceTypeService.getAllInsuranceTypes(
-        query,
-        user,
-      );
+      const data = await this.insuranceTypeService.getAll(query);
       return new ResponseSuccess('GET_INSURANCE_TYPE.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -53,16 +46,9 @@ export class InsuranceTypeController {
   @Get(':id')
   @UseGuards(JwtAuthenticationGuard)
   @UseGuards(AuthGuard('api-key'))
-  async getInsuranceTypeById(
-    @Req() request: RequestWithUser,
-    @Param() { id }: FindOneParams,
-  ): Promise<IResponse> {
+  async getById(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.insuranceTypeService.getInsuranceTypeById(
-        id,
-        user,
-      );
+      const data = await this.insuranceTypeService.getById(id);
       return new ResponseSuccess('GET_INSURANCE_TYPE.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -71,18 +57,9 @@ export class InsuranceTypeController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
-  async createInsuranceType(
-    @Req() request: RequestWithUser,
-    @Body() insuranceType: CreateInsuranceTypeDto,
-  ): Promise<IResponse> {
+  async create(@Body() dto: CreateInsuranceTypeDto): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.insuranceTypeService.createInsuranceType(
-        insuranceType,
-        user,
-      );
+      const data = await this.insuranceTypeService.create(dto);
       return new ResponseSuccess('CREATE_INSURANCE_TYPE.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -90,20 +67,12 @@ export class InsuranceTypeController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
-  async updateInsuranceType(
+  async updateById(
     @Param() { id }: FindOneParams,
-    @Body() insuranceType: UpdateInsuranceTypeDto,
-    @Req() request: RequestWithUser,
+    @Body() dto: UpdateInsuranceTypeDto,
   ): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.insuranceTypeService.updateInsuranceType(
-        id,
-        insuranceType,
-        user,
-      );
+      const data = await this.insuranceTypeService.updateById(id, dto);
       return new ResponseSuccess('UPDATE_INSURANCE_TYPE.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);
@@ -111,18 +80,9 @@ export class InsuranceTypeController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthenticationGuard)
-  @UseGuards(AuthGuard('api-key'))
-  async deleteInsuranceType(
-    @Param() { id }: FindOneParams,
-    @Req() request: RequestWithUser,
-  ): Promise<IResponse> {
+  async deleteById(@Param() { id }: FindOneParams): Promise<IResponse> {
     try {
-      const { user } = request;
-      const data = await this.insuranceTypeService.deleteInsuranceType(
-        id,
-        user,
-      );
+      const data = await this.insuranceTypeService.deleteById(id);
       return new ResponseSuccess('DELETE_INSURANCE_TYPE.SUCCESS', data);
     } catch (error) {
       throw new BadRequestException(error);

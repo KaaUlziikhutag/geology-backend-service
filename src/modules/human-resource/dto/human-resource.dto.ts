@@ -19,10 +19,10 @@ import {
   TypeOfPosition,
   WorkType,
 } from '@utils/enum-utils';
-import Users from '../../cloud/user/user.entity';
 import Worker from '../member/worker/worker.entity';
 import { ContactDto } from '../member/human/dto/contact.dto';
 import { Type } from 'class-transformer';
+import Users from '@modules/users/users.entity';
 export class HumanResourceDto {
   @IsOptional()
   @IsString()

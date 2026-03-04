@@ -12,6 +12,7 @@ import { DiscountModule } from './discount/discount.module';
 import { AdditionModule } from './addition/addition.module';
 import { SectionProductModule } from './section-product/section-product.module';
 import { MeasurementModule } from './measurement/measurement.module';
+import { RegionsModule } from './region/regions.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { MeasurementModule } from './measurement/measurement.module';
     DiscountModule,
     AdditionModule,
     MeasurementModule,
+    RegionsModule,
   ],
   controllers: [ReferenceController],
 })

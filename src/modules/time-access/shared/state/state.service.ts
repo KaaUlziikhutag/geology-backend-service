@@ -6,7 +6,7 @@ import State from './entities/state.entity';
 import StateNotFoundException from './exceptions/state-not-found.exception';
 import { ModuleRef } from '@nestjs/core';
 import { getEntityManagerToken, InjectRepository } from '@nestjs/typeorm';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class StateService {

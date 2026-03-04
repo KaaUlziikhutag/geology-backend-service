@@ -18,7 +18,7 @@ import MailUser from './users/users.entity';
 import CreateUserDto from './users/dto/create-user.dto';
 import { MailType } from '@utils/enum-utils';
 import SignatureViewUser from '../signature/view-users/view-users.entity';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class MailService {

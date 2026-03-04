@@ -21,7 +21,7 @@ import {
   WorkType,
 } from '@utils/enum-utils';
 import AppointmentCloses from './entities/appointment-close.entity';
-import IUser from '@modules/cloud/user/interface/user.interface';
+import IUser from '@modules/users/interface/user.interface';
 
 @Injectable()
 export class AppointmentService {
